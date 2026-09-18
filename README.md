@@ -46,7 +46,8 @@ $$r_i = \|\mathbf{x}_i - \mathbf{S}_{\text{closest}, i}\| + \epsilon, \qquad r_{
 
 The repulsive force profile is governed by the bounded cosecant barrier $\phi(r)$:
 
-$$\phi(r) = \operatorname{clip}\left( \left| \csc\left( \operatorname{clip}\left( r_{\text{norm}} \cdot \frac{\pi}{2}, \, 10^{-3}, \, 0.999\pi \right) \right) \right|, \, 1.0, \, M_{\max} \right) - 1.0$$
+$$\phi(r) = \mathrm{clip}\left( \left| \csc\left( \mathrm{clip}\left( r_{\text{norm}} \cdot \frac{\pi}{2}, \, 10^{-3}, \, 0.999\pi \right) \right) \right|, \, 1.0, \, M_{\max} \right) - 1.0$$
+
 
 $$\phi(r) = \begin{cases} \phi(r) & \text{if } r_{\text{norm}} < 2.0 \\ 0 & \text{if } r_{\text{norm}} \ge 2.0 \end{cases}$$
 
