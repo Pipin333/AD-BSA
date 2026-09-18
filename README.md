@@ -7,7 +7,7 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Python Version](https://img.shields.io/badge/python-3.9%20%7C%203.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-blue)](https://www.python.org/)
 [![CEC 2020 50D](https://img.shields.io/badge/CEC%202020-50D%20Rank%20%231-brightgreen.svg)](#ieee-cec-2020-benchmark-results-50-dimensions)
-[![Tests](https://img.shields.io/badge/tests-11%2F11%20passing-success)](tests/)
+[![Tests](https://img.shields.io/badge/tests-15%2F15%20passing-success)](tests/)
 [![Code Style](https://img.shields.io/badge/code%20style-PEP%208-black)](https://www.python.org/dev/peps/pep-0008/)
 
 </div>
@@ -16,7 +16,7 @@
 
 ## 📌 Executive Summary & Theoretical Motivation
 
-In continuous high-dimensional global optimization ($D \ge 50$), the volume of sub-optimal stagnation basins exponentially dwarfs the basin of attraction of the global optimum. Canonical evolutionary algorithms—including Differential Evolution (DE), Particle Swarm Optimization (PSO), and Genetic Algorithms (GA)—rely almost exclusively on **positive attraction** towards previously discovered elite vectors ($x_{\text{best}}$ or $x_{p\text{-best}}$). When the population clusters inside a deceptive local trap, exploratory perturbations decay and convergence stagnates.
+In continuous high-dimensional global optimization ($D \ge 50$), the volume of sub-optimal stagnation basins exponentially dwarfs the basin of attraction of the global optimum. Canonical evolutionary algorithms—including Differential Evolution (DE), Particle Swarm Optimization (PSO), and Genetic Algorithms (GA)—rely almost exclusively on **positive attraction** towards previously discovered elite vectors ($\mathbf{x}_{\text{best}}$ or $\mathbf{x}_{p\text{-best}}$). When the population clusters inside a deceptive local trap, exploratory perturbations decay and convergence stagnates.
 
 **AD-BSA** introduces a rigorous mathematical foundation for **Explicit Negative Learning** (*Anti-Attractor Dynamics*). Instead of only learning *where to go*, the swarm actively maps *where not to be*. 
 
@@ -31,29 +31,39 @@ Originating from a cultural and scientific reinterpretation of the mythical *Boo
 ## 🔬 Mathematical Formulation
 
 ### 1. Multi-Boogeyman Anti-Attractors (Fitness-Rank Stratified Partitioning)
-Let $\mathbf{P}_t$ be the population at generation $t$. We extract the subset $\mathbf{P}_{\text{worst}} \subset \mathbf{P}_t$ representing the $k_{\text{worst}} = 15\%$ fraction with the lowest fitness. To eliminate the iterative $O(k \cdot D \cdot I)$ clustering latency and avoid distance concentration issues in high dimensions ($D \ge 50$), $\mathbf{P}_{\text{worst}}$ is partitioned via **Fitness-Rank Stratification** (*Fitness-Rank Niching*) into $M$ contiguous sub-tiers of increasing sub-optimality. The barycenter $\mathbf{S}_k$ of each tier acts as an anti-attractor epicenter:
+Let $\mathbf{P}_t$ be the population at generation $t$. We extract the subset $\mathbf{P}_{\text{worst}} \subset \mathbf{P}_t$ representing the worst 15% fraction of individuals ($k_{\text{worst}} = 0.15$). To eliminate iterative clustering latency $O(k \cdot D \cdot I)$ and avoid distance concentration issues in high dimensions ($D \ge 50$), $\mathbf{P}_{\text{worst}}$ is partitioned via **Fitness-Rank Stratification** (*Fitness-Rank Niching*) into $M$ contiguous sub-tiers of increasing sub-optimality. The barycenter $\mathbf{S}_k$ of each tier acts as an anti-attractor epicenter:
 
-$$\mathbf{S}_k = \frac{1}{|\mathcal{C}_k|} \sum_{\mathbf{x} \in \mathcal{C}_k} \mathbf{x}, \quad k \in \{1, \dots, M\}$$
+$$
+\mathbf{S}_k = \frac{1}{|\mathcal{C}_k|} \sum_{\mathbf{x} \in \mathcal{C}_k} \mathbf{x}, \quad k \in \{1, \dots, M\}
+$$
 
 The capture radius $R_c$ is calibrated dynamically to the swarm's spatial variance:
 
-$$R_c = \max\left(0.5 \cdot \bar{\sigma}_{\mathbf{P}}, \, 10^{-12}\right)$$
+$$
+R_c = \max\left(0.5 \cdot \bar{\sigma}_{\mathbf{P}}, \, 10^{-12}\right)
+$$
 
 ### 2. The Bounded Cosecant Repulsion Barrier ($|\csc(x)|$ Operator)
 For each individual $\mathbf{x}_i$, we identify its nearest anti-attractor $\mathbf{S}_{\text{closest}, i} = \arg\min_{\mathbf{S}_k} \|\mathbf{x}_i - \mathbf{S}_k\|$. The normalized distance to danger is:
 
-$$r_i = \|\mathbf{x}_i - \mathbf{S}_{\text{closest}, i}\| + \epsilon, \qquad r_{\text{norm}, i} = \frac{r_i}{2 R_c + \epsilon}$$
+$$
+r_i = \|\mathbf{x}_i - \mathbf{S}_{\text{closest}, i}\| + \epsilon, \qquad r_{\text{norm}, i} = \frac{r_i}{2 R_c + \epsilon}
+$$
 
 The repulsive force profile is governed by the bounded cosecant barrier $\phi(r)$:
 
-$$\phi(r) = \mathrm{clip}\left( \left| \csc\left( \mathrm{clip}\left( r_{\text{norm}} \cdot \frac{\pi}{2}, \, 10^{-3}, \, 0.999\pi \right) \right) \right|, \, 1.0, \, M_{\max} \right) - 1.0$$
-
-
-$$\phi(r) = \begin{cases} \phi(r) & \text{if } r_{\text{norm}} < 2.0 \\ 0 & \text{if } r_{\text{norm}} \ge 2.0 \end{cases}$$
+$$
+\phi(r) = \begin{cases}
+\mathrm{clip}\left( \left| \csc\left( \mathrm{clip}\left( r_{\text{norm}} \cdot \frac{\pi}{2}, \, 10^{-3}, \, 0.999\pi \right) \right) \right|, \, 1.0, \, M_{\max} \right) - 1.0 & \text{if } r_{\text{norm}} < 2.0 \\
+0 & \text{if } r_{\text{norm}} \ge 2.0
+\end{cases}
+$$
 
 The resulting escape vector is defined as:
 
-$$\mathbf{v}_{\text{escape}, i} = F_{\text{escape}, i}(t) \cdot \phi(r_i) \cdot \frac{\mathbf{x}_i - \mathbf{S}_{\text{closest}, i}}{r_i} \cdot R_c$$
+$$
+\mathbf{v}_{\text{escape}, i} = F_{\text{escape}, i}(t) \cdot \phi(r_i) \cdot \frac{\mathbf{x}_i - \mathbf{S}_{\text{closest}, i}}{r_i} \cdot R_c
+$$
 
 > **Physical Significance:**
 > - **Near the trap ($r \to 0$):** $\phi(r) \to M_{\max} - 1.0$, producing maximum repulsive acceleration to violently eject the solution from the basin of deception.
@@ -62,16 +72,24 @@ $$\mathbf{v}_{\text{escape}, i} = F_{\text{escape}, i}(t) \cdot \phi(r_i) \cdot 
 ### 3. Thermodynamic Annealing Schedule
 The repulsive force scales over the computational budget $t / \text{MaxNFE}$:
 
-$$F_{\text{escape}, i}(t) = F_{\text{raw}, i} \cdot \max\left(0, \left(1 - \frac{\text{NFE}}{\text{MaxNFE}}\right)^{\gamma}\right), \quad \gamma = 1.5$$
+$$
+F_{\text{escape}, i}(t) = F_{\text{raw}, i} \cdot \max\left(0, \left(1 - \frac{\text{NFE}}{\text{MaxNFE}}\right)^{\gamma}\right), \quad \gamma = 1.5
+$$
 
 The adaptive Lehmer parameter memory records $F_{\text{raw}, i}$, ensuring the thermodynamic schedule dampens repulsion purely as a power-law function of the computational budget $(1 - t/\text{MaxNFE})^\gamma$, cleanly decoupled from the historical success memory.
 
 ### 4. Adaptive Differential Mutation Equation
 Offspring vectors $\mathbf{v}_i$ are generated by synthesizing positive attraction, negative repulsion, and historical diversity:
 
-$$\mathbf{v}_i = \mathbf{x}_i + \underbrace{F_{\text{safe}, i} \cdot (\mathbf{x}_{p\text{-best}} - \mathbf{x}_i)}_{\text{Attraction to Safe Haven}} + \underbrace{\mathbf{v}_{\text{escape}, i}}_{\text{Cosecant Barrier Repulsion}} + \underbrace{F_{\text{diff}, i} \cdot (\mathbf{x}_{r1} - \tilde{\mathbf{x}}_{r2})}_{\text{Differential Archive Diversity}}$$
+$$
+\mathbf{v}_i = \mathbf{x}_i + F_{\text{safe}, i} \cdot (\mathbf{x}_{p\text{-best}} - \mathbf{x}_i) + \mathbf{v}_{\text{escape}, i} + F_{\text{diff}, i} \cdot (\mathbf{x}_{r1} - \tilde{\mathbf{x}}_{r2})
+$$
 
-Where $\mathbf{x}_{r1} \in \mathbf{P}_t$ and $\tilde{\mathbf{x}}_{r2} \in \mathbf{P}_t \cup \mathbf{A}$ (external archive of superseded parents).
+Where:
+- $F_{\text{safe}, i} \cdot (\mathbf{x}_{p\text{-best}} - \mathbf{x}_i)$: Attraction toward the safe haven ($p$-best elite target).
+- $\mathbf{v}_{\text{escape}, i}$: Bounded cosecant barrier repulsive escape vector away from stagnation.
+- $F_{\text{diff}, i} \cdot (\mathbf{x}_{r1} - \tilde{\mathbf{x}}_{r2})$: Differential exploratory diversity from historical archive $\mathbf{A}$.
+- $\mathbf{x}_{r1} \in \mathbf{P}_t$ and $\tilde{\mathbf{x}}_{r2} \in \mathbf{P}_t \cup \mathbf{A}$ (external archive of superseded parents).
 
 ---
 
