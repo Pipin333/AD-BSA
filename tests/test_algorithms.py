@@ -68,3 +68,36 @@ def test_ad_bsa_csc_repulsion_stability():
     assert np.all(res.best_position >= -100.0)
     assert np.all(res.best_position <= 100.0)
     assert len(res.history_best_fitness) > 1
+
+
+def test_canonical_population_and_archive_ratios():
+    """Verifica que L-SHADE y jSO utilicen las fórmulas canónicas de N_init y ratios de archivo."""
+    dim = 10
+    bounds = np.array([[-100.0, 100.0]] * dim)
+    evaluator = EvaluatorWrapper(sphere)
+
+    # L-SHADE canónico: N_init = 18 * D = 180
+    lshade = L_SHADE(evaluator, bounds=bounds, max_evaluations=50000, seed=42)
+    assert lshade.N_init == 18 * dim == 180
+    assert lshade.arc_rate == 1.4
+
+    # jSO canónico: N_init = round(25 * sqrt(D) * ln(D)), arc_rate = 2.6
+    import math
+    expected_jso_N = int(round(25.0 * math.sqrt(dim) * math.log(dim)))
+    jso_opt = jSO(evaluator, bounds=bounds, max_evaluations=50000, seed=42)
+    assert jso_opt.N_init == expected_jso_N
+    assert jso_opt.arc_rate == 2.6
+
+
+def test_ad_bsa_pure_annealing_memory():
+    """Verifica que la memoria histórica de F_escape en AD-BSA almacene el valor raw sin double damping."""
+    dim = 5
+    bounds = np.array([[-10.0, 10.0]] * dim)
+    evaluator = EvaluatorWrapper(sphere)
+
+    opt = AD_BSA(evaluator, bounds=bounds, max_evaluations=2000, seed=42)
+    opt.optimize()
+
+    # Tras optimizar, la memoria de Lehmer para escape no debe haber colapsado a cero
+    assert np.all(opt.Memory_F_escape > 0.05)
+

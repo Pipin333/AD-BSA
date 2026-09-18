@@ -25,6 +25,7 @@ venv/
 *~
 .DS_Store
 Thumbs.db
+benchmarks/*checkpoint*.json
 
 # Excluir absolutamente todo en la raíz salvo los directorios y archivos oficiales
 /*

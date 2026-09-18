@@ -42,9 +42,17 @@ def generate_consolidated_data():
         d1 = json.load(f1)
         d2 = json.load(f2)
 
+    jso_fixed_path = os.path.join(os.path.dirname(__file__), "jso_fixed_30runs.json")
+    jso_fixed_data = None
+    if os.path.exists(jso_fixed_path):
+        with open(jso_fixed_path, "r", encoding="utf-8") as jf:
+            jso_fixed_data = json.load(jf)
+        print("[+] Cargados datos de jSO corregido desde jso_fixed_30runs.json")
+
     biases = {f[0]: f[3] for f in CEC2020_META}
     summary = {}
     wilcoxon_tests = {}
+    consolidated_raw_runs = {fid: {} for fid, _, _, _ in CEC2020_META}
 
     # Extraer errores directos por algoritmo y función
     for fid, name, cat, bias in CEC2020_META:
@@ -67,8 +75,21 @@ def generate_consolidated_data():
             "CMA-ES": d2["summary_statistics"][fid]["CMA-ES"],
         }
 
+        # Sobrescribir con jSO corregido si existe
+        if jso_fixed_data and fid in jso_fixed_data and len(jso_fixed_data[fid]) >= 30:
+            jso_runs = jso_fixed_data[fid]
+            jso_fits = np.array([r["fitness"] for r in jso_runs], dtype=np.float64)
+            jso_errs = np.array([r["error"] for r in jso_runs], dtype=np.float64)
+            algo_data_map["jSO"] = {
+                "mean": float(np.mean(jso_fits)),
+                "std": float(np.std(jso_errs)),
+                "median": float(np.median(jso_fits)),
+                "min": float(np.min(jso_fits)),
+            }
+
         # Extraer raw runs para calcular Wilcoxon
         raw_ad = [max(0.0, float(fit) - bias) for fit in d1["raw_runs"][fid]["AD-BSA-Csc"]]
+        consolidated_raw_runs[fid]["AD-BSA"] = raw_ad
 
         for a in ALGOS:
             st = algo_data_map[a]
@@ -85,11 +106,15 @@ def generate_consolidated_data():
             }
 
             if a != "AD-BSA":
-                if a in ["L-SHADE", "Standard-DE", "Standard-PSO", "Cuckoo-Search"]:
+                if a == "jSO" and jso_fixed_data and fid in jso_fixed_data and len(jso_fixed_data[fid]) >= 30:
+                    raw_other = [float(r["error"]) for r in jso_fixed_data[fid]]
+                elif a in ["L-SHADE", "Standard-DE", "Standard-PSO", "Cuckoo-Search"]:
                     raw_other_key = "Canonical-PSO" if a == "Standard-PSO" else a
                     raw_other = [max(0.0, float(fit) - bias) for fit in d1["raw_runs"][fid][raw_other_key]]
                 else:
                     raw_other = [max(0.0, float(fit) - bias) for fit in d2["raw_runs"][fid][a]]
+
+                consolidated_raw_runs[fid][a] = raw_other
 
                 if len(raw_ad) > 0 and len(raw_other) > 0:
                     try:
@@ -131,6 +156,7 @@ def generate_consolidated_data():
         "friedman_ranks": friedman_ranks,
         "summary_statistics": summary,
         "wilcoxon_tests_vs_ad_bsa": wilcoxon_tests,
+        "raw_runs": consolidated_raw_runs,
     }
 
     with open(OUTPUT_JSON, "w", encoding="utf-8") as f:
@@ -140,9 +166,10 @@ def generate_consolidated_data():
 
 
 def generate_markdown_report(data: dict):
+    n_runs = data.get("metadata", {}).get("num_runs", 10)
     lines = []
-    lines.append("# IEEE CEC 2020 Benchmark Results (50 Dimensions, 30 Runs)\n")
-    lines.append("Comparativa exhaustiva y estadísticamente rigurosa sobre las 10 funciones canónicas de la **IEEE CEC 2020** en **$D = 50$**, con un presupuesto de $50,000$ evaluaciones por corrida y $30$ ejecuciones independientes con semillas pseudoaleatorias controladas.\n")
+    lines.append(f"# IEEE CEC 2020 Benchmark Results (50 Dimensions, {n_runs} Runs)\n")
+    lines.append(f"Comparativa exhaustiva y estadísticamente rigurosa sobre las 10 funciones canónicas de la **IEEE CEC 2020** en **$D = 50$**, con un presupuesto de $50,000$ evaluaciones por corrida y ${n_runs}$ ejecuciones independientes con semillas pseudoaleatorias controladas.\n")
     lines.append("### Ranking Promedio de Friedman (Menor es Mejor):\n")
     lines.append("| Posición | Algoritmo | Rango Friedman | Tipo / Linaje |")
     lines.append("| :---: | :--- | :---: | :--- |")
@@ -151,9 +178,9 @@ def generate_markdown_report(data: dict):
     descriptions = {
         "L-SHADE": "Campeón IEEE CEC 2014 (DE Adaptativa con LPSR)",
         "AD-BSA": r"**Propuesto: Repulsión Cosecante Acotada $|\csc(x)|$ + Anti-Atractores**",
-        "CMA-ES": "Hansen Covariance Matrix Adaptation (SOTA en paisajes continuos)",
+        "CMA-ES": "Hansen Covariance Matrix Adaptation con IPOP Restarts",
         "jSO": "Campeón IEEE CEC 2017 (Extensión de iL-SHADE)",
-        "Standard-PSO": "Particle Swarm Optimization con decaimiento de inercia",
+        "Standard-PSO": "Particle Swarm Optimization canónico con decaimiento de inercia",
         "Standard-DE": "Differential Evolution clásica DE/rand/1/bin",
         "Cuckoo-Search": "Cuckoo Search canónico con Vuelos de Lévy",
     }
@@ -198,6 +225,7 @@ def generate_comparison_plot(data: dict):
     funcs = [f[0] for f in CEC2020_META]
     algos = ALGOS
     colors = ["#2563EB", "#059669", "#7C3AED", "#D97706", "#DC2626", "#4B5563", "#9333EA"]
+    n_runs = data.get("metadata", {}).get("num_runs", 10)
 
     fig, ax = plt.subplots(figsize=(14, 7), dpi=300)
     width = 0.11
@@ -209,7 +237,7 @@ def generate_comparison_plot(data: dict):
         offset = (i - len(algos) / 2) * width + width / 2
         ax.bar(x + offset, log_errors, width, label=algo, color=color, alpha=0.9, edgecolor="black", linewidth=0.5)
 
-    ax.set_title("IEEE CEC 2020 Benchmark (50 Dimensions, 30 Runs) - Log10 Mean Error", fontsize=14, fontweight="bold", pad=15)
+    ax.set_title(f"IEEE CEC 2020 Benchmark (50 Dimensions, {n_runs} Runs) - Log10 Mean Error", fontsize=14, fontweight="bold", pad=15)
     ax.set_xlabel("Funciones de Prueba CEC 2020", fontsize=12, fontweight="bold")
     ax.set_ylabel("Log10(Error Delta f) [Menor es Mejor]", fontsize=12, fontweight="bold")
     ax.set_xticks(x)

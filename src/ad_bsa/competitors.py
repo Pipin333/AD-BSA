@@ -24,7 +24,11 @@ except ImportError:
     HAS_CMA = False
 
 from .algorithm import OptimizationResult
-from .utils import reflect_boundaries
+from .utils import (
+    reflect_boundaries,
+    bound_constraint_shade,
+    bound_constraint_clamp,
+)
 
 
 # ==============================================================================
@@ -34,8 +38,9 @@ from .utils import reflect_boundaries
 class jSO:
     """
     jSO: Modified L-SHADE for Single Objective Real-Parameter Numerical Optimization.
-    Referencia: Brest, J., Maucec, M. S., & Zamuda, A. (2017).
-    Proc. IEEE CEC 2017, pp. 1182-1188.
+    Referencia Canónica: Brest, J., Maucec, M. S., & Boskovic, B. (2017).
+    Single objective real-parameter optimization: Algorithm jSO.
+    Proc. IEEE CEC 2017, pp. 1311-1318.
     """
 
     def __init__(
@@ -44,6 +49,7 @@ class jSO:
         bounds: np.ndarray,
         max_evaluations: int = 50000,
         memory_size: int = 5,
+        pop_size_init: Optional[int] = None,
         seed: Optional[int] = None
     ):
         self.f = objective_func
@@ -53,9 +59,21 @@ class jSO:
         self.H = int(memory_size)
         self.rng = np.random.default_rng(seed)
 
-        self.N_init = min(18 * self.dim, max(50, int(self.max_nfe / 200)))
         self.N_min = 4
+        if pop_size_init is not None:
+            self.N_init = int(pop_size_init)
+        else:
+            # Fórmula canónica de jSO (Brest et al., IEEE CEC 2017):
+            # N_init = round(25 * sqrt(D) * ln(D)) si D > 1
+            if self.dim > 1:
+                canonical_N = int(round(25.0 * math.sqrt(self.dim) * math.log(self.dim)))
+            else:
+                canonical_N = 18 * self.dim
+            # Salvaguarda para pruebas con presupuesto reducido
+            self.N_init = min(canonical_N, max(self.N_min + 2, int(self.max_nfe / 3)))
+
         self.N = self.N_init
+        self.arc_rate = 2.6  # Ratio canónico de archivo en jSO (|A| = 2.6 * N)
 
     def optimize(self) -> OptimizationResult:
         start_time = time.perf_counter()
@@ -78,7 +96,7 @@ class jSO:
         k_mem = 0
 
         archive: List[np.ndarray] = []
-        max_arc = int(1.4 * self.N_init)
+        max_arc = int(round(self.arc_rate * self.N_init))
         generation = 0
 
         while nfe < self.max_nfe:
@@ -141,7 +159,8 @@ class jSO:
                 x_r2 = pool[r2]
 
                 v = pop[i] + Fw * (x_pbest - pop[i]) + f_val * (x_r1 - x_r2)
-                v = reflect_boundaries(v[np.newaxis, :], lb=low, ub=high, base=pop[i:i+1])[0]
+                # Manejo de fronteras canónico del punto medio (SHADE/jSO)
+                v = bound_constraint_shade(v[np.newaxis, :], lb=low, ub=high, base=pop[i:i+1])[0]
 
                 j_rand = self.rng.integers(0, self.dim)
                 u = np.where((self.rng.random(self.dim) < cr) | (np.arange(self.dim) == j_rand), v, pop[i])
@@ -163,15 +182,16 @@ class jSO:
                         best_f = float(trial_fits[i])
                         best_x = trial_pop[i].copy()
 
-
             while len(archive) > max_arc:
                 del archive[self.rng.integers(0, len(archive))]
 
             if len(S_F) > 0:
                 w = np.array(delta_f, dtype=np.float64) / (np.sum(delta_f) + 1e-14)
+                # Media de Lehmer ponderada para F
                 M_F[k_mem] = np.sum(w * (np.array(S_F)**2)) / (np.sum(w * np.array(S_F)) + 1e-14)
+                # Media aritmética ponderada canónica para CR
                 if np.max(S_CR) > 0:
-                    M_CR[k_mem] = np.sum(w * (np.array(S_CR)**2)) / (np.sum(w * np.array(S_CR)) + 1e-14)
+                    M_CR[k_mem] = float(np.sum(w * np.array(S_CR)))
                 else:
                     M_CR[k_mem] = -1.0
                 k_mem = (k_mem + 1) % self.H
@@ -183,7 +203,7 @@ class jSO:
                 pop = pop[survivors]
                 fits = fits[survivors]
                 self.N = target_N
-                max_arc = int(1.4 * self.N)
+                max_arc = int(round(self.arc_rate * self.N))
                 while len(archive) > max_arc:
                     del archive[self.rng.integers(0, len(archive))]
 
@@ -202,13 +222,15 @@ class jSO:
 
 
 # ==============================================================================
-#  2. CMA-ES (Hansen et al., Covariance Matrix Adaptation)
+#  2. CMA-ES (Hansen et al., Covariance Matrix Adaptation con IPOP Restarts)
 # ==============================================================================
 
 class CMA_ES:
     """
-    Covariance Matrix Adaptation Evolution Strategy (CMA-ES).
+    Covariance Matrix Adaptation Evolution Strategy (CMA-ES) con reinicios IPOP.
     Hansen, N. (2006). The CMA evolution strategy: a comparing review.
+    Implementación oficial con reinicios de tamaño de población creciente (IPOP)
+    utilizada en las evaluaciones oficiales de IEEE CEC.
     """
 
     def __init__(
@@ -216,6 +238,7 @@ class CMA_ES:
         objective_func: Callable[[np.ndarray], np.ndarray],
         bounds: np.ndarray,
         max_evaluations: int = 50000,
+        enable_restarts: bool = True,
         seed: Optional[int] = None
     ):
         if not HAS_CMA:
@@ -224,44 +247,84 @@ class CMA_ES:
         self.bounds = np.asarray(bounds, dtype=np.float64)
         self.dim = len(bounds)
         self.max_nfe = int(max_evaluations)
+        self.enable_restarts = bool(enable_restarts)
         self.seed = seed
         self.rng = np.random.default_rng(seed)
 
     def optimize(self) -> OptimizationResult:
         start_time = time.perf_counter()
         low, high = self.bounds[:, 0], self.bounds[:, 1]
-        x0 = self.rng.uniform(low * 0.5, high * 0.5, size=self.dim)
-        sigma0 = (high[0] - low[0]) * 0.25
+        bound_range = high - low
 
-        opts = {
-            "bounds": [low.tolist(), high.tolist()],
-            "maxfevals": self.max_nfe,
-            "seed": self.seed if self.seed is not None else 42,
-            "verbose": -9,
-        }
+        total_evals = 0
+        total_iters = 0
+        best_f = float("inf")
+        best_x = np.empty(self.dim, dtype=np.float64)
 
         hist_best: List[float] = []
         hist_evals: List[int] = []
 
-        def _eval_tracked(x):
-            val = float(self.f(np.atleast_2d(x))[0])
-            return val
+        # Parámetros canónicos de tamaño poblacional inicial y escalamiento de IPOP
+        popsize = 4 + int(3 * math.log(self.dim))
+        popsize_inc_factor = 2
 
-        es = cma.CMAEvolutionStrategy(x0, sigma0, opts)
-        
-        while not es.stop():
-            solutions = es.ask()
-            batch = np.asarray(solutions, dtype=np.float64)
-            fits = self.f(batch)
-            es.tell(solutions, fits.tolist())
-            hist_best.append(float(es.result.fbest))
-            hist_evals.append(int(es.countevals))
+        while total_evals < self.max_nfe:
+            # Muestreo uniforme canónico en todo el espacio factible [low, high]
+            x0 = low + self.rng.random(self.dim) * bound_range
+            sigma0 = float(bound_range[0] * 0.3)
+
+            remaining_evals = self.max_nfe - total_evals
+            if remaining_evals <= 0:
+                break
+
+            opts = {
+                "bounds": [low.tolist(), high.tolist()],
+                "maxfevals": remaining_evals,
+                "popsize": popsize,
+                "seed": int(self.rng.integers(1, 1000000)),
+                "verbose": -9,
+            }
+
+            try:
+                es = cma.CMAEvolutionStrategy(x0, sigma0, opts)
+            except Exception:
+                break
+
+            while not es.stop() and total_evals < self.max_nfe:
+                solutions = es.ask()
+                batch = np.asarray(solutions, dtype=np.float64)
+                actual_batch = min(len(batch), self.max_nfe - total_evals)
+                if actual_batch < len(batch):
+                    batch = batch[:actual_batch]
+                    solutions = solutions[:actual_batch]
+
+                fits = self.f(batch)
+                total_evals += actual_batch
+                total_iters += 1
+
+                try:
+                    es.tell(solutions, fits.tolist())
+                except Exception:
+                    pass
+
+                min_idx = np.argmin(fits)
+                if fits[min_idx] < best_f:
+                    best_f = float(fits[min_idx])
+                    best_x = batch[min_idx].copy()
+
+                hist_best.append(best_f)
+                hist_evals.append(total_evals)
+
+            if not self.enable_restarts:
+                break
+
+            popsize *= popsize_inc_factor
 
         return OptimizationResult(
-            best_position=np.asarray(es.result.xbest, dtype=np.float64),
-            best_fitness=float(es.result.fbest),
-            total_evaluations=int(es.countevals),
-            generations=int(es.countiter),
+            best_position=best_x,
+            best_fitness=best_f,
+            total_evaluations=total_evals,
+            generations=total_iters,
             history_best_fitness=hist_best,
             history_evaluations=hist_evals,
             execution_time=time.perf_counter() - start_time
@@ -273,7 +336,11 @@ class CMA_ES:
 # ==============================================================================
 
 class L_SHADE:
-    """Linear Population Size Reduction SHADE (Tanabe & Fukunaga, 2014)."""
+    """
+    Linear Population Size Reduction SHADE (Tanabe & Fukunaga, IEEE CEC 2014).
+    Implementación canónica estricta con reducción lineal de población,
+    memoria histórica de Lehmer para F, media aritmética para CR y regla de frontera SHADE.
+    """
 
     def __init__(
         self,
@@ -283,6 +350,7 @@ class L_SHADE:
         memory_size: int = 6,
         p_best_rate: float = 0.11,
         arc_rate: float = 1.4,
+        pop_size_init: Optional[int] = None,
         seed: Optional[int] = None
     ):
         self.func = objective_func
@@ -294,8 +362,14 @@ class L_SHADE:
         self.arc_rate = float(arc_rate)
         self.rng = np.random.default_rng(seed)
 
-        self.N_init = min(18 * self.dim, max(50, int(self.max_nfe / 200)))
         self.N_min = 4
+        if pop_size_init is not None:
+            self.N_init = int(pop_size_init)
+        else:
+            # Fórmula canónica de L-SHADE (Tanabe & Fukunaga, 2014): N_init = 18 * D
+            canonical_N = 18 * self.dim
+            self.N_init = min(canonical_N, max(self.N_min + 2, int(self.max_nfe / 3)))
+
         self.N = self.N_init
 
     def optimize(self) -> OptimizationResult:
@@ -319,7 +393,7 @@ class L_SHADE:
         k_mem = 0
 
         archive: List[np.ndarray] = []
-        max_archive_size = int(self.arc_rate * self.N_init)
+        max_archive_size = int(round(self.arc_rate * self.N_init))
         generation = 0
 
         while nfe < self.max_nfe:
@@ -361,7 +435,8 @@ class L_SHADE:
                 x_r2 = pop[r2_idx] if r2_idx < self.N else archive[r2_idx - self.N]
 
                 v = pop[i] + trial_F[i] * (x_pbest - pop[i]) + trial_F[i] * (pop[r1] - x_r2)
-                v = reflect_boundaries(v[np.newaxis, :], lb=low, ub=high, base=pop[i:i+1])[0]
+                # Manejo de fronteras canónico del punto medio (SHADE)
+                v = bound_constraint_shade(v[np.newaxis, :], lb=low, ub=high, base=pop[i:i+1])[0]
 
                 j_rand = self.rng.integers(0, self.dim)
                 cross_mask = (self.rng.random(self.dim) < trial_CR[i])
@@ -392,8 +467,13 @@ class L_SHADE:
 
             if len(S_F) > 0:
                 w = np.array(delta_f, dtype=np.float64) / (np.sum(delta_f) + 1e-14)
+                # Media de Lehmer ponderada para F
                 M_F[k_mem] = np.sum(w * (np.array(S_F)**2)) / (np.sum(w * np.array(S_F)) + 1e-14)
-                M_CR[k_mem] = np.sum(w * (np.array(S_CR)**2)) / (np.sum(w * np.array(S_CR)) + 1e-14)
+                # Media aritmética ponderada canónica para CR
+                if np.max(S_CR) > 0:
+                    M_CR[k_mem] = float(np.sum(w * np.array(S_CR)))
+                else:
+                    M_CR[k_mem] = -1.0
                 k_mem = (k_mem + 1) % self.H
 
             if nfe < self.max_nfe:
@@ -406,9 +486,10 @@ class L_SHADE:
                     pop = pop[sort_idx[:N_next]]
                     fits = fits[sort_idx[:N_next]]
                     self.N = N_next
-                    max_archive_size = int(self.arc_rate * self.N)
+                    max_archive_size = int(round(self.arc_rate * self.N))
                     if len(archive) > max_archive_size:
-                        archive = archive[:max_archive_size]
+                        survivors = self.rng.choice(len(archive), size=max_archive_size, replace=False)
+                        archive = [archive[idx] for idx in survivors]
 
             hist_best.append(best_f)
             hist_evals.append(nfe)
@@ -429,7 +510,7 @@ class L_SHADE:
 # ==============================================================================
 
 class StandardDE:
-    """Evolución Diferencial canónica clásica (DE/rand/1/bin) vectorizada."""
+    """Evolución Diferencial canónica clásica (DE/rand/1/bin) vectorizada con clamping de fronteras."""
 
     def __init__(
         self,
@@ -478,7 +559,8 @@ class StandardDE:
             r3 = candidates[np.arange(N), r_cols[:, 2]]
 
             mutant = pop[r1] + self.F * (pop[r2] - pop[r3])
-            mutant = reflect_boundaries(mutant, lb=lb, ub=ub, base=pop)
+            # Clamping canónico a fronteras
+            mutant = bound_constraint_clamp(mutant, lb=lb, ub=ub)
 
             rand_j = self.rng.integers(0, self.dim, size=N)
             j_matrix = np.tile(np.arange(self.dim), (N, 1))
@@ -518,7 +600,10 @@ class StandardDE:
 # ==============================================================================
 
 class StandardPSO:
-    """Particle Swarm Optimization canónico vectorizado con decaimiento lineal de inercia."""
+    """
+    Particle Swarm Optimization canónico vectorizado con decaimiento lineal de inercia
+    (Shi & Eberhart, 1998) y absorción de velocidad en las fronteras.
+    """
 
     def __init__(
         self,
@@ -528,8 +613,8 @@ class StandardPSO:
         max_evaluations: int = 50000,
         w_max: float = 0.9,
         w_min: float = 0.4,
-        c1: float = 2.05,
-        c2: float = 2.05,
+        c1: float = 2.0,
+        c2: float = 2.0,
         seed: Optional[int] = None
     ):
         self.func = objective_func
@@ -571,7 +656,13 @@ class StandardPSO:
 
             vel = w * vel + self.c1 * r1 * (pbest_pos - pos) + self.c2 * r2 * (gbest_pos - pos)
             vel = np.clip(vel, -v_max, v_max)
-            pos = reflect_boundaries(pos + vel, lb=lb, ub=ub, base=pos)
+
+            # Actualización de posición y absorción de velocidad canónica en paredes
+            new_pos = pos + vel
+            low_viol = new_pos < lb
+            high_viol = new_pos > ub
+            pos = np.clip(new_pos, lb, ub)
+            vel[low_viol | high_viol] = 0.0
 
             eval_batch = min(self.pop_size, self.max_evals - evals)
             fit = self.func(pos[:eval_batch])
@@ -654,7 +745,7 @@ class CanonicalCuckooSearch:
             generation += 1
             step = self._levy_flight()
             new_nests = nests + self.alpha * step * (nests - best_pos)
-            new_nests = reflect_boundaries(new_nests, lb=lb, ub=ub, base=nests)
+            new_nests = bound_constraint_clamp(new_nests, lb=lb, ub=ub)
 
             eval_batch = min(self.pop_size, self.max_evals - evals)
             new_fit = self.func(new_nests[:eval_batch])
@@ -669,9 +760,9 @@ class CanonicalCuckooSearch:
                 perm1 = self.rng.permutation(self.pop_size)
                 perm2 = self.rng.permutation(self.pop_size)
                 step_abandon = self.rng.random((self.pop_size, self.dim)) * (nests[perm1] - nests[perm2])
-                abandoned_nests = reflect_boundaries(
+                abandoned_nests = bound_constraint_clamp(
                     nests + step_abandon * discover_mask[:, np.newaxis],
-                    lb=lb, ub=ub, base=nests
+                    lb=lb, ub=ub
                 )
 
                 abandon_batch = min(self.pop_size, self.max_evals - evals)
@@ -699,4 +790,5 @@ class CanonicalCuckooSearch:
             history_evaluations=hist_evals,
             execution_time=time.perf_counter() - start_time
         )
+
 

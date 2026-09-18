@@ -40,6 +40,44 @@ def reflect_boundaries(
     return np.clip(fixed, lb, ub)
 
 
+def bound_constraint_shade(
+    candidates: np.ndarray,
+    lb: np.ndarray,
+    ub: np.ndarray,
+    base: np.ndarray
+) -> np.ndarray:
+    """
+    Regla canónica de manejo de restricciones de frontera en SHADE, L-SHADE y jSO:
+      - Si v_{i,j} < lb_j: v_{i,j} = (lb_j + base_{i,j}) / 2.0
+      - Si v_{i,j} > ub_j: v_{i,j} = (ub_j + base_{i,j}) / 2.0
+    Garantiza que las soluciones mutadas permanezcan dentro de la región factible
+    interpolarizando a mitad de camino hacia la posición parental.
+    """
+    fixed = candidates.copy()
+    low_mask = fixed < lb
+    high_mask = fixed > ub
+
+    lb_mat = np.broadcast_to(lb, fixed.shape)
+    ub_mat = np.broadcast_to(ub, fixed.shape)
+
+    fixed[low_mask] = 0.5 * (lb_mat[low_mask] + base[low_mask])
+    fixed[high_mask] = 0.5 * (ub_mat[high_mask] + base[high_mask])
+
+    return np.clip(fixed, lb, ub)
+
+
+def bound_constraint_clamp(
+    candidates: np.ndarray,
+    lb: np.ndarray,
+    ub: np.ndarray
+) -> np.ndarray:
+    """
+    Regla canónica de truncamiento directo a límites (Simple Bounds Clamping)
+    usada tradicionalmente en DE estándar y Cuckoo Search.
+    """
+    return np.clip(candidates, lb, ub)
+
+
 class EvaluatorWrapper:
     """
     Wrapper para funciones objetivo continuas que contabiliza evaluaciones

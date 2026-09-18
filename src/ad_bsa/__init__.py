@@ -16,6 +16,8 @@ from .competitors import (
 )
 from .utils import (
     reflect_boundaries,
+    bound_constraint_shade,
+    bound_constraint_clamp,
     EvaluatorWrapper,
     compute_wilcoxon,
 )
@@ -32,6 +34,8 @@ __all__ = [
     "StandardDE",
     "StandardPSO",
     "reflect_boundaries",
+    "bound_constraint_shade",
+    "bound_constraint_clamp",
     "EvaluatorWrapper",
     "compute_wilcoxon",
 ]

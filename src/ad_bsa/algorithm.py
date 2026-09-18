@@ -45,13 +45,14 @@ class AD_BSA:
     aprendizaje negativo (Negative Learning / Anti-Attractors) y escape armónico.
 
     Componentes Arquitectónicos Clave:
-      1. Multi-Boogeyman Clustering: Identificación de centroides anti-atractores
-         en el k% de las peores soluciones (cuencas de estancamiento subóptimas).
+      1. Multi-Boogeyman Anti-Attractors: Partición Estratificada por Rango de Fitness
+         (Fitness-Rank Stratified Partitioning) en el k% de las peores soluciones,
+         obteniendo baricentros de repulsión sin latencia computacional O(kD).
       2. Operador de Repulsión Cosecante Acotada |csc(x)|: Barrera de potencial
          no lineal que expulsa agresivamente soluciones del epicentro de la trampa
          sin perturbar a individuos en cuencas prometedoras o valles profundos.
-      3. Enfriamiento Termodinámico: Decaimiento temporal suave de la fuerza de
-         escape F_escape(t) = F * (1 - t/MaxNFE)^gamma.
+      3. Enfriamiento Termodinámico Puro: Decaimiento temporal suave de la fuerza de
+         escape F_escape(t) = F_raw * (1 - t/MaxNFE)^gamma desacoplado de la memoria histórica.
       4. Memorias Históricas de Lehmer: Auto-adaptación paramétrica guiada por
          mejoras reales de fitness (Delta f).
       5. Archivo Histórico de Diversidad (A): Selección de vectores diferenciales
@@ -152,8 +153,13 @@ class AD_BSA:
 
     def _awaken_multi_boogeymen(self) -> Tuple[np.ndarray, float]:
         """
-        Calcula M anti-atractores agrupando los peores individuos (cuencas de estancamiento)
-        y determina el radio medio de captura.
+        Calcula M anti-atractores mediante Partición Estratificada por Rango de Fitness
+        (Fitness-Rank Stratified Partitioning) sobre el k% de las peores soluciones
+        (cuencas de estancamiento subóptimas) y determina el radio dinámico de captura.
+
+        Esta estratificación agrupa las peores soluciones en M niveles de subóptimos
+        calculando sus baricentros geométricos en O(k * D), evitando la sobrecarga
+        computacional y la concentración de distancias propia de k-means en alta dimensión.
         """
         k_count = max(self.num_boogeymen * 2, int(np.ceil(self.k_boogeyman_ratio * self.current_pop_size)))
         worst_indices = np.argsort(self.fitness)[-k_count:]
@@ -175,8 +181,8 @@ class AD_BSA:
 
         return np.array(boogeymen), capture_radius
 
-    def _sample_parameters(self) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
-        """Genera parámetros F_safe, F_escape, F_diff y CR vía memorias de Lehmer y Cauchy."""
+    def _sample_parameters(self) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+        """Genera parámetros F_safe, F_escape, raw_F_escape, F_diff y CR vía memorias de Lehmer y Cauchy."""
         mem_indices = self.rng.integers(0, self.memory_size, size=self.current_pop_size)
 
         def sample_cauchy(mu_arr: np.ndarray) -> np.ndarray:
@@ -195,13 +201,13 @@ class AD_BSA:
         raw_F_escape = sample_cauchy(self.Memory_F_escape[mem_indices])
         F_diff = sample_cauchy(self.Memory_F_diff[mem_indices])
 
-        # Enfriamiento termodinámico
+        # Enfriamiento termodinámico puro (desacoplado de la memoria histórica)
         progress = self.evaluations_count / self.max_evaluations
         annealing_factor = max(0.0, (1.0 - progress) ** self.annealing_power)
         F_escape = raw_F_escape * annealing_factor
 
         CR = np.clip(self.rng.normal(self.Memory_CR[mem_indices], 0.1), 0.0, 1.0)
-        return F_safe, F_escape, F_diff, CR
+        return F_safe, F_escape, raw_F_escape, F_diff, CR
 
     def _select_mutation_partners(
         self,
@@ -295,7 +301,8 @@ class AD_BSA:
 
             max_archive_capacity = int(self.archive_factor * self.current_pop_size)
             if len(self.Archive) > max_archive_capacity:
-                self.Archive = self.Archive[:max_archive_capacity]
+                survivor_indices = self.rng.choice(len(self.Archive), size=max_archive_capacity, replace=False)
+                self.Archive = self.Archive[survivor_indices]
 
     def optimize(self) -> OptimizationResult:
         """Ejecuta el ciclo de optimización de AD-BSA."""
@@ -313,7 +320,7 @@ class AD_BSA:
             boogeymen_pos, capture_radius = self._awaken_multi_boogeymen()
 
             # 2. Muestreo de hiperparámetros
-            F_safe, F_escape, F_diff, CR = self._sample_parameters()
+            F_safe, F_escape, raw_F_escape, F_diff, CR = self._sample_parameters()
 
             # 3. Selección de parejas de mutación
             x_best_p, S_closest, x_r1, x_r2 = self._select_mutation_partners(boogeymen_pos)
@@ -388,7 +395,8 @@ class AD_BSA:
             if len(successful_indices) > 0:
                 weights = fitness_deltas[successful_indices] / (np.sum(fitness_deltas[successful_indices]) + 1e-14)
                 self.Memory_F_safe[self.memory_pointer] = self._lehmer_mean(F_safe[successful_indices], weights)
-                self.Memory_F_escape[self.memory_pointer] = self._lehmer_mean(F_escape[successful_indices], weights)
+                # Almacenar raw_F_escape para que el enfriamiento termodinámico sea exacto y sin double damping
+                self.Memory_F_escape[self.memory_pointer] = self._lehmer_mean(raw_F_escape[successful_indices], weights)
                 self.Memory_F_diff[self.memory_pointer] = self._lehmer_mean(F_diff[successful_indices], weights)
                 self.Memory_CR[self.memory_pointer] = float(np.sum(weights * CR[successful_indices]))
                 self.memory_pointer = (self.memory_pointer + 1) % self.memory_size
