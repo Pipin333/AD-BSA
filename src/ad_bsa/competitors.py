@@ -95,6 +95,8 @@ class jSO:
             S_CR: List[float] = []
             delta_f: List[float] = []
             trial_pop = np.empty_like(pop)
+            trial_F = np.empty(self.N, dtype=np.float64)
+            trial_CR = np.empty(self.N, dtype=np.float64)
 
             for i in range(self.N):
                 r_k = self.rng.integers(0, self.H)
@@ -115,6 +117,9 @@ class jSO:
                         f_val = 1.0
                 if nfe_ratio < 0.6 and f_val > 0.7:
                     f_val = 0.7
+
+                trial_F[i] = f_val
+                trial_CR[i] = cr
 
                 if nfe_ratio < 0.2:
                     Fw = 0.7 * f_val
@@ -150,13 +155,14 @@ class jSO:
                 if trial_fits[i] < fits[i]:
                     archive.append(pop[i].copy())
                     delta_f.append(fits[i] - trial_fits[i])
-                    S_F.append(f_val)
-                    S_CR.append(cr)
+                    S_F.append(trial_F[i])
+                    S_CR.append(trial_CR[i])
                     pop[i] = trial_pop[i].copy()
                     fits[i] = trial_fits[i]
                     if trial_fits[i] < best_f:
                         best_f = float(trial_fits[i])
                         best_x = trial_pop[i].copy()
+
 
             while len(archive) > max_arc:
                 del archive[self.rng.integers(0, len(archive))]
