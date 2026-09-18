@@ -6,7 +6,7 @@
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Python Version](https://img.shields.io/badge/python-3.9%20%7C%203.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-blue)](https://www.python.org/)
-[![CEC 2020 50D](https://img.shields.io/badge/CEC%202020-50D%20Rank%20%231-brightgreen.svg)](#ieee-cec-2020-benchmark-results-50-dimensions)
+[![CEC 2020 50D](https://img.shields.io/badge/CEC%202020-50D%20Rank%20%231%20Tied-brightgreen.svg)](#ieee-cec-2020-benchmark-results-50-dimensions)
 [![Tests](https://img.shields.io/badge/tests-15%2F15%20passing-success)](tests/)
 [![Code Style](https://img.shields.io/badge/code%20style-PEP%208-black)](https://www.python.org/dev/peps/pep-0008/)
 
