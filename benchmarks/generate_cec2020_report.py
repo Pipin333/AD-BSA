@@ -57,7 +57,7 @@ def generate_markdown_report(data: dict):
 
     lines.append("\n---\n")
     lines.append(r"### Tabla Detallada de Rendimiento: Media ± Desv. Estándar (Error $\Delta f = f(x) - f^*$) y Test de Wilcoxon:" + "\n")
-    lines.append(r"Signos de Wilcoxon vs `AD-BSA`: `+` (AD-BSA supera con $p < 0.05$), `-` (AD-BSA es superado con $p < 0.05$), `=` (empate estadístico)." + "\n")
+    lines.append(r"Signos de Wilcoxon vs `AD-BSA`: `+` (AD-BSA supera significativamente al competidor, $p < 0.05$), `=` (estadísticamente equivalente, $p \ge 0.05$), `-` (competidor supera significativamente a AD-BSA, $p < 0.05$)." + "\n")
 
     # Header
     header = "| Función | Categoría | `AD-BSA` (Propuesto) | `jSO` | `CMA-ES` | `L-SHADE` | `Standard-DE` | `Standard-PSO` | `Cuckoo-Search` |"

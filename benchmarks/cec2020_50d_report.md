@@ -18,7 +18,7 @@ Comparativa exhaustiva y estadísticamente rigurosa sobre las 10 funciones canó
 
 ### Tabla Detallada de Rendimiento: Media ± Desv. Estándar (Error $\Delta f = f(x) - f^*$) y Test de Wilcoxon:
 
-Signos de Wilcoxon vs `AD-BSA`: `+` (AD-BSA supera con $p < 0.05$), `-` (AD-BSA es superado con $p < 0.05$), `=` (empate estadístico).
+Signos de Wilcoxon vs `AD-BSA`: `+` (AD-BSA supera significativamente al competidor, $p < 0.05$), `=` (estadísticamente equivalente, $p \ge 0.05$), `-` (competidor supera significativamente a AD-BSA, $p < 0.05$).
 
 | Función | Categoría | `AD-BSA` (Propuesto) | `jSO` | `CMA-ES` | `L-SHADE` | `Standard-DE` | `Standard-PSO` | `Cuckoo-Search` |
 | :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |

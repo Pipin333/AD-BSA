@@ -122,7 +122,7 @@ All competitors were executed in their canonical competitive formulations:
 ### Detailed Statistical Results: Mean Error ± Std Dev ($\Delta f = f(\mathbf{x}^*) - f_{\text{bias}}$)
 
 Sign marks for Wilcoxon signed-rank test vs `AD-BSA` ($\alpha = 0.05$): 
-`+` (*AD-BSA significantly better, $p < 0.05$*), `=` (*statistically equivalent*), `-` (*AD-BSA significantly outperformed, $p < 0.05$*).
+`+` (*AD-BSA significantly outperforms competitor, $p < 0.05$*), `=` (*statistically equivalent, $p \ge 0.05$*), `-` (*competitor significantly outperforms AD-BSA, $p < 0.05$*).
 
 | Problem | Landscape Class | `AD-BSA` (Proposed) | `jSO` (CEC 2017) | `CMA-ES` | `L-SHADE` (CEC 2014) | `Standard-DE` | `Standard-PSO` | `Cuckoo-Search` |
 | :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
