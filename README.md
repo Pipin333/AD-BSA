@@ -217,15 +217,14 @@ AD-BSA/
 
 ## 📜 Citation & Academic Reference
 
-If you find AD-BSA useful in your research, optimization benchmarks, or applications, please cite:
-
 ```bibtex
-@article{riquelme2026adbsa,
-  title={{AD-BSA}: Adaptive Differential Boogeyman Search Algorithm with Bounded Cosecant Repulsion Barriers},
-  author={Riquelme Salvo, Felipe},
-  journal={arXiv preprint},
-  year={2026},
-  url={https://github.com/Pipin333/AD-BSA}
+@misc{riquelme2026adbsa,
+  author = {Riquelme Salvo, Felipe},
+  title = {{AD-BSA}: Adaptive Differential Boogeyman Search Algorithm with Bounded Cosecant Repulsion Barriers},
+  year = {2026},
+  publisher = {GitHub},
+  journal = {GitHub repository},
+  howpublished = {\url{https://github.com/Pipin333/AD-BSA}}
 }
 ```
 
