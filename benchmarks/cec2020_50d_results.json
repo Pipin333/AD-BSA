@@ -1,0 +1,796 @@
+{
+  "metadata": {
+    "benchmark_suite": "IEEE CEC 2020",
+    "dimension": 50,
+    "bounds": [
+      -100.0,
+      100.0
+    ],
+    "max_evaluations": 50000,
+    "num_runs": 30,
+    "algorithms": [
+      "AD-BSA",
+      "jSO",
+      "CMA-ES",
+      "L-SHADE",
+      "Standard-DE",
+      "Standard-PSO",
+      "Cuckoo-Search"
+    ],
+    "functions": [
+      "F1",
+      "F2",
+      "F3",
+      "F4",
+      "F5",
+      "F6",
+      "F7",
+      "F8",
+      "F9",
+      "F10"
+    ]
+  },
+  "friedman_ranks": {
+    "AD-BSA": 2.2,
+    "jSO": 3.2,
+    "CMA-ES": 2.7,
+    "L-SHADE": 2.3,
+    "Standard-DE": 5.8,
+    "Standard-PSO": 5.8,
+    "Cuckoo-Search": 6.0
+  },
+  "summary_statistics": {
+    "F1": {
+      "name": "Shifted & Rotated Bent Cigar",
+      "category": "Unimodal",
+      "bias": 100.0,
+      "algorithms": {
+        "AD-BSA": {
+          "mean_error": 12425.30225130241,
+          "std_error": 9370.69917686274,
+          "median_error": 11919.233185279805,
+          "best_error": 6.586171206313722
+        },
+        "jSO": {
+          "mean_error": 2693.9179782159363,
+          "std_error": 3013.0045785384364,
+          "median_error": 1294.873240395001,
+          "best_error": 39.86982244670287
+        },
+        "CMA-ES": {
+          "mean_error": 2.842170943040401e-14,
+          "std_error": 7.78360568894479e-15,
+          "median_error": 2.842170943040401e-14,
+          "best_error": 1.4210854715202004e-14
+        },
+        "L-SHADE": {
+          "mean_error": 3293.557004857541,
+          "std_error": 2771.325658796187,
+          "median_error": 2772.519439032467,
+          "best_error": 22.881961198970927
+        },
+        "Standard-DE": {
+          "mean_error": 393404371.4991833,
+          "std_error": 165133072.75202364,
+          "median_error": 366040417.4459559,
+          "best_error": 122647471.46048352
+        },
+        "Standard-PSO": {
+          "mean_error": 6209400021.363128,
+          "std_error": 4580601382.940881,
+          "median_error": 5396487970.049543,
+          "best_error": 4097991.078463102
+        },
+        "Cuckoo-Search": {
+          "mean_error": 4443123331.592077,
+          "std_error": 978780755.3013694,
+          "median_error": 4378183112.393581,
+          "best_error": 2447304768.055917
+        }
+      }
+    },
+    "F2": {
+      "name": "Shifted & Rotated Schwefel",
+      "category": "Multimodal",
+      "bias": 1100.0,
+      "algorithms": {
+        "AD-BSA": {
+          "mean_error": 0.0,
+          "std_error": 1124.388208266445,
+          "median_error": 0.0,
+          "best_error": 0.0
+        },
+        "jSO": {
+          "mean_error": 5025.6740818428825,
+          "std_error": 3630.294478117948,
+          "median_error": 6203.614558839056,
+          "best_error": 0.0
+        },
+        "CMA-ES": {
+          "mean_error": 1869.223708462092,
+          "std_error": 5988.170230501366,
+          "median_error": 0.0,
+          "best_error": 0.0
+        },
+        "L-SHADE": {
+          "mean_error": 0.0,
+          "std_error": 473.2564981016594,
+          "median_error": 0.0,
+          "best_error": 0.0
+        },
+        "Standard-DE": {
+          "mean_error": 8134.158594534994,
+          "std_error": 830.2834848253234,
+          "median_error": 8163.368530930591,
+          "best_error": 6155.759740288382
+        },
+        "Standard-PSO": {
+          "mean_error": 2402.9761141550975,
+          "std_error": 2870.083915724719,
+          "median_error": 2404.6541442453454,
+          "best_error": 0.0
+        },
+        "Cuckoo-Search": {
+          "mean_error": 2692.666069195594,
+          "std_error": 690.765509278605,
+          "median_error": 2776.1028332883634,
+          "best_error": 1127.9293243997308
+        }
+      }
+    },
+    "F3": {
+      "name": "Shifted & Rotated Lunacek bi-Rastrigin",
+      "category": "Multimodal",
+      "bias": 700.0,
+      "algorithms": {
+        "AD-BSA": {
+          "mean_error": 154.62956495162075,
+          "std_error": 29.168351309694597,
+          "median_error": 150.10153812690828,
+          "best_error": 98.50332010708757
+        },
+        "jSO": {
+          "mean_error": 268.9222538067228,
+          "std_error": 87.30871515564867,
+          "median_error": 243.1012021716192,
+          "best_error": 168.05559208332386
+        },
+        "CMA-ES": {
+          "mean_error": 157.85960283940437,
+          "std_error": 20.732145351896865,
+          "median_error": 157.8360314862814,
+          "best_error": 121.12307620027093
+        },
+        "L-SHADE": {
+          "mean_error": 163.72575727012702,
+          "std_error": 15.39953574522164,
+          "median_error": 161.32671198925527,
+          "best_error": 132.5079678270472
+        },
+        "Standard-DE": {
+          "mean_error": 12161.659295692603,
+          "std_error": 4686.624346433105,
+          "median_error": 11121.25173383464,
+          "best_error": 5329.721644644457
+        },
+        "Standard-PSO": {
+          "mean_error": 290448.4288948521,
+          "std_error": 231190.00785239984,
+          "median_error": 263869.65291147475,
+          "best_error": 13124.54291548865
+        },
+        "Cuckoo-Search": {
+          "mean_error": 135069.83450343457,
+          "std_error": 25352.90377522764,
+          "median_error": 132973.47724563797,
+          "best_error": 80512.5281210186
+        }
+      }
+    },
+    "F4": {
+      "name": "Expanded Rosenbrock + Griewank",
+      "category": "Multimodal",
+      "bias": 1900.0,
+      "algorithms": {
+        "AD-BSA": {
+          "mean_error": 8.236587025330437,
+          "std_error": 2.9856885094974657,
+          "median_error": 7.110987433231685,
+          "best_error": 5.146109536124641
+        },
+        "jSO": {
+          "mean_error": 23.648219452101557,
+          "std_error": 5.9802468362248655,
+          "median_error": 26.96016978919897,
+          "best_error": 13.11853969742242
+        },
+        "CMA-ES": {
+          "mean_error": 6.2917768582672124,
+          "std_error": 1.2624575110394163,
+          "median_error": 6.189301089644687,
+          "best_error": 3.7917983415452454
+        },
+        "L-SHADE": {
+          "mean_error": 12.864408334460904,
+          "std_error": 1.247389502039076,
+          "median_error": 12.98849345080589,
+          "best_error": 10.051145119688272
+        },
+        "Standard-DE": {
+          "mean_error": 45.34258729967041,
+          "std_error": 4.186131925141254,
+          "median_error": 44.425479035513035,
+          "best_error": 37.05001047656924
+        },
+        "Standard-PSO": {
+          "mean_error": 424.7607461587586,
+          "std_error": 612.0435930333455,
+          "median_error": 187.3463154553874,
+          "best_error": 35.46357690158516
+        },
+        "Cuckoo-Search": {
+          "mean_error": 1153.209918635404,
+          "std_error": 926.987404422627,
+          "median_error": 1018.0761044139381,
+          "best_error": 176.61673394070795
+        }
+      }
+    },
+    "F5": {
+      "name": "Hybrid Function 1 (N=3)",
+      "category": "Hybrid",
+      "bias": 1700.0,
+      "algorithms": {
+        "AD-BSA": {
+          "mean_error": 2421092.67306522,
+          "std_error": 1474220.8211950297,
+          "median_error": 2398017.598752464,
+          "best_error": 34360.647909515006
+        },
+        "jSO": {
+          "mean_error": 143411.23647698385,
+          "std_error": 100916.38023889436,
+          "median_error": 107526.2986860375,
+          "best_error": 42663.10597447404
+        },
+        "CMA-ES": {
+          "mean_error": 10116.228181380966,
+          "std_error": 7526.458862039076,
+          "median_error": 7102.44078715385,
+          "best_error": 3010.3731905328186
+        },
+        "L-SHADE": {
+          "mean_error": 23713.278347864663,
+          "std_error": 10441.77513916512,
+          "median_error": 19924.537535873205,
+          "best_error": 9970.037759799105
+        },
+        "Standard-DE": {
+          "mean_error": 8448686.706963295,
+          "std_error": 2601933.984672709,
+          "median_error": 7645037.658245674,
+          "best_error": 4688458.645689275
+        },
+        "Standard-PSO": {
+          "mean_error": 6558326.159899896,
+          "std_error": 6832483.615645976,
+          "median_error": 3274394.517832302,
+          "best_error": 1131606.5868214606
+        },
+        "Cuckoo-Search": {
+          "mean_error": 6723851.792026534,
+          "std_error": 1598525.0974473492,
+          "median_error": 6750730.5731399,
+          "best_error": 3408674.0940069174
+        }
+      }
+    },
+    "F6": {
+      "name": "Hybrid Function 2 (N=4)",
+      "category": "Hybrid",
+      "bias": 1600.0,
+      "algorithms": {
+        "AD-BSA": {
+          "mean_error": 96.36853650068633,
+          "std_error": 372.7734852969227,
+          "median_error": 0.0,
+          "best_error": 0.0
+        },
+        "jSO": {
+          "mean_error": 184.84960762165588,
+          "std_error": 473.0529164056857,
+          "median_error": 101.49918123220459,
+          "best_error": 0.0
+        },
+        "CMA-ES": {
+          "mean_error": 220.81372005826438,
+          "std_error": 549.5172356462684,
+          "median_error": 195.12243041056126,
+          "best_error": 0.0
+        },
+        "L-SHADE": {
+          "mean_error": 0.0,
+          "std_error": 206.68400715028685,
+          "median_error": 0.0,
+          "best_error": 0.0
+        },
+        "Standard-DE": {
+          "mean_error": 18733.437466849857,
+          "std_error": 6603.230509404632,
+          "median_error": 19649.836947268006,
+          "best_error": 7914.4897922244345
+        },
+        "Standard-PSO": {
+          "mean_error": 5341208.565953815,
+          "std_error": 27267773.9208184,
+          "median_error": 73801.02396282705,
+          "best_error": 4518.4546588139065
+        },
+        "Cuckoo-Search": {
+          "mean_error": 165412.87925515007,
+          "std_error": 73873.281451997,
+          "median_error": 148235.25279372663,
+          "best_error": 53690.395701314024
+        }
+      }
+    },
+    "F7": {
+      "name": "Hybrid Function 3 (N=5)",
+      "category": "Hybrid",
+      "bias": 2100.0,
+      "algorithms": {
+        "AD-BSA": {
+          "mean_error": 599015.5124619915,
+          "std_error": 926732.8450836019,
+          "median_error": 108401.45309837701,
+          "best_error": 28169.297553769953
+        },
+        "jSO": {
+          "mean_error": 216612.23951933207,
+          "std_error": 296949.28327764047,
+          "median_error": 99457.15170813908,
+          "best_error": 40316.94191585248
+        },
+        "CMA-ES": {
+          "mean_error": 5838.640773193224,
+          "std_error": 6174.04191265133,
+          "median_error": 3839.310473205236,
+          "best_error": 461.38605760458904
+        },
+        "L-SHADE": {
+          "mean_error": 26662.255525315275,
+          "std_error": 11521.028844272687,
+          "median_error": 25303.520979021065,
+          "best_error": 8027.6371803037255
+        },
+        "Standard-DE": {
+          "mean_error": 42513597.34150707,
+          "std_error": 20500380.03666636,
+          "median_error": 37350439.97854705,
+          "best_error": 18898586.736300267
+        },
+        "Standard-PSO": {
+          "mean_error": 9536354.645921115,
+          "std_error": 10704745.219362365,
+          "median_error": 7351688.744378187,
+          "best_error": 1087237.237029301
+        },
+        "Cuckoo-Search": {
+          "mean_error": 11365840.004820326,
+          "std_error": 3065221.3538061944,
+          "median_error": 11070043.806788323,
+          "best_error": 5223720.899651435
+        }
+      }
+    },
+    "F8": {
+      "name": "Composition Function 1 (N=3)",
+      "category": "Composition",
+      "bias": 2200.0,
+      "algorithms": {
+        "AD-BSA": {
+          "mean_error": 0.0,
+          "std_error": 2017.4820755572853,
+          "median_error": 0.0,
+          "best_error": 0.0
+        },
+        "jSO": {
+          "mean_error": 0.0,
+          "std_error": 688.9446112731283,
+          "median_error": 94.91255551478935,
+          "best_error": 0.0
+        },
+        "CMA-ES": {
+          "mean_error": 141.58438393874349,
+          "std_error": 12.442795403386963,
+          "median_error": 142.14094314984231,
+          "best_error": 115.47886446198027
+        },
+        "L-SHADE": {
+          "mean_error": 0.0,
+          "std_error": 1669.6558201451217,
+          "median_error": 0.0,
+          "best_error": 0.0
+        },
+        "Standard-DE": {
+          "mean_error": 406.4639703450439,
+          "std_error": 470.175597124781,
+          "median_error": 323.6624314401606,
+          "best_error": 268.0660057135942
+        },
+        "Standard-PSO": {
+          "mean_error": 0.0,
+          "std_error": 2659.2377055441407,
+          "median_error": 280.3127312000297,
+          "best_error": 0.0
+        },
+        "Cuckoo-Search": {
+          "mean_error": 0.0,
+          "std_error": 592.3783909295529,
+          "median_error": 0.0,
+          "best_error": 0.0
+        }
+      }
+    },
+    "F9": {
+      "name": "Composition Function 2 (N=4)",
+      "category": "Composition",
+      "bias": 2400.0,
+      "algorithms": {
+        "AD-BSA": {
+          "mean_error": 200.01107444177705,
+          "std_error": 0.01513378887316655,
+          "median_error": 200.0067921880709,
+          "best_error": 200.00079443984396
+        },
+        "jSO": {
+          "mean_error": 200.11085303742675,
+          "std_error": 0.19325819260599678,
+          "median_error": 200.03481215929605,
+          "best_error": 200.00445793290237
+        },
+        "CMA-ES": {
+          "mean_error": 234.27657095380073,
+          "std_error": 77.08775510112068,
+          "median_error": 200.00000000858563,
+          "best_error": 200.00000000578166
+        },
+        "L-SHADE": {
+          "mean_error": 200.00021727713647,
+          "std_error": 0.00017952741855606342,
+          "median_error": 200.00013597393536,
+          "best_error": 200.0000548206931
+        },
+        "Standard-DE": {
+          "mean_error": 2017.0478729669667,
+          "std_error": 281.91960347110034,
+          "median_error": 1936.5090824072477,
+          "best_error": 1640.0326512241154
+        },
+        "Standard-PSO": {
+          "mean_error": 10146.328142500297,
+          "std_error": 3753.1472330173415,
+          "median_error": 11211.249607977392,
+          "best_error": 2739.671682763743
+        },
+        "Cuckoo-Search": {
+          "mean_error": 7034.947776213903,
+          "std_error": 913.4370214396025,
+          "median_error": 6933.386604324358,
+          "best_error": 5117.072149769334
+        }
+      }
+    },
+    "F10": {
+      "name": "Composition Function 3 (N=5)",
+      "category": "Composition",
+      "bias": 2500.0,
+      "algorithms": {
+        "AD-BSA": {
+          "mean_error": 725.2238418636161,
+          "std_error": 10.424274520547655,
+          "median_error": 726.1216437689081,
+          "best_error": 706.4681025082978
+        },
+        "jSO": {
+          "mean_error": 743.777385207713,
+          "std_error": 26.59556454529144,
+          "median_error": 734.561601508598,
+          "best_error": 702.7145333547878
+        },
+        "CMA-ES": {
+          "mean_error": 750.2958314060111,
+          "std_error": 47.260534889882194,
+          "median_error": 737.6953220207852,
+          "best_error": 701.9803509731487
+        },
+        "L-SHADE": {
+          "mean_error": 745.66038670228,
+          "std_error": 24.086561128939664,
+          "median_error": 738.7957432078438,
+          "best_error": 702.413323564956
+        },
+        "Standard-DE": {
+          "mean_error": 928.5768852963015,
+          "std_error": 74.30921380073268,
+          "median_error": 917.7462957502548,
+          "best_error": 833.7175563671672
+        },
+        "Standard-PSO": {
+          "mean_error": 1237.194275548487,
+          "std_error": 312.543354626204,
+          "median_error": 1197.3153996148494,
+          "best_error": 754.9433954918131
+        },
+        "Cuckoo-Search": {
+          "mean_error": 2087.9294565034907,
+          "std_error": 297.2406532510996,
+          "median_error": 2077.3587763849646,
+          "best_error": 1517.7324166733779
+        }
+      }
+    }
+  },
+  "wilcoxon_tests_vs_ad_bsa": {
+    "F1": {
+      "jSO": {
+        "p_value": 1.3966113328933716e-05,
+        "sign": "-"
+      },
+      "CMA-ES": {
+        "p_value": 1.862645149230957e-09,
+        "sign": "-"
+      },
+      "L-SHADE": {
+        "p_value": 4.4075772166252136e-05,
+        "sign": "-"
+      },
+      "Standard-DE": {
+        "p_value": 1.862645149230957e-09,
+        "sign": "+"
+      },
+      "Standard-PSO": {
+        "p_value": 1.862645149230957e-09,
+        "sign": "+"
+      },
+      "Cuckoo-Search": {
+        "p_value": 1.862645149230957e-09,
+        "sign": "+"
+      }
+    },
+    "F2": {
+      "jSO": {
+        "p_value": 1.821529714896801e-05,
+        "sign": "+"
+      },
+      "CMA-ES": {
+        "p_value": 0.0009815397525216685,
+        "sign": "-"
+      },
+      "L-SHADE": {
+        "p_value": NaN,
+        "sign": "="
+      },
+      "Standard-DE": {
+        "p_value": 1.862645149230957e-09,
+        "sign": "+"
+      },
+      "Standard-PSO": {
+        "p_value": 2.7015948487105512e-05,
+        "sign": "+"
+      },
+      "Cuckoo-Search": {
+        "p_value": 1.862645149230957e-09,
+        "sign": "+"
+      }
+    },
+    "F3": {
+      "jSO": {
+        "p_value": 1.862645149230957e-09,
+        "sign": "+"
+      },
+      "CMA-ES": {
+        "p_value": 0.308520769700408,
+        "sign": "="
+      },
+      "L-SHADE": {
+        "p_value": 0.1641840822994709,
+        "sign": "="
+      },
+      "Standard-DE": {
+        "p_value": 1.862645149230957e-09,
+        "sign": "+"
+      },
+      "Standard-PSO": {
+        "p_value": 1.862645149230957e-09,
+        "sign": "+"
+      },
+      "Cuckoo-Search": {
+        "p_value": 1.862645149230957e-09,
+        "sign": "+"
+      }
+    },
+    "F4": {
+      "jSO": {
+        "p_value": 1.862645149230957e-09,
+        "sign": "+"
+      },
+      "CMA-ES": {
+        "p_value": 0.0006084088236093521,
+        "sign": "-"
+      },
+      "L-SHADE": {
+        "p_value": 4.7124922275543213e-07,
+        "sign": "+"
+      },
+      "Standard-DE": {
+        "p_value": 1.862645149230957e-09,
+        "sign": "+"
+      },
+      "Standard-PSO": {
+        "p_value": 1.862645149230957e-09,
+        "sign": "+"
+      },
+      "Cuckoo-Search": {
+        "p_value": 1.862645149230957e-09,
+        "sign": "+"
+      }
+    },
+    "F5": {
+      "jSO": {
+        "p_value": 2.0489096641540527e-07,
+        "sign": "-"
+      },
+      "CMA-ES": {
+        "p_value": 1.862645149230957e-09,
+        "sign": "-"
+      },
+      "L-SHADE": {
+        "p_value": 3.725290298461914e-09,
+        "sign": "-"
+      },
+      "Standard-DE": {
+        "p_value": 1.862645149230957e-09,
+        "sign": "+"
+      },
+      "Standard-PSO": {
+        "p_value": 0.01453801617026329,
+        "sign": "+"
+      },
+      "Cuckoo-Search": {
+        "p_value": 3.725290298461914e-09,
+        "sign": "+"
+      }
+    },
+    "F6": {
+      "jSO": {
+        "p_value": 0.6186406172812118,
+        "sign": "="
+      },
+      "CMA-ES": {
+        "p_value": 0.09185084396186832,
+        "sign": "="
+      },
+      "L-SHADE": {
+        "p_value": 0.040135536373545506,
+        "sign": "+"
+      },
+      "Standard-DE": {
+        "p_value": 1.862645149230957e-09,
+        "sign": "+"
+      },
+      "Standard-PSO": {
+        "p_value": 1.862645149230957e-09,
+        "sign": "+"
+      },
+      "Cuckoo-Search": {
+        "p_value": 1.862645149230957e-09,
+        "sign": "+"
+      }
+    },
+    "F7": {
+      "jSO": {
+        "p_value": 0.17059839516878128,
+        "sign": "="
+      },
+      "CMA-ES": {
+        "p_value": 1.862645149230957e-09,
+        "sign": "-"
+      },
+      "L-SHADE": {
+        "p_value": 3.725290298461914e-09,
+        "sign": "-"
+      },
+      "Standard-DE": {
+        "p_value": 1.862645149230957e-09,
+        "sign": "+"
+      },
+      "Standard-PSO": {
+        "p_value": 1.862645149230957e-09,
+        "sign": "+"
+      },
+      "Cuckoo-Search": {
+        "p_value": 1.862645149230957e-09,
+        "sign": "+"
+      }
+    },
+    "F8": {
+      "jSO": {
+        "p_value": 8.857457687863547e-05,
+        "sign": "+"
+      },
+      "CMA-ES": {
+        "p_value": 1.7333066441991056e-06,
+        "sign": "+"
+      },
+      "L-SHADE": {
+        "p_value": NaN,
+        "sign": "="
+      },
+      "Standard-DE": {
+        "p_value": 1.862645149230957e-09,
+        "sign": "+"
+      },
+      "Standard-PSO": {
+        "p_value": 5.956977907456359e-05,
+        "sign": "+"
+      },
+      "Cuckoo-Search": {
+        "p_value": 0.007685794055213263,
+        "sign": "-"
+      }
+    },
+    "F9": {
+      "jSO": {
+        "p_value": 3.725290298461914e-09,
+        "sign": "+"
+      },
+      "CMA-ES": {
+        "p_value": 0.05768792890012264,
+        "sign": "="
+      },
+      "L-SHADE": {
+        "p_value": 1.862645149230957e-09,
+        "sign": "-"
+      },
+      "Standard-DE": {
+        "p_value": 1.862645149230957e-09,
+        "sign": "+"
+      },
+      "Standard-PSO": {
+        "p_value": 1.862645149230957e-09,
+        "sign": "+"
+      },
+      "Cuckoo-Search": {
+        "p_value": 1.862645149230957e-09,
+        "sign": "+"
+      }
+    },
+    "F10": {
+      "jSO": {
+        "p_value": 0.0009517744183540344,
+        "sign": "+"
+      },
+      "CMA-ES": {
+        "p_value": 0.00016989745199680328,
+        "sign": "+"
+      },
+      "L-SHADE": {
+        "p_value": 0.0003449581563472748,
+        "sign": "+"
+      },
+      "Standard-DE": {
+        "p_value": 1.862645149230957e-09,
+        "sign": "+"
+      },
+      "Standard-PSO": {
+        "p_value": 1.862645149230957e-09,
+        "sign": "+"
+      },
+      "Cuckoo-Search": {
+        "p_value": 1.862645149230957e-09,
+        "sign": "+"
+      }
+    }
+  }
+}

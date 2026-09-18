@@ -1,0 +1,55 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ad-bsa"
+version = "1.0.0"
+description = "Adaptive Differential Boogeyman Search Algorithm with Bounded Cosecant Repulsion Barrier"
+readme = "README.md"
+authors = [
+    { name = "Felipe Riquelme Salvo", email = "f.riquelmesalvo@uandresbello.edu" }
+]
+license = { text = "Apache-2.0" }
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Mathematics",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+]
+keywords = [
+    "optimization",
+    "metaheuristics",
+    "evolutionary-computation",
+    "differential-evolution",
+    "cec2020",
+    "anti-attractors",
+    "negative-learning"
+]
+dependencies = [
+    "numpy>=1.22.0",
+    "scipy>=1.8.0",
+    "matplotlib>=3.5.0",
+    "opfunu>=1.0.1",
+    "cma>=3.3.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/Pipin333/AD-BSA"
+Repository = "https://github.com/Pipin333/AD-BSA.git"
+"Bug Tracker" = "https://github.com/Pipin333/AD-BSA/issues"
+
+[tool.setuptools.packages.find]
+where = ["src"]

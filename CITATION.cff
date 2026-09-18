@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+message: "If you use AD-BSA in your research or applications, please cite it as below."
+authors:
+  - family-names: "Riquelme Salvo"
+    given-names: "Felipe"
+    affiliation: "Facultad de Ingeniería, Universidad Andrés Bello"
+    email: "f.riquelmesalvo@uandresbello.edu"
+title: "AD-BSA: Adaptive Differential Boogeyman Search Algorithm with Bounded Cosecant Repulsion Barrier"
+version: 1.0.0
+date-released: 2026-09-18
+license: "Apache-2.0"
+repository-code: "https://github.com/Pipin333/AD-BSA"
+keywords:
+  - "metaheuristics"
+  - "continuous optimization"
+  - "negative learning"
+  - "anti-attractors"
+  - "differential evolution"
+  - "cec-benchmark"
+  - "boogeyman"

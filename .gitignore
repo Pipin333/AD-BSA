@@ -1,0 +1,42 @@
+# ==============================================================================
+#  .gitignore - AD-BSA (Pure Continuous Optimization Framework)
+# ==============================================================================
+
+# Python Bytecode, Caches & Environments
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.coverage
+htmlcov/
+*.egg-info/
+dist/
+build/
+.env
+.venv
+env/
+venv/
+
+# IDEs & OS Files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Excluir absolutamente todo en la raíz salvo los directorios y archivos oficiales
+/*
+!/.gitignore
+!/LICENSE
+!/NOTICE
+!/CITATION.cff
+!/README.md
+!/pyproject.toml
+
+!/requirements.txt
+!/src/
+!/benchmarks/
+!/tests/
+!/examples/

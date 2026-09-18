@@ -1,0 +1,14 @@
+AD-BSA: Adaptive Differential Boogeyman Search Algorithm
+Copyright 2026 Felipe Riquelme Salvo (Pipin333)
+
+This product includes software developed as part of academic and open-source
+research in continuous global metaheuristic optimization.
+
+Original Author:
+Felipe Riquelme Salvo <f.riquelmesalvo@uandresbello.edu>
+Facultad de Ingeniería, Universidad Andrés Bello, Santiago, Chile.
+
+Algorithmic Contributions:
+- Negative Learning / Anti-Attractor Dynamics (El Cuco / Boogeyman formulation)
+- Bounded Cosecant Repulsion Potential Barrier (|csc(x)| Operator)
+- Thermodynamic Annealing Schedule for Directional Basin Evacuation
