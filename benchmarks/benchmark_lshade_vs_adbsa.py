@@ -2,16 +2,16 @@
 ================================================================================
   BENCHMARK: L-SHADE vs AD-BSA v2 (Runtime & Solution Quality Comparison)
   
-  Condiciones experimentales verificables:
-    - Protocolo: 30 Dimensiones, 75.000 evaluaciones (MaxNFE), 10 corridas
-      independientes con semillas determinísticas (seed = 1000 + r * 17).
-    - Entorno: CPU x86_64, Windows, Python 3.13, NumPy 2.x.
-    - Resultados empíricos consolidados:
-        * L-SHADE tiempo promedio por corrida: 6.38 s
-        * AD-BSA v2 tiempo promedio por corrida: 0.80 s
-        * Speedup empírico de ejecución: ~8.0x (NumPy matrix vectorization)
-        * Calidad de solución (fitness): L-SHADE alcanza mayor precisión
-          explotativa en las 6 funciones canónicas bajo este protocolo.
+  Verifiable Experimental Conditions:
+    - Protocol: 30 Dimensions, 75,000 evaluations (MaxNFE), 10 independent
+      runs with deterministic seeds (seed = 1000 + r * 17).
+    - Environment: x86_64 CPU, Windows, Python 3.13, NumPy 2.x.
+    - Consolidated Empirical Results:
+        * L-SHADE average runtime per run: 6.38 s
+        * AD-BSA v2 average runtime per run: 0.80 s
+        * Empirical execution speedup: ~8.0x (NumPy matrix vectorization)
+        * Solution quality (fitness): Canonical L-SHADE achieves higher
+          exploitative precision across the 6 standard functions under this protocol.
 ================================================================================
 """
 

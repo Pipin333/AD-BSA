@@ -158,21 +158,21 @@ Sign marks for Wilcoxon signed-rank test vs `AD-BSA` ($\alpha = 0.05$):
 
 ---
 
-## ⚠️ Limitaciones y Protocolo Experimental
+## ⚠️ Limitations & Experimental Protocol
 
-Para asegurar transparencia y rigor metodológico, se destacan las siguientes restricciones y observaciones clave del estudio:
+To ensure transparency, reproducibility, and rigorous scientific reporting, the following scope constraints and empirical observations are highlighted:
 
-1. **Rendimiento relativo y significancia estadística frente a CMA-ES:**
-   En las 10 funciones evaluadas de la suite CEC 2020 en 50D, **CMA-ES supera significativamente a AD-BSA en 5 de las 10 funciones** (F1, F3, F5, F7, F10 con $p < 0.05$ según el test de rangos con signo de Wilcoxon). La adaptación de covarianza de CMA-ES resulta marcadamente superior en paisajes unimodales rotados e híbridos complejos. El empate de AD-BSA en el ranking promedio de Friedman (2.30) se sustenta en su resiliencia en problemas multimodales con trampas de estancamiento (F2, F6, F9).
+1. **Relative Performance & Statistical Significance vs. CMA-ES:**
+   Across the 10 benchmark problems of the IEEE CEC 2020 suite in 50D, **CMA-ES statistically significantly outperforms AD-BSA on 5 out of 10 functions** (F1, F3, F5, F7, F10 with $p < 0.05$ via the Wilcoxon signed-rank test). Covariance matrix adaptation in CMA-ES demonstrates superior precision on ill-conditioned rotated unimodal landscapes and complex hybrid functions. AD-BSA's tied overall Friedman ranking (2.30) is anchored by its strong robustness and basin evacuation capability on deceptive multimodal landscapes (F2, F6, F9).
 
-2. **Sensibilidad al presupuesto computacional en algoritmos con reducción poblacional:**
-   El protocolo experimental fijó un presupuesto de $50.000$ evaluaciones ($1.000 \cdot D$). En competencias oficiales de IEEE CEC, el presupuesto estándar suele ser sustancialmente mayor ($10.000 \cdot D = 500.000$ evaluaciones). Algoritmos canónicos de la familia SHADE como **L-SHADE** (con $N_{\text{init}} = 18 \cdot D = 900$) y **jSO** ($N_{\text{init}} \approx 691$) están diseñados para amortizar su reducción lineal a lo largo de cientos de miles de evaluaciones. Con $50.000$ evaluaciones, una fracción importante se gasta en la fase exploratoria de población grande, penalizando su capacidad de convergencia fina en comparación con presupuestos extendidos.
+2. **Computational Budget Sensitivity in Population Reduction Algorithms:**
+   The experimental protocol evaluated a fixed computational budget of $50,000$ evaluations ($1,000 \cdot D$). In official IEEE CEC competitions, the standard budget is substantially higher ($10,000 \cdot D = 500,000$ evaluations). Canonical SHADE-family algorithms—such as **L-SHADE** (initial population $N_{\text{init}} = 18 \cdot D = 900$) and **jSO** ($N_{\text{init}} \approx 691$)—are designed to amortize linear population size reduction across hundreds of thousands of evaluations. Under a compact budget of 50,000 evaluations, a large fraction of function calls is consumed during the early large-population exploration phase, constraining their fine exploitative convergence compared to extended-budget regimes.
 
-3. **Trade-off entre Dinámica de Escape y Precisión Numérica Asintótica:**
-   En pruebas directas en 30D con $75.000$ evaluaciones ([`benchmarks/benchmark_lshade_vs_adbsa.py`](benchmarks/benchmark_lshade_vs_adbsa.py)), ambos algoritmos convergen con éxito al óptimo global. La implementación vectorizada en NumPy de AD-BSA logra una aceleración de **~8.0x en tiempo de ejecución de CPU** (0.80 s vs 6.38 s por corrida) frente a la implementación canónica en Python de L-SHADE. En funciones estándar suaves continuas, L-SHADE afina una mayor precisión asintótica decimal en la fase puramente explotativa final, mientras que el operador cosecante de AD-BSA prioriza la evacuación rápida de trampas de estancamiento y la eficiencia matricial, mostrando su mayor fortaleza en problemas de alta dimensión y trampas multimodales complejas (como se observa en CEC 2020 en 50D).
+3. **Trade-off Between Escape Dynamics and Asymptotic Decimal Precision:**
+   In direct head-to-head experiments on 30D problems with $75,000$ evaluations ([`benchmarks/benchmark_lshade_vs_adbsa.py`](benchmarks/benchmark_lshade_vs_adbsa.py)), both algorithms reliably locate the global basin. The fully vectorized NumPy implementation of AD-BSA achieves a **~8.0x wall-clock CPU speedup per run** (0.80 s vs. 6.38 s) compared to canonical Python L-SHADE. On smooth standard test functions, L-SHADE refines higher asymptotic decimal precision during the terminal exploitation phase, whereas AD-BSA's cosecant repulsion operator prioritizes rapid evacuation of deceptive stagnation traps and matrix throughput, exhibiting its primary advantage in high-dimensional multimodal topologies (as observed in CEC 2020 at 50D).
 
-4. **Verificabilidad y Reproducibilidad:**
-   Todos los scripts ejecutables, condiciones experimentales, semillas determinísticas y archivos JSON consolidados se encuentran disponibles en el directorio [`benchmarks/`](benchmarks/) para su auditoría directa.
+4. **Verifiability & Reproducibility:**
+   All execution scripts, experimental parameters, deterministic pseudo-random seeds, and raw JSON result files are fully archived in the [`benchmarks/`](benchmarks/) directory for independent verification.
 
 ---
 
