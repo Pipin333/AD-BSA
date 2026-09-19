@@ -38,6 +38,7 @@ dependencies = [
     "matplotlib>=3.5.0",
     "opfunu>=1.0.1",
     "cma>=3.3.0",
+    "setuptools>=65.0.0",
 ]
 
 [project.optional-dependencies]
