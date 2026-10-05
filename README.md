@@ -15,6 +15,26 @@
 
 ---
 
+## ⚡ At a Glance: Core Mutation & Performance Snapshot
+
+### 1. The Tri-Partite Mutation Operator
+$$\mathbf{v}_i = \mathbf{x}_i + \underbrace{F_{\text{safe}, i} \cdot (\mathbf{x}_{p\text{-best}} - \mathbf{x}_i)}_{\substack{\text{\bf Positive Attraction} \\ \text{(Exploitation of Safe Havens)}}} + \underbrace{\mathbf{v}_{\text{escape}, i}(|\csc|)}_{\substack{\text{\bf Repulsive Barrier} \\ \text{(Active Basin Evacuation)}}} + \underbrace{F_{\text{diff}, i} \cdot (\mathbf{x}_{r1} - \tilde{\mathbf{x}}_{r2})}_{\substack{\text{\bf Differential Perturbation} \\ \text{(Diversity Injection)}}}$$
+
+### 2. High-Dimensional & Real-World Performance Snapshot
+
+| Evaluation Benchmark | Problem Dimension | Algorithm / Paradigm | Benchmark Result / Rank | Key Takeaway / Significance |
+| :--- | :---: | :--- | :---: | :--- |
+| **IEEE CEC 2020 Suite**<br>*(Fixed Budget: $50\text{k}$ NFEs)* | **$50\text{D}$** | **AD-BSA (Proposed)**<br>CMA-ES (IPOP)<br>jSO (CEC 2017 Winner)<br>L-SHADE (CEC 2014 Winner)<br>Standard DE / PSO | **Rank #1 (Friedman: 2.30)**<br>Rank #1 (Friedman: 2.30)<br>Rank #3 (Friedman: 2.40)<br>Rank #4 (Friedman: 3.40)<br>Rank #6 / #5 (6.10 / 5.00) | Tied for **#1 rank** on multimodal deception; exact zeros ($0.00\text{e}+00$) on Schwefel (F2) and Lunacek (F3). |
+| **Quantum Floquet Sensor**<br>*(PRResearch 8, 033316, 2026)* | **$15\text{D}$**<br>*(Harmonics)* | **AD-BSA (Proposed)**<br>L-SHADE<br>Standard DE<br>dCRAB Quantum Optimal | **Peak: 8.8324** ($\mu = 5.13$)<br>Peak: 9.8685 ($\mu = 4.86$)<br>Peak: 1.9812 ($\mu = 2.01$)<br>Baseline: 0.6900 | **$4.5\times$ to $12\times$ leap** over standard baselines; $0.999997$ unitary norm conservation (`DOP853`) and $>99.3\%$ retention under 1% noise. |
+
+<p align="center">
+  <img src="benchmarks/cec2020_50d_comparison.png" alt="IEEE CEC 2020 50D Benchmark Comparison" width="850"/>
+  <br>
+  <em>Figure 1: Benchmark distribution on IEEE CEC 2020 (50 Dimensions, 50,000 NFEs) across canonical metaheuristics.</em>
+</p>
+
+---
+
 ## 📌 Executive Summary & Theoretical Motivation
 
 In continuous high-dimensional global optimization ($D \ge 50$), the volume of sub-optimal stagnation basins exponentially dwarfs the basin of attraction of the global optimum. Canonical evolutionary algorithms—including Differential Evolution (DE), Particle Swarm Optimization (PSO), and Genetic Algorithms (GA)—rely primarily on **positive attraction** towards previously discovered elite vectors ($\mathbf{x}_{\text{best}}$ or $p$-best elite targets). When the population clusters inside a deceptive local trap, exploratory perturbations decay and convergence can stagnate.
