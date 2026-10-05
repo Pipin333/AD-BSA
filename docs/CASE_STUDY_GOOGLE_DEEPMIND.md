@@ -35,7 +35,7 @@ flowchart LR
 
 In modern quantum engineering—specifically atomtronic sensors relying on Bose-Einstein condensates (BEC) confined in optical ring lattices—inertial sensitivity is fundamentally governed by the sharpness of macroscopic supercurrent resonances ($\bar{I}$). 
 
-In a newly published breakthrough by Carmona-López, Morales-Molina (Pontificia Universidad Católica de Chile), and Matos-Abiague (Wayne State University) (*Phys. Rev. Research*, Sept 15, 2026), the authors theoretically demonstrated that atomic interactions ($U$) allow atomtronic angular accelerometers to surpass the classic Fourier scaling limit. However, their experimental proof-of-concept utilized a single-harmonic sinusoidal ac-driving:
+In a newly published breakthrough by S. Carmona-López, A. Matos-Abiague, F. Isaule, and L. Morales-Molina (*"Enhancing supercurrent-based inertial sensing via interactions in atomtronic angular accelerometers"*, [*Phys. Rev. Research* **8**, 033316](https://doi.org/10.1103/zzx2-tttb), Sept 15, 2026), the authors theoretically demonstrated that atomic interactions ($U$) allow atomtronic angular accelerometers to surpass the classic Fourier scaling limit. However, their experimental proof-of-concept utilized a single-harmonic sinusoidal ac-driving:
 
 $$\frac{\phi(t)}{N_s} = \omega_B t + \tilde{A} \sin(\omega t + \theta)$$
 
@@ -132,6 +132,16 @@ Evaluating multi-harmonic Floquet driving in Atomtronic Sagnac Accelerometers:
    AD-BSA provides a generalizable, black-box optimal control solver directly applicable to Floquet engineering, superconducting qubit pulse shaping (Google Sycamore), and cold-atom quantum sensing.
 4. **Permanent Open-Science Archival:**  
    The entire discovery pipeline is archived and reproducible under the **Apache-2.0 License** with a **CERN Zenodo DOI** ([10.5281/zenodo.23147724](https://doi.org/10.5281/zenodo.23147724)).
+
+---
+
+## 5. References & Academic Attribution
+
+1. **Foundational Atomtronic Sensing Article:**  
+   S. Carmona-López, A. Matos-Abiague, F. Isaule, and L. Morales-Molina, *"Enhancing supercurrent-based inertial sensing via interactions in atomtronic angular accelerometers"*, *Physical Review Research* **8**, 033316 (2026). DOI: [10.1103/zzx2-tttb](https://doi.org/10.1103/zzx2-tttb).
+
+2. **AD-BSA Software Archive:**  
+   Felipe S. Riquelme Salvo, *"AD-BSA: Adaptive Differential Boogeyman Search Algorithm with Bounded Cosecant Repulsion Barrier (v1.0.0)"*, CERN Zenodo (2026). DOI: [10.5281/zenodo.23147724](https://doi.org/10.5281/zenodo.23147724).
 
 ---
 

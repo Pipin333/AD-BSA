@@ -235,7 +235,7 @@ To empirically assess the individual contribution of each novel mathematical com
 
 ## ⚡ Quantum Engineering Application: Atomtronic Sagnac Accelerometers
 
-Beyond synthetic testbeds, AD-BSA was evaluated on **Multi-Harmonic Optimal Quantum Floquet Control in Atomtronic Sagnac Accelerometers** ([Carmona-López et al., *Physical Review Research*, 2026](https://doi.org/10.1103/zzx2-tttb)).
+Beyond synthetic testbeds, AD-BSA was evaluated on **Multi-Harmonic Optimal Quantum Floquet Control** applied to the atomtronic quantum sensing framework introduced by **Carmona-López et al.** (*"Enhancing supercurrent-based inertial sensing via interactions in atomtronic angular accelerometers"*, [*Physical Review Research* **8**, 033316, 2026](https://doi.org/10.1103/zzx2-tttb)).
 
 Modeling $N=3$ interacting bosons in a 3-site optical ring governed by the Many-Body Bose-Hubbard Hamiltonian across dimensions $D=10, 15, 20$:
 
@@ -371,6 +371,9 @@ AD-BSA/
 
 ## 📜 Citation & Academic Reference
 
+If you use AD-BSA in your research or reference the atomtronic quantum control benchmark, please cite both the software and the foundational physics article:
+
+### AD-BSA Optimization Software (Zenodo / CERN)
 ```bibtex
 @software{riquelmesalvo2026adbsa_code,
   author       = {Riquelme Salvo, Felipe S.},
@@ -382,6 +385,23 @@ AD-BSA/
   version      = {v1.0.0},
   doi          = {10.5281/zenodo.23147724},
   url          = {https://doi.org/10.5281/zenodo.23147724}
+}
+```
+
+### Foundational Atomtronic Quantum Sensing Paper (APS Physical Review Research)
+```bibtex
+@article{carmonalopez2026enhancing,
+  author    = {Carmona-L{\'o}pez, S. and Matos-Abiague, A. and Isaule, F. and Morales-Molina, L.},
+  title     = {Enhancing supercurrent-based inertial sensing via interactions in atomtronic angular accelerometers},
+  journal   = {Physical Review Research},
+  volume    = {8},
+  number    = {3},
+  pages     = {033316},
+  year      = {2026},
+  month     = {Sep},
+  publisher = {American Physical Society},
+  doi       = {10.1103/zzx2-tttb},
+  url       = {https://doi.org/10.1103/zzx2-tttb}
 }
 ```
 
