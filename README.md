@@ -9,7 +9,7 @@
 [![CEC 2020 Suite](https://img.shields.io/badge/CEC_2020_Suite-Friedman_2.30_(Tied_with_CMA--ES)-brightgreen)](#ieee-cec-2020-benchmark-suite-50-dimensions)
 [![Tests](https://github.com/Pipin333/AD-BSA/actions/workflows/ci.yml/badge.svg)](https://github.com/Pipin333/AD-BSA/actions)
 [![Code Style](https://img.shields.io/badge/code%20style-PEP%208-black)](https://www.python.org/dev/peps/pep-0008/)
-[![DOI](https://zenodo.org/badge/1376269303.svg)](https://doi.org/10.5281/zenodo.23147723)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23147724.svg)](https://doi.org/10.5281/zenodo.23147724)
 
 </div>
 
@@ -26,6 +26,22 @@ Originating from a conceptual reinterpretation of the mythical *Boogeyman* (*El 
 2. **The Bounded Cosecant Repulsion Barrier ($|\csc(x)|$):** A non-linear potential field providing high repulsive acceleration away from stagnation centers while dropping to zero in safe valleys.
 3. **Power-Law Cooling Schedule:** A power-law damping $(1 - t/\text{MaxNFE})^\gamma$ that transitions search dynamics from basin evacuation in early phases to localized exploitation in later stages.
 4. **Historical Lehmer Parameter Memories & LPSR:** Adaptive selection of differential parameters coupled with Linear Population Size Reduction.
+
+---
+
+## 💡 The Intuition in 30 Seconds
+
+> **Why "El Cuco" (The Boogeyman)?**  
+> Almost all classical optimization algorithms (PSO, Genetic Algorithms, CMA-ES, Differential Evolution) operate purely on **Positive Learning**: *"See where the best solutions are and move towards them."*  
+> 
+> In rugged, deceptive terrains, this blind attraction leads to **premature stagnation**—every agent falls into the same attractive trap.  
+> 
+> **AD-BSA introduces Explicit Negative Learning:**  
+> * **The Boogeyman (Anti-Attractor):** Clusters the worst solutions in the search space.  
+> * **The Repulsion Barrier:** If an agent gets too close to a known bad region, a non-linear cosecant potential physically repels it away.  
+> * **The Sack & Safe House:** Trapped solutions are captured and directionally redirected toward the global best (*The Safe House*).  
+> 
+> **The Takeaway:** You don't just reach the optimal solution by chasing success; you reach it by **actively running away from known disasters.**
 
 ---
 
@@ -136,10 +152,13 @@ All competitors were executed in their canonical competitive formulations:
 
 ---
 
-### Detailed Statistical Results: Mean Error ± Std Dev ($\Delta f = f(\mathbf{x}^*) - f_{\text{bias}}$)
+### Detailed Statistical Results: Mean Error ± Std Dev (Δf = f(x*) − f_bias)
 
-Sign marks for Wilcoxon signed-rank test vs `AD-BSA` ($\alpha = 0.05$): 
-`+` (*AD-BSA significantly outperforms competitor, $p < 0.05$*), `=` (*statistically equivalent, $p \ge 0.05$*), `-` (*competitor significantly outperforms AD-BSA, $p < 0.05$*).
+Sign marks for Wilcoxon signed-rank test vs AD-BSA (α = 0.05):
+* + : AD-BSA significantly outperforms competitor (*p* < 0.05)
+* = : Statistically equivalent (*p* ≥ 0.05)
+* - : Competitor significantly outperforms AD-BSA (*p* < 0.05)
+
 
 *(Bold values indicate the best performer with lowest mean error for each row)*
 
@@ -211,6 +230,31 @@ To empirically assess the individual contribution of each novel mathematical com
    ```bash
    python benchmarks/run_ablation_study.py --runs 5 --workers 4
    ```
+
+---
+
+---
+
+## ⚡ Quantum Engineering Application: Atomtronic Sagnac Accelerometers
+
+Beyond synthetic testbeds, AD-BSA was evaluated on **Multi-Harmonic Optimal Quantum Floquet Control in Atomtronic Sagnac Accelerometers** ([Carmona-López et al., *Physical Review Research*, 2026](https://doi.org/10.1103/zzx2-tttb)).
+
+Modeling $N=3$ interacting bosons in a 3-site optical ring governed by the Many-Body Bose-Hubbard Hamiltonian across dimensions $D=10, 15, 20$:
+
+$$
+\hat{H}(t) = -J \sum_{l=1}^{N_s} \left( e^{i \phi(t) / N_s} \hat{a}_{l+1}^\dagger \hat{a}_l + \text{h.c.} \right) + \frac{U}{2} \sum_{l=1}^{N_s} \hat{n}_l (\hat{n}_l - 1)
+$$
+
+where the driving phase $\phi(t)$ is parameterized as a multi-harmonic Fourier synthesis with non-linear chirp:
+
+$$
+\phi(t) = \omega_B t + \sum_{k=1}^K A_k \sin(k \omega t + \theta_k) + \beta t^{1.5}
+$$
+
+AD-BSA systematically detected and evacuated destructive quantum interference traps, achieving significant sensitivity gains over standard evolutionary operators:
+- **$+75.5\%$ ($D=10$)**
+- **$+184.3\%$ ($2.84\times$ boost, $D=15$)**
+- **$+54.1\%$ ($D=20$)**
 
 ---
 
