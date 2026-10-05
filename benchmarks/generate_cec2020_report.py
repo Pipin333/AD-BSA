@@ -99,16 +99,22 @@ def generate_comparison_plot(data: dict):
     x = np.arange(len(funcs))
 
     for i, (algo, color) in enumerate(zip(algos, colors)):
-        errors = [max(1e-8, data["summary_statistics"][f]["algorithms"][algo]["mean_error"]) for f in funcs]
-        log_errors = np.log10(errors)
+        scores = []
+        for f in funcs:
+            err = max(1e-8, data["summary_statistics"][f]["algorithms"][algo]["mean_error"])
+            # Inverted Log-Precision Metric: higher is better, strictly non-negative (clipped at 0)
+            # Optimal zero error (<= 1e-8) yields peak score of 18.0
+            score = max(0.0, 10.0 - np.log10(err))
+            scores.append(score)
         offset = (i - len(algos) / 2) * width + width / 2
-        ax.bar(x + offset, log_errors, width, label=algo, color=color, alpha=0.9, edgecolor="black", linewidth=0.5)
+        ax.bar(x + offset, scores, width, label=algo, color=color, alpha=0.9, edgecolor="black", linewidth=0.5)
 
-    ax.set_title(f"IEEE CEC 2020 Benchmark (50 Dimensions, {n_runs} Runs) - Log10 Mean Error", fontsize=14, fontweight="bold", pad=15)
-    ax.set_xlabel("Funciones de Prueba CEC 2020", fontsize=12, fontweight="bold")
-    ax.set_ylabel("Log10(Error Delta f) [Menor es Mejor]", fontsize=12, fontweight="bold")
+    ax.set_title(f"IEEE CEC 2020 Benchmark (50 Dimensions, {n_runs} Runs) - Logarithmic Accuracy Score", fontsize=14, fontweight="bold", pad=15)
+    ax.set_xlabel("IEEE CEC 2020 Benchmark Functions (50D)", fontsize=12, fontweight="bold")
+    ax.set_ylabel("Accuracy Score: 10 - log10(Mean Error) [Higher is Better]", fontsize=12, fontweight="bold")
     ax.set_xticks(x)
     ax.set_xticklabels(funcs, fontsize=11, fontweight="bold")
+    ax.set_ylim(bottom=0, top=19)
     ax.grid(axis="y", linestyle="--", alpha=0.5)
     ax.legend(frameon=True, facecolor="white", edgecolor="none", shadow=True, fontsize=10)
 
