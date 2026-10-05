@@ -42,3 +42,4 @@ benchmarks/*checkpoint*.json
 !/tests/
 !/examples/
 !/.github/
+!/docs/
