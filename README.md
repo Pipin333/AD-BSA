@@ -24,8 +24,8 @@ $$\mathbf{v}_i = \mathbf{x}_i + \underbrace{F_{\text{safe}, i} \cdot (\mathbf{x}
 
 | Evaluation Benchmark | Problem Dimension | Algorithm / Paradigm | Benchmark Result / Rank | Key Takeaway / Significance |
 | :--- | :---: | :--- | :---: | :--- |
-| **IEEE CEC 2020 Suite**<br>*(Fixed Budget: $50\text{k}$ NFEs)* | **$50\text{D}$** | **AD-BSA (Proposed)**<br>CMA-ES (IPOP)<br>jSO (CEC 2017 Winner)<br>L-SHADE (CEC 2014 Winner)<br>Standard DE / PSO | **Rank #1 (Friedman: 2.30)**<br>Rank #1 (Friedman: 2.30)<br>Rank #3 (Friedman: 2.40)<br>Rank #4 (Friedman: 3.40)<br>Rank #6 / #5 (6.10 / 5.00) | Tied for **#1 rank** on multimodal deception; exact zeros ($0.00\text{e}+00$) on Schwefel (F2) and Lunacek (F3). |
-| **Quantum Floquet Sensor**<br>*(PRResearch 8, 033316, 2026)* | **$15\text{D}$**<br>*(Harmonics)* | **AD-BSA (Proposed)**<br>L-SHADE<br>Standard DE<br>dCRAB Quantum Optimal | **Peak: 8.8324** ($\mu = 5.13$)<br>Peak: 9.8685 ($\mu = 4.86$)<br>Peak: 1.9812 ($\mu = 2.01$)<br>Baseline: 0.6900 | **$4.5\times$ to $12\times$ leap** over standard baselines; $0.999997$ unitary norm conservation (`DOP853`) and $>99.3\%$ retention under 1% noise. |
+| **IEEE CEC 2020 Suite**<br>*(Fixed Budget: 50,000 NFEs)* | **50D** | **AD-BSA (Proposed)**<br>CMA-ES (IPOP)<br>jSO (CEC 2017 Winner)<br>L-SHADE (CEC 2014 Winner)<br>Standard DE / PSO | **Rank #1 (Friedman: 2.30)**<br>Rank #1 (Friedman: 2.30)<br>Rank #3 (Friedman: 2.40)<br>Rank #4 (Friedman: 3.40)<br>Rank #6 / #5 (6.10 / 5.00) | Tied for **#1 rank** on multimodal deception; exact zeros (0.00e+00) on Schwefel (F2) and Lunacek (F3). |
+| **Quantum Floquet Sensor**<br>*(PRResearch 8, 033316, 2026)* | **15D**<br>*(Harmonics)* | **AD-BSA (Proposed)**<br>L-SHADE<br>Standard DE<br>dCRAB Quantum Optimal | **Peak: 8.8324** (Mean: 5.13)<br>Peak: 9.8685 (Mean: 4.86)<br>Peak: 1.9812 (Mean: 2.01)<br>Baseline: 0.6900 | **4.5x to 12x leap** over standard baselines; 0.999997 unitary norm conservation (`DOP853`) and >99.3% retention under 1% noise. |
 
 <p align="center">
   <img src="benchmarks/cec2020_50d_comparison.png" alt="IEEE CEC 2020 50D Benchmark Comparison" width="850"/>
