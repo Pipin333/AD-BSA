@@ -154,10 +154,10 @@ All competitors were executed in their canonical competitive formulations:
 
 ### Detailed Statistical Results: Mean Error ± Std Dev (Δf = f(x*) − f_bias)
 
-Sign marks for Wilcoxon signed-rank test vs AD-BSA (α = 0.05):
-* + : AD-BSA significantly outperforms competitor (*p* < 0.05)
-* = : Statistically equivalent (*p* ≥ 0.05)
-* - : Competitor significantly outperforms AD-BSA (*p* < 0.05)
+Sign marks for Wilcoxon signed-rank test vs `AD-BSA` (α = 0.05):
+* `(+)` : AD-BSA significantly outperforms competitor (*p* < 0.05)
+* `(=)` : Statistically equivalent (*p* ≥ 0.05)
+* `(-)` : Competitor significantly outperforms AD-BSA (*p* < 0.05)
 
 
 *(Bold values indicate the best performer with lowest mean error for each row)*
