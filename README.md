@@ -17,7 +17,7 @@
 
 ## 📌 Executive Summary & Theoretical Motivation
 
-In continuous high-dimensional global optimization ($D \ge 50$), the volume of sub-optimal stagnation basins exponentially dwarfs the basin of attraction of the global optimum. Canonical evolutionary algorithms—including Differential Evolution (DE), Particle Swarm Optimization (PSO), and Genetic Algorithms (GA)—rely primarily on **positive attraction** towards previously discovered elite vectors ($\mathbf{x}_{\text{best}}$ or $\mathbf{x}_{p\text{-best}}$). When the population clusters inside a deceptive local trap, exploratory perturbations decay and convergence can stagnate.
+In continuous high-dimensional global optimization ($D \ge 50$), the volume of sub-optimal stagnation basins exponentially dwarfs the basin of attraction of the global optimum. Canonical evolutionary algorithms—including Differential Evolution (DE), Particle Swarm Optimization (PSO), and Genetic Algorithms (GA)—rely primarily on **positive attraction** towards previously discovered elite vectors ($\mathbf{x}_{\text{best}}$ or $p$-best elite targets). When the population clusters inside a deceptive local trap, exploratory perturbations decay and convergence can stagnate.
 
 **AD-BSA** explores a mathematical framework for **Explicit Negative Learning** (*Anti-Attractor Dynamics*). Alongside learning *where to go*, the swarm actively maps *where not to be*.
 
@@ -61,7 +61,10 @@ $$\text{DE (1997)} \longrightarrow \text{JADE (2009)} \longrightarrow \text{SHAD
 ## 🔬 Mathematical Formulation
 
 ### 1. Multi-Boogeyman Anti-Attractors (Fitness-Rank Stratified Partitioning)
-Let $\mathbf{P}_t$ be the population at generation $t$. We extract the subset $\mathbf{P}_{\text{worst}} \subset \mathbf{P}_t$ representing the worst 15% fraction of individuals ($k_{\text{worst}} = 0.15$). To eliminate iterative clustering latency $O(k \cdot D \cdot I)$ and avoid distance concentration issues in high dimensions ($D \ge 50$), $\mathbf{P}_{\text{worst}}$ is partitioned via **Fitness-Rank Stratification** (*Fitness-Rank Niching*) into $M$ contiguous sub-tiers of increasing sub-optimality. The barycenter $\mathbf{S}_k$ of each tier acts as an anti-attractor epicenter:
+
+Let $\mathbf{P}$ be the swarm population at generation $t$. We extract the subset $\mathbf{P}_{\text{worst}}$ representing the worst 15% fraction of individuals ($k = 0.15$).
+
+To eliminate iterative clustering latency $O(k \cdot D \cdot I)$ and avoid distance concentration issues in high dimensions ($D \ge 50$), the sub-optimal population is partitioned via **Fitness-Rank Stratification** (*Fitness-Rank Niching*) into $M$ contiguous sub-tiers. The barycenter $\mathbf{S}_k$ of each tier acts as an anti-attractor epicenter:
 
 $$
 \mathbf{S}_k = \frac{1}{|\mathcal{C}_k|} \sum_{\mathbf{x} \in \mathcal{C}_k} \mathbf{x}, \quad k \in \{1, \dots, M\}
@@ -73,8 +76,15 @@ $$
 R_c = \max\left(0.5 \cdot \bar{\sigma}_{\mathbf{P}}, \, 10^{-12}\right)
 $$
 
-### 2. The Bounded Cosecant Repulsion Barrier ($|\csc(x)|$ Operator)
-For each individual $\mathbf{x}_i$, we identify its nearest anti-attractor $\mathbf{S}_{\text{closest}, i} = \arg\min_{\mathbf{S}_k} \|\mathbf{x}_i - \mathbf{S}_k\|$. The normalized distance to danger is:
+### 2. The Bounded Cosecant Repulsion Barrier
+
+For each candidate vector $\mathbf{x}_i$, its nearest anti-attractor epicenter is identified via Euclidean distance:
+
+$$
+\mathbf{S}_{\text{closest}, i} = \arg\min_{\mathbf{S}_k} \|\mathbf{x}_i - \mathbf{S}_k\|
+$$
+
+The normalized distance to danger is:
 
 $$
 r_i = \|\mathbf{x}_i - \mathbf{S}_{\text{closest}, i}\| + \epsilon, \qquad r_{\text{norm}, i} = \frac{r_i}{2 R_c + \epsilon}
@@ -119,7 +129,7 @@ Where:
 - $F_{\text{safe}, i} \cdot (\mathbf{x}_{p\text{-best}} - \mathbf{x}_i)$: Attraction toward the safe haven ($p$-best elite target).
 - $\mathbf{v}_{\text{escape}, i}$: Bounded cosecant barrier repulsive escape vector away from stagnation.
 - $F_{\text{diff}, i} \cdot (\mathbf{x}_{r1} - \tilde{\mathbf{x}}_{r2})$: Differential exploratory diversity from historical archive $\mathbf{A}$.
-- $\mathbf{x}_{r1} \in \mathbf{P}_t$ and $\tilde{\mathbf{x}}_{r2} \in \mathbf{P}_t \cup \mathbf{A}$ (external archive of superseded parents).
+- Mutation vectors $\mathbf{x}_{r1} \in \mathbf{P}_t, \; \tilde{\mathbf{x}}_{r2} \in \mathbf{P}_t \cup \mathbf{A}$ (external archive of superseded parents).
 
 ---
 
@@ -185,7 +195,7 @@ To ensure transparency, reproducibility, and rigorous scientific reporting, the 
    Across the 10 benchmark problems of the IEEE CEC 2020 suite in 50D, **CMA-ES statistically significantly outperforms AD-BSA on 5 out of 10 functions** (F1, F3, F5, F7, F10 with $p < 0.05$ via the Wilcoxon signed-rank test). Covariance matrix adaptation in CMA-ES demonstrates superior precision on ill-conditioned rotated unimodal landscapes and complex hybrid functions. AD-BSA's tied overall Friedman ranking (2.30) is anchored by its strong robustness and basin evacuation capability on deceptive multimodal landscapes (F2, F6, F9).
 
 2. **Computational Budget Sensitivity in Population Reduction Algorithms:**
-   The experimental protocol evaluated a fixed computational budget of $50,000$ evaluations ($1,000 \cdot D$). In official IEEE CEC competitions, the standard budget is substantially higher ($10,000 \cdot D = 500,000$ evaluations). Canonical SHADE-family algorithms—such as **L-SHADE** (initial population $N_{\text{init}} = 18 \cdot D = 900$) and **jSO** ($N_{\text{init}} \approx 691$)—are designed to amortize linear population size reduction across hundreds of thousands of evaluations. Under a compact budget of 50,000 evaluations, a large fraction of function calls is consumed during the early large-population exploration phase, constraining their fine exploitative convergence compared to extended-budget regimes.
+   The experimental protocol evaluated a fixed computational budget of $50,000$ evaluations ($1,000 \cdot D$). In official IEEE CEC competitions, the standard budget is substantially higher ($10,000 \cdot D = 500,000$ evaluations). Canonical SHADE-family algorithms—such as **L-SHADE** (initial population $N = 18 \cdot D = 900$) and **jSO** ($N \approx 691$)—are designed to amortize linear population size reduction across hundreds of thousands of evaluations. Under a compact budget of 50,000 evaluations, a large fraction of function calls is consumed during the early large-population exploration phase, constraining their fine exploitative convergence compared to extended-budget regimes.
 
 3. **Trade-off Between Escape Dynamics and Asymptotic Decimal Precision:**
    In direct head-to-head experiments on 30D problems with $75,000$ evaluations ([`benchmarks/benchmark_lshade_vs_adbsa.py`](benchmarks/benchmark_lshade_vs_adbsa.py)), both algorithms reliably locate the global basin. The fully vectorized NumPy implementation of AD-BSA achieves a **~8.0x wall-clock CPU speedup per run** (0.80 s vs. 6.38 s) compared to canonical Python L-SHADE. On smooth standard test functions, L-SHADE refines higher asymptotic decimal precision during the terminal exploitation phase, whereas AD-BSA's cosecant repulsion operator prioritizes rapid evacuation of deceptive stagnation traps and matrix throughput, exhibiting its primary advantage in high-dimensional multimodal topologies (as observed in CEC 2020 at 50D).
