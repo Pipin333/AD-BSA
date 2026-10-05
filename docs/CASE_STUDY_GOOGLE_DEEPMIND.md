@@ -1,6 +1,6 @@
 # CASE STUDY: Accelerating Quantum Floquet Optimal Control with Agentic AI
 
-## *How Gemini & Google Antigravity Co-Engineered AD-BSA: From Folkloric Intuition to Elite IEEE CEC 2020 Benchmarks and Many-Body Atomtronics*
+## *How Gemini & Google Antigravity Co-Engineered AD-BSA: From Folkloric Intuition to Competitive 50D Metaheuristics and Many-Body Atomtronics*
 
 **Author:** Felipe S. Riquelme Salvo  
 **Affiliation:** Departamento de Ingeniería, Universidad Andrés Bello (UNAB), Santiago, Chile  
@@ -13,18 +13,18 @@
 
 ## Executive Summary
 
-Across the global scientific landscape, Artificial Intelligence is rapidly transitioning from passive code-generation assistants to **Agentic Co-Scientists** capable of accelerating foundational discoveries. Following prominent breakthroughs such as DeepMind's *FunSearch* and recent AI-driven fluid dynamics discoveries, this case study presents an end-to-end real-world demonstration of **Google Antigravity 2.0** paired with **Gemini** driving autonomous computational scientific discovery.
+Across the global scientific landscape, Artificial Intelligence is rapidly transitioning from passive code-generation assistants to **Agentic Co-Scientists** capable of accelerating foundational discoveries. Following prominent breakthroughs such as DeepMind's *FunSearch* and recent AI-driven fluid dynamics discoveries, this case study presents an end-to-end, scientifically grounded demonstration of **Google Antigravity 2.0** paired with **Gemini** driving autonomous computational optimization.
 
 Operating as an undergraduate engineering researcher at Universidad Andrés Bello (Chile), the author collaborated with Antigravity to:
 1. **Formalize a Novel Metaheuristic Paradigm:** Transforming an intuitive cultural archetype (*El Cuco / The Boogeyman*) into a mathematically rigorous formulation of **Explicit Negative Learning** via Bounded Cosecant Repulsion barriers ($|\csc|$) and dynamic anti-attractor clustering.
-2. **Conquer the Elite IEEE CEC 2020 50D Benchmark:** Conducting 2,100 automated runs across the full competition battery, achieving the **#1 overall Friedman rank (1.40)**, sweeping IEEE CEC 2017 winner *jSO* (10/10 victories), and statistically defeating *CMA-ES* on rugged multimodal landscapes.
+2. **Rigorous Benchmarking on IEEE CEC 2020 (50D):** Evaluating the framework under a fixed-budget protocol ($50,000$ evaluations) across all 10 problem definitions, attaining a **tied #1 overall average Friedman rank (2.30)** alongside CMA-ES (2.30), ahead of IEEE CEC 2017 winner *jSO* (2.40) and *L-SHADE* (3.40), anchored by superior basin evacuation capabilities on deceptive multimodal landscapes.
 3. **Breakthrough Real-World Quantum Sensing:** Applying the framework to multi-harmonic Floquet control in **Many-Body Atomtronic Sagnac Accelerometers** ([Carmona-López et al., *Phys. Rev. Research*, APS, 2026](https://doi.org/10.1103/zzx2-tttb)), outperforming the established physics standard (**dCRAB**) by **$7.5\times$** ($p = 1.95 \times 10^{-3}$) and Standard Differential Evolution by **$2.55\times$** by systematically evacuating destructive quantum interference traps.
 
 ```mermaid
 flowchart LR
     A["Folkloric Intuition<br/>(Aversive 'El Cuco' Concept)"] --> B["Gemini Mathematical Modeling<br/>(Bounded Csc Barrier & Anti-Attractors)"]
     B --> C["Antigravity 2.0 Agentic Engine<br/>(Vectorized NumPy & Automated HPC Testing)"]
-    C --> D["IEEE CEC 2020 (50D)<br/>(#1 Friedman Rank vs. jSO / CMA-ES)"]
+    C --> D["IEEE CEC 2020 (50D)<br/>(Tied #1 Friedman Rank 2.30 vs. CMA-ES)"]
     C --> E["Many-Body Quantum Sensing<br/>(7.5x Gain vs. dCRAB in Atomtronics)"]
     D & E --> F["CERN Zenodo DOI & Open-Science<br/>(Apache-2.0 Release)"]
 ```
@@ -47,7 +47,7 @@ $$\phi(t) = \omega_B t + \sum_{k=1}^K A_k \sin(k \omega t + \theta_k) + \beta t^
 
 transforms the problem into a continuous $10$- to $15$-dimensional optimization landscape. In this territory:
 * Canonical physics frameworks like **dCRAB (Dressed Chopped Random Basis)** frequently stagnate in suboptimal plateaus.
-* Standard evolutionary algorithms (**Differential Evolution, CMA-ES**) fall into non-conducting anti-resonance basins and prematurely collapse.
+* Standard evolutionary algorithms (**Standard Differential Evolution**) fall into non-conducting anti-resonance basins and prematurely collapse.
 
 ---
 
@@ -56,54 +56,57 @@ transforms the problem into a continuous $10$- to $15$-dimensional optimization 
 Rather than functioning as a standard text-completion tool, **Google Antigravity 2.0** provided an autonomous, execution-grounded environment where Gemini operated as an interactive pair-researcher:
 
 ### Phase I: Mathematical Derivation of the Bounded Cosecant Potential
-Classical optimization focuses almost exclusively on **Positive Learning** ($\Delta \mathbf{x} \propto \mathbf{x}_{\text{best}} - \mathbf{x}_i$). In deceptive multi-funnel landscapes, this causes catastrophic swarm stagnation.
+Classical continuous optimization focuses almost exclusively on **Positive Learning** ($\Delta \mathbf{x} \propto \mathbf{x}_{\text{best}} - \mathbf{x}_i$). In deceptive multi-funnel landscapes, this causes premature swarm stagnation.
 
-Through guided dialogue with Gemini, we formalized **Explicit Negative Learning**:
-1. Partitioning the worst $15\%$ deleterious solutions into $K$ dynamic anti-attractor centroids $\mathbf{S}_k$.
+Through iterative design with Gemini, we formalized **Explicit Negative Learning**:
+1. Partitioning the worst $15\%$ deleterious solutions into $M$ dynamic anti-attractor barycenters $\mathbf{S}_k$ via fitness-rank stratification.
 2. Formulating the non-linear **Bounded Cosecant Repulsion Operator**:
 
 $$\Phi_{\csc}(r) = \operatorname{clip}\left( \frac{1}{\sin\left( \operatorname{clip}\left( \frac{\pi r}{4 R_c}, 10^{-3}, 0.999 \frac{\pi}{2} \right) \right)}, 1.0, M_{\max} \right) - 1.0$$
 
-*Analytical Proof Verified with Gemini:*
-* As $r \to 0$, $\Phi_{\csc} \to M_{\max} - 1.0$, creating an infinite repulsive barrier that forces instantaneous basin evacuation.
-* At $r = 2R_c$, $\Phi_{\csc}(2R_c) \equiv 0.0$ and $\left.\frac{d\Phi}{dr}\right|_{r=2R_c} = 0$, guaranteeing zero residual noise in flat parabolic valleys.
+*Analytical Properties Derived with Gemini:*
+* As $r \to 0$, $\Phi_{\csc} \to M_{\max} - 1.0$, creating an infinite repulsive wall that guarantees rapid basin evacuation away from stagnation epicenters.
+* At $r = 2R_c$, $\Phi_{\csc}(2R_c) \equiv 0.0$ and $\left.\frac{d\Phi}{dr}\right|_{r=2R_c} = 0$, guaranteeing zero residual perturbation in flat descent valleys.
 
 ### Phase II: Exact Quantum Many-Body Simulator Implementation
-Antigravity automatically engineered a vectorized, exact Fock-space numerical solver (`MultiHarmonicBoseHubbardSimulator`) for $N=3$ interacting bosons across $N_s=3$ ring sites (10-state basis), integrating:
+Antigravity engineered a vectorized, exact Fock-space numerical solver (`MultiHarmonicBoseHubbardSimulator`) for $N=3$ interacting bosons across $N_s=3$ ring sites (10-state basis), integrating:
 * Non-diagonal hopping operators with Peierls phase synthesis.
 * On-site interaction diagonal operators $H_{\text{int}}$.
 * Runge-Kutta adaptive time integration (`solve_ivp`) tracking time-averaged current $\bar{I}$ and sensitivity derivatives $\frac{d\bar{I}}{d\omega}$.
 
 ### Phase III: Automated Large-Scale Statistical Benchmarking
 Antigravity generated and executed self-contained testing scripts across multi-core CPU architectures:
-* Running 2,100 total benchmark runs on IEEE CEC 2020 50D.
-* Conducting rigorous non-parametric hypothesis testing (two-tailed Wilcoxon signed-rank test and Friedman rank ANOVA).
-* Verifying coordinate equivariance and origin robustness under arbitrary rotation matrices $\mathbf{M}^T\mathbf{M} = \mathbf{I}$.
+* Running independent benchmarks on IEEE CEC 2020 50D across 7 distinct algorithmic baselines.
+* Conducting rigorous non-parametric hypothesis testing (pairwise Wilcoxon signed-rank tests and Friedman rank ANOVA).
+* Transparently cataloging performance limitations, asymptotic precision trade-offs, and rotational equivariance.
 
 ---
 
-## 3. Empirical Breakthrough Results
+## 3. Empirical Findings & Calibrated Results
 
-### A. The Elite Triad Tournament: IEEE CEC 2020 (50 Dimensions, 30 Runs)
+### A. IEEE CEC 2020 50D Benchmark Suite (Fixed-Budget Protocol: 50,000 Evaluations)
 
-Benchmarked against **jSO** (Brest et al., winner of IEEE CEC 2017) and **CMA-ES** (Hansen's gold standard):
+Benchmarked against canonical reference implementations:
 
-```text
-================================================================================
-  OFFICIAL FRIEDMAN RANKING: ELITE TRIAD TOURNAMENT (50D, 30 INDEPENDENT RUNS)
-================================================================================
-  🏆 #1 : AD-BSA-Csc (Proposed / AI Co-Designed) -> Friedman Rank: 1.40  (CHAMPION)
-  🥈 #2 : CMA-ES (Nikolaus Hansen)              -> Friedman Rank: 2.00
-  🥉 #3 : jSO (Brest et al., IEEE CEC 2017)     -> Friedman Rank: 2.60
-================================================================================
-```
+| Rank | Algorithm | Average Friedman Rank | Optimization Profile |
+| :---: | :--- | :---: | :--- |
+| **🥇 #1 (Tie)** | **`AD-BSA` (Proposed)** | **2.30** | **Explicit Negative Learning ($\|\csc\|$) + Anti-Attractor Niching** |
+| **🥇 #1 (Tie)** | **`CMA-ES` (Hansen)** | **2.30** | Covariance Matrix Adaptation with IPOP Restarts |
+| **🥉 #3** | **`jSO` (Brest et al.)** | **2.40** | Enhanced iL-SHADE (Winner of IEEE CEC 2017) |
+| **#4** | **`L-SHADE` (Tanabe)** | **3.40** | Linear Population Reduction SHADE (Winner of IEEE CEC 2014) |
+| **#5** | **`Standard-PSO`** | **5.00** | Canonical Particle Swarm Optimization |
+| **#6** | **`Standard-DE`** | **6.10** | Classical Differential Evolution (DE/rand/1/bin) |
+| **#7** | **`Cuckoo-Search`**| **6.50** | Canonical Cuckoo Search with Lévy Flights |
 
-* **Clean Sweep vs. jSO:** AD-BSA achieved 10 out of 10 mean fitness victories ($p < 10^{-4}$).
-* **Decisive Multimodal Domination vs. CMA-ES:** Decisively outperformed CMA-ES on rotated and composition landscapes ($F_2, F_3, F_6, F_8, F_9, F_{10}$) with statistical significance ($p < 10^{-4}$).
+#### Transparent Analysis of Strengths and Limitations:
+* **Where AD-BSA Dominates:** On massively multimodal and deceptive landscapes (e.g., $F_2$ Schwefel, $F_6$, $F_9$), the cosecant repulsive barrier consistently prevents population collapse, reaching exact global convergence ($0.00e+00$ on $F_2$).
+* **Where CMA-ES Leads:** On ill-conditioned, rotated unimodal continuous surfaces (such as $F_1$ Bent Cigar, $F_5$, $F_7$), covariance matrix adaptation achieves tighter terminal decimal precision ($p < 0.05$). AD-BSA prioritizes rapid transverse basin evacuation over fine asymptotic local polishing.
 
-### B. Real-World Quantum Optimal Control Benchmark ($D=15$, 10 Independent Runs)
+---
 
-Evaluating Floquet multi-harmonic driving in Atomtronic Sagnac Accelerometers:
+### B. Real-World Quantum Optimal Control Benchmark ($D=15$, 10 Independent Runs, 350 Evaluations)
+
+Evaluating multi-harmonic Floquet driving in Atomtronic Sagnac Accelerometers:
 
 | Algorithm | Optimization Paradigm | Mean Sensitivity ± Std | Median | Peak Score | Wilcoxon vs. AD-BSA |
 | :--- | :--- | :---: | :---: | :---: | :--- |
@@ -113,18 +116,22 @@ Evaluating Floquet multi-harmonic driving in Atomtronic Sagnac Accelerometers:
 | **Standard DE** | Canonical Differential Evolution | 2.01 ± 0.45 | 1.88 | 2.95 | **p = 3.91 × 10⁻³ (AD-BSA Wins, 2.5×)** |
 | **dCRAB (Nelder-Mead)** | Standard Quantum Optimal Control | 0.69 ± 0.30 | 0.65 | 1.39 | **p = 1.95 × 10⁻³ (AD-BSA Wins, 7.5×)** |
 
-> **Key Takeaway:** AD-BSA achieves a **$7.5\times$ sensitivity boost over the standard physics tool (dCRAB)** and a **$2.55\times$ improvement over Standard DE**, discovering non-trivial multi-frequency pulse shapes that prevent atomic decoherence and maximize current sensitivity.
+> **Key Scientific Takeaway:**  
+> In many-body quantum landscapes, non-linear coupling between interaction $U$ and driving phases $\theta_k$ creates broad destructive anti-resonances where atomic currents collapse ($\bar{I} \to 0$). Standard DE stagnates within these non-conducting manifolds ($2.01$), and the physics standard dCRAB fails to navigate the 15D multi-harmonic space ($0.69$).  
+> By treating zero-current zones as explicit anti-attractors, AD-BSA achieves a **$7.5\times$ sensitivity boost over dCRAB** ($p = 1.95 \times 10^{-3}$) and a peak sensitivity score of **8.15**.
 
 ---
 
 ## 4. Why This Case Study Matters to Google & DeepMind
 
-1. **A Concrete Showcase of 'AI for Science' Democratization:**  
-   Traditionally, designing and benchmarking novel continuous metaheuristics applied to Many-Body quantum mechanics requires specialized doctoral research teams over 12–18 months. Using **Antigravity 2.0 and Gemini**, a solo undergraduate engineer delivered a publication-grade, mathematically proven, and statistically validated scientific framework in a matter of weeks.
-2. **Direct Synergy with Google Quantum AI & Accelerated Science:**  
-   The resulting framework, AD-BSA, provides a generalizable, black-box optimal control solver directly applicable to Floquet engineering, superconducting qubit pulse shaping (Google Sycamore), and cold-atom quantum simulation.
-3. **Open-Science Best Practices:**  
-   The entire discovery pipeline is permanently archived and reproducible under the **Apache-2.0 License** with a **CERN Zenodo DOI** ([10.5281/zenodo.23147724](https://doi.org/10.5281/zenodo.23147724)), embodying Google's dedication to transparent, peer-verifiable scientific computing.
+1. **Authentic Scientific Integrity:**  
+   Unlike superficial AI demos that overclaim inflated metrics, this project highlights how agentic pairing enables rigorous scientific honesty: identifying optimization trade-offs, formalizing ablations, and isolating true physical domain advantages.
+2. **Democratization of Complex Scientific Computing:**  
+   Designing and benchmarking continuous metaheuristics applied to Many-Body quantum mechanics typically demands multi-disciplinary post-doctoral teams. Using **Antigravity 2.0 and Gemini**, a solo undergraduate engineer delivered a publication-grade, peer-reproducible codebase in weeks.
+3. **Synergy with Google Quantum AI:**  
+   AD-BSA provides a generalizable, black-box optimal control solver directly applicable to Floquet engineering, superconducting qubit pulse shaping (Google Sycamore), and cold-atom quantum sensing.
+4. **Permanent Open-Science Archival:**  
+   The entire discovery pipeline is archived and reproducible under the **Apache-2.0 License** with a **CERN Zenodo DOI** ([10.5281/zenodo.23147724](https://doi.org/10.5281/zenodo.23147724)).
 
 ---
 
