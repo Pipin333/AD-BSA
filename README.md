@@ -30,7 +30,7 @@ $$\mathbf{v}_i = \mathbf{x}_i + \underbrace{F_{\text{safe}, i} \cdot (\mathbf{x}
 <p align="center">
   <img src="benchmarks/cec2020_50d_comparison.png" alt="IEEE CEC 2020 50D Benchmark Comparison" width="850"/>
   <br>
-  <em>Figure 1: Logarithmic Accuracy Score on IEEE CEC 2020 (50 Dimensions, 50,000 NFEs, Higher is Better). Bars plot $\max(0, 10 - \log_{10}(\Delta f))$, where zero error reaches the peak ceiling of 18.0 and higher bars indicate superior convergence.</em>
+  <em>Figure 1: Logarithmic Accuracy Score on IEEE CEC 2020 (50 Dimensions, 50,000 NFEs, Higher is Better). Bars plot <code>max(0, 10 - log10(Δf))</code>, where zero error reaches the peak ceiling of 18.0 and higher bars indicate superior convergence.</em>
 </p>
 
 ---
