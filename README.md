@@ -258,7 +258,7 @@ AD-BSA systematically detected and evacuated destructive quantum interference tr
 
 | Algorithm | Optimization Paradigm | Mean Sensitivity ± Std | Median | Peak Score | Wilcoxon vs. AD-BSA |
 | :--- | :--- | :---: | :---: | :---: | :--- |
-| **AD-BSA-Csc (Proposed)** | Negative-Learning DE ($|\csc|$) | **5.13 ± 2.30** | **5.31** | **8.15** | — (Baseline) |
+| **AD-BSA-Csc (Proposed)** | Negative-Learning DE ($\vert\csc\vert$) | **5.13 ± 2.30** | **5.31** | **8.15** | — (Baseline) |
 | **jSO (Brest et al.)** | Adaptive DE (Success-History) | 3.50 ± 1.88 | 2.44 | 6.51 | *p* = 0.084 (Competitive Parity) |
 | **Standard DE** | Canonical Differential Evolution | 2.01 ± 0.45 | 1.88 | 2.95 | **p = 3.91 × 10⁻³ (AD-BSA Wins, 2.5×)** |
 | **dCRAB (Nelder-Mead)** | Standard Quantum Optimal Control | 0.69 ± 0.30 | 0.65 | 1.39 | **p = 1.95 × 10⁻³ (AD-BSA Wins, 7.5×)** |
