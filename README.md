@@ -128,7 +128,7 @@ $$
 Where the three core operators synthesize:
 - **Positive Elite Attraction:** Pulls candidate solutions toward the top $p$-best safe havens.
 - **Negative Repulsion Barrier ($\mathbf{v}_{\text{escape}}$):** Expels candidates out of deceptive stagnation basins.
-- **Differential Exploration:** Injects historical archive diversity using randomly sampled vectors $\mathbf{x}_{r1} \in \mathbf{P}$ and $\tilde{\mathbf{x}}_{r2} \in \mathbf{P} \cup \mathbf{A}$.
+- **Differential Exploration:** Injects historical diversity via mutation difference vectors sampled from the swarm population and external archive ($\mathbf{A}$).
 
 ---
 

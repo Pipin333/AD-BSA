@@ -37,13 +37,17 @@ In modern quantum engineering—specifically atomtronic sensors relying on Bose-
 
 In a newly published breakthrough by S. Carmona-López, A. Matos-Abiague, F. Isaule, and L. Morales-Molina (*"Enhancing supercurrent-based inertial sensing via interactions in atomtronic angular accelerometers"*, [*Phys. Rev. Research* **8**, 033316](https://doi.org/10.1103/zzx2-tttb), Sept 15, 2026), the authors theoretically demonstrated that atomic interactions ($U$) allow atomtronic angular accelerometers to surpass the classic Fourier scaling limit. However, their experimental proof-of-concept utilized a single-harmonic sinusoidal ac-driving:
 
-$$\frac{\phi(t)}{N_s} = \omega_B t + \tilde{A} \sin(\omega t + \theta)$$
+$$
+\frac{\phi(t)}{N_s} = \omega_B t + \tilde{A} \sin(\omega t + \theta)
+$$
 
 While mathematically tractable, a single harmonic is fundamentally rigid: it cannot compensate for interaction-induced phase dispersion or mitigate transitions into destructive quantum interference manifolds where net current collapses ($\bar{I} \to 0$).
 
 Expanding the driving phase into a multi-frequency Fourier synthesis with non-linear chirp:
 
-$$\phi(t) = \omega_B t + \sum_{k=1}^K A_k \sin(k \omega t + \theta_k) + \beta t^{1.5}$$
+$$
+\phi(t) = \omega_B t + \sum_{k=1}^K A_k \sin(k \omega t + \theta_k) + \beta t^{1.5}
+$$
 
 transforms the problem into a continuous $10$- to $15$-dimensional optimization landscape. In this territory:
 * Canonical physics frameworks like **dCRAB (Dressed Chopped Random Basis)** frequently stagnate in suboptimal plateaus.
@@ -56,17 +60,19 @@ transforms the problem into a continuous $10$- to $15$-dimensional optimization 
 Rather than functioning as a standard text-completion tool, **Google Antigravity 2.0** provided an autonomous, execution-grounded environment where Gemini operated as an interactive pair-researcher:
 
 ### Phase I: Mathematical Derivation of the Bounded Cosecant Potential
-Classical continuous optimization focuses almost exclusively on **Positive Learning** ($\Delta \mathbf{x} \propto \mathbf{x}_{\text{best}} - \mathbf{x}_i$). In deceptive multi-funnel landscapes, this causes premature swarm stagnation.
+Classical continuous optimization focuses almost exclusively on **Positive Learning** (attraction toward discovered elite vectors). In deceptive multi-funnel landscapes, this causes premature swarm stagnation.
 
 Through iterative design with Gemini, we formalized **Explicit Negative Learning**:
 1. Partitioning the worst $15\%$ deleterious solutions into $M$ dynamic anti-attractor barycenters $\mathbf{S}_k$ via fitness-rank stratification.
 2. Formulating the non-linear **Bounded Cosecant Repulsion Operator**:
 
-$$\Phi_{\csc}(r) = \operatorname{clip}\left( \frac{1}{\sin\left( \operatorname{clip}\left( \frac{\pi r}{4 R_c}, 10^{-3}, 0.999 \frac{\pi}{2} \right) \right)}, 1.0, M_{\max} \right) - 1.0$$
+$$
+\Phi_{\csc}(r) = \operatorname{clip}\left( \frac{1}{\sin\left( \operatorname{clip}\left( \frac{\pi r}{4 R_c}, 10^{-3}, 0.999 \frac{\pi}{2} \right) \right)}, 1.0, M_{\max} \right) - 1.0
+$$
 
 *Analytical Properties Derived with Gemini:*
-* As $r \to 0$, $\Phi_{\csc} \to M_{\max} - 1.0$, creating an infinite repulsive wall that guarantees rapid basin evacuation away from stagnation epicenters.
-* At $r = 2R_c$, $\Phi_{\csc}(2R_c) \equiv 0.0$ and $\left.\frac{d\Phi}{dr}\right|_{r=2R_c} = 0$, guaranteeing zero residual perturbation in flat descent valleys.
+* As distance approaches zero ($r \to 0$), the barrier approaches $M_{\max} - 1.0$, creating an explosive repulsive wall that evacuates deceptive stagnation basins.
+* Beyond the capture radius ($r \ge 2R_c$), the barrier drops identically to zero ($\Phi \equiv 0$) with zero derivative, guaranteeing zero residual perturbation in flat descent valleys.
 
 ### Phase II: Exact Quantum Many-Body Simulator Implementation
 Antigravity engineered a vectorized, exact Fock-space numerical solver (`MultiHarmonicBoseHubbardSimulator`) for $N=3$ interacting bosons across $N_s=3$ ring sites (10-state basis), integrating:
@@ -99,8 +105,8 @@ Benchmarked against canonical reference implementations:
 | **#7** | **`Cuckoo-Search`**| **6.50** | Canonical Cuckoo Search with Lévy Flights |
 
 #### Transparent Analysis of Strengths and Limitations:
-* **Where AD-BSA Dominates:** On massively multimodal and deceptive landscapes (e.g., $F_2$ Schwefel, $F_6$, $F_9$), the cosecant repulsive barrier consistently prevents population collapse, reaching exact global convergence ($0.00e+00$ on $F_2$).
-* **Where CMA-ES Leads:** On ill-conditioned, rotated unimodal continuous surfaces (such as $F_1$ Bent Cigar, $F_5$, $F_7$), covariance matrix adaptation achieves tighter terminal decimal precision ($p < 0.05$). AD-BSA prioritizes rapid transverse basin evacuation over fine asymptotic local polishing.
+* **Where AD-BSA Dominates:** On massively multimodal and deceptive landscapes (e.g., F2 Schwefel, F6, F9), the cosecant repulsive barrier consistently prevents population collapse, reaching exact global convergence ($0.00\times 10^0$ on F2).
+* **Where CMA-ES Leads:** On ill-conditioned, rotated unimodal continuous surfaces (such as F1 Bent Cigar, F5, F7), covariance matrix adaptation achieves tighter terminal decimal precision ($p < 0.05$). AD-BSA prioritizes rapid transverse basin evacuation over fine asymptotic local polishing.
 
 ---
 
