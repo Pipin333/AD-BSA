@@ -233,8 +233,6 @@ To empirically assess the individual contribution of each novel mathematical com
 
 ---
 
----
-
 ## ⚡ Quantum Engineering Application: Atomtronic Sagnac Accelerometers
 
 Beyond synthetic testbeds, AD-BSA was evaluated on **Multi-Harmonic Optimal Quantum Floquet Control in Atomtronic Sagnac Accelerometers** ([Carmona-López et al., *Physical Review Research*, 2026](https://doi.org/10.1103/zzx2-tttb)).
@@ -255,6 +253,19 @@ AD-BSA systematically detected and evacuated destructive quantum interference tr
 - **$+75.5\%$ ($D=10$)**
 - **$+184.3\%$ ($2.84\times$ boost, $D=15$)**
 - **$+54.1\%$ ($D=20$)**
+
+### Multi-Algorithm Benchmark on Quantum Floquet Control ($D=15$, 10 Independent Runs, 350 Evaluations; Maximized Sensitivity $\uparrow$)
+
+| Algorithm | Optimization Paradigm | Mean Sensitivity ± Std | Median | Peak Score | Wilcoxon vs. AD-BSA |
+| :--- | :--- | :---: | :---: | :---: | :--- |
+| **AD-BSA-Csc (Proposed)** | Negative-Learning DE ($|\csc|$) | **5.13 ± 2.30** | **5.31** | **8.15** | — (Baseline) |
+| **jSO (Brest et al.)** | Adaptive DE (Success-History) | 3.50 ± 1.88 | 2.44 | 6.51 | *p* = 0.084 (Competitive Parity) |
+| **Standard DE** | Canonical Differential Evolution | 2.01 ± 0.45 | 1.88 | 2.95 | **p = 3.91 × 10⁻³ (AD-BSA Wins, 2.5×)** |
+| **dCRAB (Nelder-Mead)** | Standard Quantum Optimal Control | 0.69 ± 0.30 | 0.65 | 1.39 | **p = 1.95 × 10⁻³ (AD-BSA Wins, 7.5×)** |
+
+> **Key Physical Insights in Quantum Optimal Control:**
+> 1. **DE Lineage vs. Physics Standard (dCRAB):** In many-body Floquet landscapes, the canonical physics framework **dCRAB** (Chopped Random Basis) frequently stalls in suboptimal parameter basins. Differential Evolution architectures prove substantially better suited for multi-harmonic parameter synthesis, with AD-BSA achieving a **7.5× sensitivity gain** over dCRAB ($p = 1.95 \times 10^{-3}$).
+> 2. **Evacuating Destructive Interference Traps:** Non-linear coupling between interaction $U$ and driving phases $\theta_k$ creates broad destructive anti-resonances where atomic currents collapse ($\bar{I} \to 0$). Standard DE falls into these zero-current manifolds and stagnates ($2.01$), whereas AD-BSA's bounded cosecant repulsion treats zero-current zones as anti-attractor traps, expelling search vectors into constructive Floquet transmission channels to achieve a peak sensitivity of **8.15**.
 
 ---
 
