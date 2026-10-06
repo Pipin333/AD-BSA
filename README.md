@@ -343,10 +343,11 @@ print(f"Execution Time:      {result.execution_time:.2f} s")
 
 ## 🧪 Running Tests & Reproducing Benchmarks
 
-### Execute Unit Test Battery
-Run the full test suite with Pytest:
+### Execute Unit Test Battery & Style Linting
+Run the full test suite and PEP 8 verification:
 ```bash
 pytest tests/ -v
+flake8 src/ad_bsa --max-line-length=88
 ```
 
 ### Reproduce CEC 2020 50D Benchmark Suite
@@ -374,7 +375,7 @@ AD-BSA/
 ├── README.md                       # Comprehensive documentation & benchmark analysis
 ├── src/
 │   └── ad_bsa/                     # Core Python Library
-│       ├── __init__.py             # Exports: AD_BSA, jSO, CMA_ES, L_SHADE, StandardDE, StandardPSO
+│       ├── __init__.py             # Exports: AD_BSA, jSO, CMA_ES, L_SHADE, CanonicalCuckooSearch, StandardDE, StandardPSO
 │       ├── algorithm.py            # Canonical AD-BSA with Bounded Cosecant Repulsion |csc|
 │       ├── competitors.py          # Standardized competitor implementations (jSO, CMA-ES, L-SHADE, etc.)
 │       └── utils.py                # Boundary reflection, evaluation counters, Wilcoxon statistical tests

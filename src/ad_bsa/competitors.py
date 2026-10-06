@@ -1,19 +1,17 @@
-"""
-================================================================================
-  AD-BSA: Adaptive Differential Boogeyman Search Algorithm
-  Module: src/ad_bsa/competitors.py
-  State-of-the-Art Elite Competitors for IEEE CEC Benchmarks:
-    1. jSO (Brest et al., IEEE CEC 2017 Champion)
-    2. CMA-ES (Hansen et al., Covariance Matrix Adaptation)
-    3. L-SHADE (Tanabe & Fukunaga, IEEE CEC 2014 Champion)
-    4. Standard DE (DE/rand/1/bin, Storn & Price, 1997)
-    5. Standard PSO (Eberhart & Kennedy, 1995 / Shi & Eberhart, 1998)
-================================================================================
+"""State-of-the-art competitor algorithms for benchmark comparisons.
+
+Implements standard benchmark algorithms:
+  1. jSO (Brest et al., IEEE CEC 2017 Winner)
+  2. CMA-ES (Hansen et al., Covariance Matrix Adaptation)
+  3. L-SHADE (Tanabe & Fukunaga, IEEE CEC 2014 Winner)
+  4. Standard DE (Storn & Price, 1997, DE/rand/1/bin)
+  5. Standard PSO (Eberhart & Kennedy, 1995 / Shi & Eberhart, 1998)
+  6. Canonical Cuckoo Search (Yang & Deb, 2009)
 """
 
 import math
 import time
-from typing import Callable, List, Optional, Tuple
+from typing import Callable, List, Optional
 import numpy as np
 from scipy import stats
 
@@ -25,7 +23,6 @@ except ImportError:
 
 from .algorithm import OptimizationResult
 from .utils import (
-    reflect_boundaries,
     bound_constraint_shade,
     bound_constraint_clamp,
 )
@@ -36,11 +33,12 @@ from .utils import (
 # ==============================================================================
 
 class jSO:
-    """
-    jSO: Modified L-SHADE for Single Objective Real-Parameter Numerical Optimization.
-    Referencia Canónica: Brest, J., Maucec, M. S., & Boskovic, B. (2017).
-    Single objective real-parameter optimization: Algorithm jSO.
-    Proc. IEEE CEC 2017, pp. 1311-1318.
+    """Modified L-SHADE for Single Objective Real-Parameter Optimization.
+
+    Reference:
+        Brest, J., Maucec, M. S., & Boskovic, B. (2017). Single objective
+        real-parameter optimization: Algorithm jSO. Proc. IEEE CEC 2017,
+        pp. 1311-1318.
     """
 
     def __init__(
@@ -66,16 +64,21 @@ class jSO:
             # Fórmula canónica de jSO (Brest et al., IEEE CEC 2017):
             # N_init = round(25 * sqrt(D) * ln(D)) si D > 1
             if self.dim > 1:
-                canonical_N = int(round(25.0 * math.sqrt(self.dim) * math.log(self.dim)))
+                canonical_N = int(
+                    round(25.0 * math.sqrt(self.dim) * math.log(self.dim))
+                )
             else:
                 canonical_N = 18 * self.dim
             # Salvaguarda para pruebas con presupuesto reducido
-            self.N_init = min(canonical_N, max(self.N_min + 2, int(self.max_nfe / 3)))
+            self.N_init = min(
+                canonical_N, max(self.N_min + 2, int(self.max_nfe / 3))
+            )
 
         self.N = self.N_init
         self.arc_rate = 2.6  # Ratio canónico de archivo en jSO (|A| = 2.6 * N)
 
     def optimize(self) -> OptimizationResult:
+        """Execute the jSO optimization algorithm until max_evaluations."""
         start_time = time.perf_counter()
         low, high = self.bounds[:, 0], self.bounds[:, 1]
         bound_range = high - low
@@ -130,7 +133,9 @@ class jSO:
 
                 f_val = -1.0
                 while f_val <= 0:
-                    f_val = stats.cauchy.rvs(loc=M_F[r_k], scale=0.1, random_state=self.rng)
+                    f_val = stats.cauchy.rvs(
+                        loc=M_F[r_k], scale=0.1, random_state=self.rng
+                    )
                     if f_val > 1.0:
                         f_val = 1.0
                 if nfe_ratio < 0.6 and f_val > 0.7:
@@ -160,10 +165,16 @@ class jSO:
 
                 v = pop[i] + Fw * (x_pbest - pop[i]) + f_val * (x_r1 - x_r2)
                 # Manejo de fronteras canónico del punto medio (SHADE/jSO)
-                v = bound_constraint_shade(v[np.newaxis, :], lb=low, ub=high, base=pop[i:i+1])[0]
+                v = bound_constraint_shade(
+                    v[np.newaxis, :], lb=low, ub=high, base=pop[i:i + 1]
+                )[0]
 
                 j_rand = self.rng.integers(0, self.dim)
-                u = np.where((self.rng.random(self.dim) < cr) | (np.arange(self.dim) == j_rand), v, pop[i])
+                crossover_cond = (
+                    (self.rng.random(self.dim) < cr)
+                    | (np.arange(self.dim) == j_rand)
+                )
+                u = np.where(crossover_cond, v, pop[i])
                 trial_pop[i] = u
 
             batch_size = min(self.N, self.max_nfe - nfe)
@@ -188,7 +199,9 @@ class jSO:
             if len(S_F) > 0:
                 w = np.array(delta_f, dtype=np.float64) / (np.sum(delta_f) + 1e-14)
                 # Media de Lehmer ponderada para F
-                M_F[k_mem] = np.sum(w * (np.array(S_F)**2)) / (np.sum(w * np.array(S_F)) + 1e-14)
+                M_F[k_mem] = np.sum(w * (np.array(S_F) ** 2)) / (
+                    np.sum(w * np.array(S_F)) + 1e-14
+                )
                 # Media aritmética ponderada canónica para CR
                 if np.max(S_CR) > 0:
                     M_CR[k_mem] = float(np.sum(w * np.array(S_CR)))
@@ -196,7 +209,9 @@ class jSO:
                     M_CR[k_mem] = -1.0
                 k_mem = (k_mem + 1) % self.H
 
-            target_N = round(((self.N_min - self.N_init) / self.max_nfe) * nfe + self.N_init)
+            target_N = round(
+                ((self.N_min - self.N_init) / self.max_nfe) * nfe + self.N_init
+            )
             target_N = max(self.N_min, target_N)
             if self.N > target_N:
                 survivors = np.argsort(fits)[:target_N]
@@ -226,11 +241,14 @@ class jSO:
 # ==============================================================================
 
 class CMA_ES:
-    """
-    Covariance Matrix Adaptation Evolution Strategy (CMA-ES) con reinicios IPOP.
-    Hansen, N. (2006). The CMA evolution strategy: a comparing review.
-    Implementación oficial con reinicios de tamaño de población creciente (IPOP)
-    utilizada en las evaluaciones oficiales de IEEE CEC.
+    """Covariance Matrix Adaptation Evolution Strategy with IPOP Restarts.
+
+    Official implementation with Increasing Population (IPOP) restarts
+    as utilized in IEEE CEC benchmark evaluations.
+
+    Reference:
+        Hansen, N. (2006). The CMA evolution strategy: a comparing review.
+        Towards a New Evolutionary Computation, pp. 75-102.
     """
 
     def __init__(
@@ -242,7 +260,9 @@ class CMA_ES:
         seed: Optional[int] = None
     ):
         if not HAS_CMA:
-            raise ImportError("El paquete 'cma' no está instalado. Instálalo con: pip install cma")
+            raise ImportError(
+                "El paquete 'cma' no está instalado. Instálalo con: pip install cma"
+            )
         self.f = objective_func
         self.bounds = np.asarray(bounds, dtype=np.float64)
         self.dim = len(bounds)
@@ -252,6 +272,7 @@ class CMA_ES:
         self.rng = np.random.default_rng(seed)
 
     def optimize(self) -> OptimizationResult:
+        """Execute CMA-ES with optional IPOP restarts until budget exhaustion."""
         start_time = time.perf_counter()
         low, high = self.bounds[:, 0], self.bounds[:, 1]
         bound_range = high - low
@@ -336,10 +357,16 @@ class CMA_ES:
 # ==============================================================================
 
 class L_SHADE:
-    """
-    Linear Population Size Reduction SHADE (Tanabe & Fukunaga, IEEE CEC 2014).
-    Implementación canónica estricta con reducción lineal de población,
-    memoria histórica de Lehmer para F, media aritmética para CR y regla de frontera SHADE.
+    """Linear Population Size Reduction SHADE (Tanabe & Fukunaga, IEEE CEC 2014).
+
+    Implements canonical L-SHADE with linear population size reduction,
+    historical Lehmer memories for F, arithmetic mean for CR, and SHADE
+    midpoint boundary handling.
+
+    Reference:
+        Tanabe, R., & Fukunaga, A. S. (2014). Improving the search performance
+        of SHADE using linear population size reduction. Proc. IEEE CEC 2014,
+        pp. 1658-1665.
     """
 
     def __init__(
@@ -368,11 +395,14 @@ class L_SHADE:
         else:
             # Fórmula canónica de L-SHADE (Tanabe & Fukunaga, 2014): N_init = 18 * D
             canonical_N = 18 * self.dim
-            self.N_init = min(canonical_N, max(self.N_min + 2, int(self.max_nfe / 3)))
+            self.N_init = min(
+                canonical_N, max(self.N_min + 2, int(self.max_nfe / 3))
+            )
 
         self.N = self.N_init
 
     def optimize(self) -> OptimizationResult:
+        """Execute the L-SHADE optimization loop."""
         start_time = time.perf_counter()
         low, high = self.bounds[:, 0], self.bounds[:, 1]
         bound_range = high - low
@@ -434,9 +464,15 @@ class L_SHADE:
                 r2_idx = self.rng.choice(r2_candidates)
                 x_r2 = pop[r2_idx] if r2_idx < self.N else archive[r2_idx - self.N]
 
-                v = pop[i] + trial_F[i] * (x_pbest - pop[i]) + trial_F[i] * (pop[r1] - x_r2)
+                v = (
+                    pop[i]
+                    + trial_F[i] * (x_pbest - pop[i])
+                    + trial_F[i] * (pop[r1] - x_r2)
+                )
                 # Manejo de fronteras canónico del punto medio (SHADE)
-                v = bound_constraint_shade(v[np.newaxis, :], lb=low, ub=high, base=pop[i:i+1])[0]
+                v = bound_constraint_shade(
+                    v[np.newaxis, :], lb=low, ub=high, base=pop[i:i + 1]
+                )[0]
 
                 j_rand = self.rng.integers(0, self.dim)
                 cross_mask = (self.rng.random(self.dim) < trial_CR[i])
@@ -462,13 +498,17 @@ class L_SHADE:
                         best_x = trial_pop[i].copy()
 
             if len(archive) > max_archive_size:
-                survivors = self.rng.choice(len(archive), size=max_archive_size, replace=False)
+                survivors = self.rng.choice(
+                    len(archive), size=max_archive_size, replace=False
+                )
                 archive = [archive[idx] for idx in survivors]
 
             if len(S_F) > 0:
                 w = np.array(delta_f, dtype=np.float64) / (np.sum(delta_f) + 1e-14)
                 # Media de Lehmer ponderada para F
-                M_F[k_mem] = np.sum(w * (np.array(S_F)**2)) / (np.sum(w * np.array(S_F)) + 1e-14)
+                M_F[k_mem] = np.sum(w * (np.array(S_F) ** 2)) / (
+                    np.sum(w * np.array(S_F)) + 1e-14
+                )
                 # Media aritmética ponderada canónica para CR
                 if np.max(S_CR) > 0:
                     M_CR[k_mem] = float(np.sum(w * np.array(S_CR)))
@@ -488,7 +528,9 @@ class L_SHADE:
                     self.N = N_next
                     max_archive_size = int(round(self.arc_rate * self.N))
                     if len(archive) > max_archive_size:
-                        survivors = self.rng.choice(len(archive), size=max_archive_size, replace=False)
+                        survivors = self.rng.choice(
+                            len(archive), size=max_archive_size, replace=False
+                        )
                         archive = [archive[idx] for idx in survivors]
 
             hist_best.append(best_f)
@@ -510,7 +552,7 @@ class L_SHADE:
 # ==============================================================================
 
 class StandardDE:
-    """Evolución Diferencial canónica clásica (DE/rand/1/bin) vectorizada con clamping de fronteras."""
+    """Canonical Differential Evolution (DE/rand/1/bin) with boundary clamping."""
 
     def __init__(
         self,
@@ -532,6 +574,7 @@ class StandardDE:
         self.rng = np.random.default_rng(seed)
 
     def optimize(self) -> OptimizationResult:
+        """Execute canonical Differential Evolution until budget exhaustion."""
         start_time = time.perf_counter()
         lb, ub = self.bounds[:, 0], self.bounds[:, 1]
         pop = lb + self.rng.random((self.pop_size, self.dim)) * (ub - lb)
@@ -600,9 +643,13 @@ class StandardDE:
 # ==============================================================================
 
 class StandardPSO:
-    """
-    Particle Swarm Optimization canónico vectorizado con decaimiento lineal de inercia
-    (Shi & Eberhart, 1998) y absorción de velocidad en las fronteras.
+    """Particle Swarm Optimization with linear inertia decay.
+
+    Vectorized implementation with boundary velocity absorption.
+
+    Reference:
+        Shi, Y., & Eberhart, R. (1998). A modified particle swarm optimizer.
+        IEEE World Congress on Computational Intelligence, pp. 69-73.
     """
 
     def __init__(
@@ -629,6 +676,7 @@ class StandardPSO:
         self.rng = np.random.default_rng(seed)
 
     def optimize(self) -> OptimizationResult:
+        """Execute PSO swarm optimization until budget exhaustion."""
         start_time = time.perf_counter()
         lb, ub = self.bounds[:, 0], self.bounds[:, 1]
         v_max = 0.2 * (ub - lb)
@@ -654,7 +702,11 @@ class StandardPSO:
             r1 = self.rng.random((self.pop_size, self.dim))
             r2 = self.rng.random((self.pop_size, self.dim))
 
-            vel = w * vel + self.c1 * r1 * (pbest_pos - pos) + self.c2 * r2 * (gbest_pos - pos)
+            vel = (
+                w * vel
+                + self.c1 * r1 * (pbest_pos - pos)
+                + self.c2 * r2 * (gbest_pos - pos)
+            )
             vel = np.clip(vel, -v_max, v_max)
 
             # Actualización de posición y absorción de velocidad canónica en paredes
@@ -696,7 +748,13 @@ class StandardPSO:
 # ==============================================================================
 
 class CanonicalCuckooSearch:
-    """Cuckoo Search auténtico con Vuelos de Lévy de Mantegna y abandono de nidos (pa)."""
+    """Canonical Cuckoo Search with Mantegna Lévy flights and nest abandonment.
+
+    Reference:
+        Yang, X. S., & Deb, S. (2009). Cuckoo search via Lévy flights.
+        World Congress on Nature & Biologically Inspired Computing,
+        pp. 210-214.
+    """
 
     def __init__(
         self,
@@ -718,13 +776,18 @@ class CanonicalCuckooSearch:
         self.rng = np.random.default_rng(seed)
 
     def _levy_flight(self, beta: float = 1.5) -> np.ndarray:
-        sigma_u = (math.gamma(1 + beta) * math.sin(math.pi * beta / 2) /
-                   (math.gamma((1 + beta) / 2) * beta * (2 ** ((beta - 1) / 2)))) ** (1 / beta)
+        """Generate Lévy flight step vector using Mantegna's algorithm."""
+        sigma_u = (
+            math.gamma(1 + beta)
+            * math.sin(math.pi * beta / 2)
+            / (math.gamma((1 + beta) / 2) * beta * (2 ** ((beta - 1) / 2)))
+        ) ** (1 / beta)
         u = self.rng.normal(0, sigma_u, size=(self.pop_size, self.dim))
         v = self.rng.normal(0, 1, size=(self.pop_size, self.dim))
         return u / (np.abs(v) ** (1 / beta))
 
     def optimize(self) -> OptimizationResult:
+        """Execute Cuckoo Search optimization until budget exhaustion."""
         start_time = time.perf_counter()
         lb, ub = self.bounds[:, 0], self.bounds[:, 1]
         scale = ub - lb
@@ -759,7 +822,9 @@ class CanonicalCuckooSearch:
                 discover_mask = self.rng.random(self.pop_size) < self.pa
                 perm1 = self.rng.permutation(self.pop_size)
                 perm2 = self.rng.permutation(self.pop_size)
-                step_abandon = self.rng.random((self.pop_size, self.dim)) * (nests[perm1] - nests[perm2])
+                step_abandon = self.rng.random(
+                    (self.pop_size, self.dim)
+                ) * (nests[perm1] - nests[perm2])
                 abandoned_nests = bound_constraint_clamp(
                     nests + step_abandon * discover_mask[:, np.newaxis],
                     lb=lb, ub=ub
@@ -770,8 +835,12 @@ class CanonicalCuckooSearch:
                 evals += abandon_batch
 
                 better_ab_mask = abandon_fit < fitness[:abandon_batch]
-                nests[:abandon_batch][better_ab_mask] = abandoned_nests[:abandon_batch][better_ab_mask]
-                fitness[:abandon_batch][better_ab_mask] = abandon_fit[better_ab_mask]
+                nests[:abandon_batch][better_ab_mask] = (
+                    abandoned_nests[:abandon_batch][better_ab_mask]
+                )
+                fitness[:abandon_batch][better_ab_mask] = (
+                    abandon_fit[better_ab_mask]
+                )
 
             best_idx = np.argmin(fitness)
             if fitness[best_idx] < best_fit:
@@ -790,5 +859,3 @@ class CanonicalCuckooSearch:
             history_evaluations=hist_evals,
             execution_time=time.perf_counter() - start_time
         )
-
-

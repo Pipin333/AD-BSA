@@ -1,8 +1,8 @@
-"""
-================================================================================
-  AD-BSA: Adaptive Differential Boogeyman Search Algorithm
-  Package Root Initialization
-================================================================================
+"""AD-BSA: Adaptive Differential Boogeyman Search Algorithm.
+
+A continuous global metaheuristic package combining bounded cosecant
+repulsion barriers, multi-boogeyman anti-attractors, historical Lehmer
+parameter memories, and linear population size reduction.
 """
 
 from .algorithm import AD_BSA, OptimizationResult

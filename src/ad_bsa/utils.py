@@ -1,9 +1,7 @@
-"""
-================================================================================
-  AD-BSA: Adaptive Differential Boogeyman Search Algorithm
-  Module: src/ad_bsa/utils.py
-  Utilities: Boundary constraints, evaluation counters, statistical analysis
-================================================================================
+"""AD-BSA Utility Functions and Helper Classes.
+
+Provides boundary constraint handlers (reflective, SHADE midpoint, clamp),
+objective function evaluation wrapper, and non-parametric statistical tests.
 """
 
 from typing import Callable, Tuple
@@ -17,25 +15,43 @@ def reflect_boundaries(
     ub: np.ndarray,
     base: np.ndarray
 ) -> np.ndarray:
-    """
-    Refleja los candidatos fuera de los límites del espacio de búsqueda.
-    Si la reflexión directa excede el rango opuesto, interpola a la mitad del camino hacia la base.
+    """Reflect candidate vectors that violate search space boundaries.
+
+    Implements adaptive reflective boundary handling. If the direct reflection
+    exceeds the opposite bound, the coordinate is projected to the midpoint
+    between the base parental position and the violated boundary.
+
+    Args:
+        candidates: Candidate population array of shape (N, D).
+        lb: 1D array of lower bounds of length D.
+        ub: 1D array of upper bounds of length D.
+        base: 1D or 2D array of parental base coordinates of shape (N, D).
+
+    Returns:
+        np.ndarray: Feasible population array of shape (N, D) clipped to [lb, ub].
     """
     fixed = candidates.copy()
 
-    # Violación de límite inferior
+    lb_expanded = np.broadcast_to(lb, fixed.shape)
+    ub_expanded = np.broadcast_to(ub, fixed.shape)
+
+    # Lower bound violation
     lower_mask = fixed < lb
-    fixed[lower_mask] = 2.0 * lb[np.newaxis, :].repeat(len(fixed), axis=0)[lower_mask] - candidates[lower_mask]
+    fixed[lower_mask] = 2.0 * lb_expanded[lower_mask] - candidates[lower_mask]
     re_violate_low = (fixed < lb) | (fixed > ub)
     if np.any(re_violate_low):
-        fixed[re_violate_low] = 0.5 * (base[re_violate_low] + lb[np.newaxis, :].repeat(len(fixed), axis=0)[re_violate_low])
+        fixed[re_violate_low] = 0.5 * (
+            base[re_violate_low] + lb_expanded[re_violate_low]
+        )
 
-    # Violación de límite superior
+    # Upper bound violation
     upper_mask = fixed > ub
-    fixed[upper_mask] = 2.0 * ub[np.newaxis, :].repeat(len(fixed), axis=0)[upper_mask] - candidates[upper_mask]
+    fixed[upper_mask] = 2.0 * ub_expanded[upper_mask] - candidates[upper_mask]
     re_violate_high = (fixed < lb) | (fixed > ub)
     if np.any(re_violate_high):
-        fixed[re_violate_high] = 0.5 * (base[re_violate_high] + ub[np.newaxis, :].repeat(len(fixed), axis=0)[re_violate_high])
+        fixed[re_violate_high] = 0.5 * (
+            base[re_violate_high] + ub_expanded[re_violate_high]
+        )
 
     return np.clip(fixed, lb, ub)
 
@@ -46,12 +62,20 @@ def bound_constraint_shade(
     ub: np.ndarray,
     base: np.ndarray
 ) -> np.ndarray:
-    """
-    Regla canónica de manejo de restricciones de frontera en SHADE, L-SHADE y jSO:
-      - Si v_{i,j} < lb_j: v_{i,j} = (lb_j + base_{i,j}) / 2.0
-      - Si v_{i,j} > ub_j: v_{i,j} = (ub_j + base_{i,j}) / 2.0
-    Garantiza que las soluciones mutadas permanezcan dentro de la región factible
-    interpolarizando a mitad de camino hacia la posición parental.
+    """Apply the canonical midpoint boundary constraint rule of SHADE/jSO.
+
+    If a trial coordinate violates a bound:
+        - v_{i,j} = (lb_j + base_{i,j}) / 2.0  if v_{i,j} < lb_j
+        - v_{i,j} = (ub_j + base_{i,j}) / 2.0  if v_{i,j} > ub_j
+
+    Args:
+        candidates: Candidate population array of shape (N, D).
+        lb: 1D array of lower bounds of length D.
+        ub: 1D array of upper bounds of length D.
+        base: Parental coordinate array of shape (N, D).
+
+    Returns:
+        np.ndarray: Feasible coordinate array bounded to [lb, ub].
     """
     fixed = candidates.copy()
     low_mask = fixed < lb
@@ -71,52 +95,103 @@ def bound_constraint_clamp(
     lb: np.ndarray,
     ub: np.ndarray
 ) -> np.ndarray:
-    """
-    Regla canónica de truncamiento directo a límites (Simple Bounds Clamping)
-    usada tradicionalmente en DE estándar y Cuckoo Search.
+    """Apply direct bounds clamping to candidate solutions.
+
+    Truncates coordinates violating search limits directly to lb or ub.
+
+    Args:
+        candidates: Candidate population array of shape (N, D) or (D,).
+        lb: Lower boundary vector.
+        ub: Upper boundary vector.
+
+    Returns:
+        np.ndarray: Clamped coordinate array.
     """
     return np.clip(candidates, lb, ub)
 
 
 class EvaluatorWrapper:
-    """
-    Wrapper para funciones objetivo continuas que contabiliza evaluaciones
-    y maneja tanto entradas 1D (vector individual) como 2D (población completa).
+    """Objective function wrapper tracking cumulative evaluations.
+
+    Supports both 1D individual vectors and 2D population batches,
+    maintaining an internal evaluation counter.
     """
 
-    def __init__(self, func: Callable[[np.ndarray], np.ndarray], f_bias: float = 0.0):
+    def __init__(
+        self,
+        func: Callable[[np.ndarray], np.ndarray],
+        f_bias: float = 0.0
+    ) -> None:
+        """Initialize the evaluator wrapper.
+
+        Args:
+            func: Target callable objective function.
+            f_bias: Theoretical optimal fitness bias offset. Defaults to 0.0.
+        """
         self.func = func
-        self.f_bias = f_bias
+        self.f_bias = float(f_bias)
         self.evaluations = 0
 
     def __call__(self, x: np.ndarray) -> np.ndarray:
-        x = np.asarray(x, dtype=np.float64)
-        if x.ndim == 1:
+        """Evaluate candidate input vector or batch.
+
+        Args:
+            x: Input array of shape (D,) or (N, D).
+
+        Returns:
+            np.ndarray or float: Function evaluation value(s).
+
+        Raises:
+            ValueError: If input dimensionality is not 1D or 2D.
+        """
+        x_arr = np.asarray(x, dtype=np.float64)
+        if x_arr.ndim == 1:
             self.evaluations += 1
-            return float(self.func(x))
-        elif x.ndim == 2:
-            batch_size = x.shape[0]
-            # Intentar vectorizado si la función objetivo admite arrays 2D y retorna array de tamaño batch_size
+            return float(self.func(x_arr))
+        elif x_arr.ndim == 2:
+            batch_size = x_arr.shape[0]
+            # Attempt vectorized batch evaluation
             try:
-                res = np.asarray(self.func(x), dtype=np.float64)
+                res = np.asarray(self.func(x_arr), dtype=np.float64)
                 if res.ndim == 1 and len(res) == batch_size:
                     self.evaluations += batch_size
                     return res
             except Exception:
                 pass
 
-            # Evaluación iterativa fila por fila
+            # Fallback to row-by-row iteration
             self.evaluations += batch_size
-            return np.array([float(self.func(ind)) for ind in x], dtype=np.float64)
+            return np.array(
+                [float(self.func(ind)) for ind in x_arr],
+                dtype=np.float64
+            )
         else:
-            raise ValueError(f"Dimensión de entrada inválida: {x.ndim}. Debe ser 1D o 2D.")
+            raise ValueError(
+                f"Invalid input dimensions: {x_arr.ndim}. Must be 1D or 2D."
+            )
 
 
+def compute_wilcoxon(
+    scores_a: list,
+    scores_b: list,
+    alpha: float = 0.05
+) -> Tuple[float, str]:
+    """Compute the two-sided Wilcoxon signed-rank test between two algorithms.
 
-def compute_wilcoxon(scores_a: list, scores_b: list, alpha: float = 0.05) -> Tuple[float, str]:
-    """
-    Calcula el test de rangos signados de Wilcoxon / Mann-Whitney U entre dos algoritmos.
-    Retorna (p_value, sign), donde sign es '+', '-', o '='.
+    Falls back to Mann-Whitney U test if paired sample sizes or ranks diverge.
+
+    Args:
+        scores_a: Collection of fitness error scores from algorithm A.
+        scores_b: Collection of fitness error scores from algorithm B.
+        alpha: Significance threshold level. Defaults to 0.05.
+
+    Returns:
+        Tuple[float, str]: Pair of (p_value, sign) where:
+            '+' indicates algorithm A significantly outperforms B
+                (p < alpha, med_a < med_b),
+            '-' indicates algorithm B significantly outperforms A
+                (p < alpha, med_b < med_a),
+            '=' indicates no statistically significant difference (p >= alpha).
     """
     arr_a = np.asarray(scores_a, dtype=np.float64)
     arr_b = np.asarray(scores_b, dtype=np.float64)
@@ -125,9 +200,9 @@ def compute_wilcoxon(scores_a: list, scores_b: list, alpha: float = 0.05) -> Tup
         return 1.0, "="
 
     try:
-        stat, p_val = stats.wilcoxon(arr_a, arr_b, alternative="two-sided")
+        _, p_val = stats.wilcoxon(arr_a, arr_b, alternative="two-sided")
     except Exception:
-        stat, p_val = stats.mannwhitneyu(arr_a, arr_b, alternative="two-sided")
+        _, p_val = stats.mannwhitneyu(arr_a, arr_b, alternative="two-sided")
 
     med_a = float(np.median(arr_a))
     med_b = float(np.median(arr_b))
@@ -135,6 +210,5 @@ def compute_wilcoxon(scores_a: list, scores_b: list, alpha: float = 0.05) -> Tup
     if p_val < alpha:
         if med_a < med_b:
             return float(p_val), "+"
-        else:
-            return float(p_val), "-"
+        return float(p_val), "-"
     return float(p_val), "="

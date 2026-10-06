@@ -1,11 +1,12 @@
-"""
-================================================================================
-  AD-BSA: Adaptive Differential Boogeyman Search Algorithm
-  Module: src/ad_bsa/algorithm.py
-  Core Algorithm with Bounded Cosecant Repulsion Barrier |csc(x)|,
-  Multi-Boogeyman Anti-Attractors, Thermodynamic Annealing, Lehmer Memory,
-  External Diversity Archive, and Linear Population Size Reduction (LPSR).
-================================================================================
+"""AD-BSA: Adaptive Differential Boogeyman Search Algorithm.
+
+Core algorithm implementation featuring:
+  - Bounded Cosecant Repulsion Barrier (|csc(x)|)
+  - Multi-Boogeyman Anti-Attractors (Fitness-Rank Stratified Partitioning)
+  - Pure Thermodynamic Cooling Schedule
+  - Historical Lehmer Parameter Memories
+  - External Diversity Archive
+  - Linear Population Size Reduction (LPSR)
 """
 
 import time
@@ -18,7 +19,19 @@ from .utils import reflect_boundaries
 
 @dataclass
 class OptimizationResult:
-    """Contenedor estructurado con los resultados de optimización de AD-BSA."""
+    """Optimization result container for AD-BSA runs.
+
+    Attributes:
+        best_position (np.ndarray): Best coordinate vector found in search space.
+        best_fitness (float): Global objective function value at best_position.
+        total_evaluations (int): Total number of objective function evaluations.
+        generations (int): Total number of generations executed.
+        history_best_fitness (List[float]): Best fitness history per generation.
+        history_evaluations (List[int]): Cumulative evaluation counter history.
+        history_population_size (List[int]): Population size trajectory.
+        execution_time (float): Wall-clock optimization time in seconds.
+    """
+
     best_position: np.ndarray
     best_fitness: float
     total_evaluations: int
@@ -30,35 +43,34 @@ class OptimizationResult:
 
     @property
     def safe_house_position(self) -> np.ndarray:
+        """Alias returning the best position vector discovered."""
         return self.best_position
 
     @property
     def safe_house_fitness(self) -> float:
+        """Alias returning the global best fitness value."""
         return self.best_fitness
 
 
 class AD_BSA:
-    """
-    Adaptive Differential Boogeyman Search Algorithm (AD-BSA).
+    """Adaptive Differential Boogeyman Search Algorithm (AD-BSA).
 
-    Metaheurística continua de optimización global bioinspirada en la dinámica de
-    aprendizaje negativo (Negative Learning / Anti-Attractors) y escape armónico.
+    Continuous global metaheuristic for high-dimensional multimodal landscapes,
+    synthesizing negative learning anti-attractors with bounded cosecant repulsion.
 
-    Componentes Arquitectónicos Clave:
-      1. Multi-Boogeyman Anti-Attractors: Partición Estratificada por Rango de Fitness
-         (Fitness-Rank Stratified Partitioning) en el k% de las peores soluciones,
-         obteniendo baricentros de repulsión sin latencia computacional O(kD).
-      2. Operador de Repulsión Cosecante Acotada |csc(x)|: Barrera de potencial
-         no lineal que expulsa agresivamente soluciones del epicentro de la trampa
-         sin perturbar a individuos en cuencas prometedoras o valles profundos.
-      3. Enfriamiento Termodinámico Puro: Decaimiento temporal suave de la fuerza de
-         escape F_escape(t) = F_raw * (1 - t/MaxNFE)^gamma desacoplado de la memoria histórica.
-      4. Memorias Históricas de Lehmer: Auto-adaptación paramétrica guiada por
-         mejoras reales de fitness (Delta f).
-      5. Archivo Histórico de Diversidad (A): Selección de vectores diferenciales
-         en P U A para preservar direcciones ortogonales de búsqueda.
-      6. Reducción Lineal de Población (LPSR): Concentración progresiva del
-         esfuerzo computacional desde exploración global hacia explotación fina.
+    Key Architectural Mechanisms:
+      1. Multi-Boogeyman Anti-Attractors: Stratified fitness-rank partitioning of
+         the worst k% candidate solutions into M centroid epicenters in O(k * D).
+      2. Bounded Cosecant Repulsion Barrier (|csc|): Non-linear potential field
+         diverging near stagnation cores while smoothly vanishing outside 2 * Rc.
+      3. Thermodynamic Annealing: Power-law damping (1 - t/MaxNFE)^gamma cleanly
+         decoupled from historical parameter success memories.
+      4. Historical Lehmer Memories: Parameter auto-adaptation driven by fitness
+         improvement deltas (Delta f).
+      5. External Diversity Archive: Differential perturbation vectors sampled
+         from P U A to preserve orthogonal search directions.
+      6. Linear Population Size Reduction (LPSR): Dynamic shrinkage from broad
+         global exploration toward localized exploitation.
     """
 
     def __init__(
@@ -75,24 +87,24 @@ class AD_BSA:
         annealing_power: float = 1.5,
         archive_factor: float = 1.4,
         max_repulsion_force: float = 4.0,
-        seed: Optional[int] = None
+        seed: Optional[int] = None,
     ) -> None:
-        """
-        Inicializa el algoritmo AD-BSA.
+        """Initialize the AD-BSA optimizer.
 
-        :param objective_func: Función f(x) a minimizar (acepta vectores 1D o lotes 2D N x D).
-        :param bounds: Array (D, 2) con cotas inferiores y superiores [(lb_0, ub_0), ...].
-        :param max_evaluations: Presupuesto total de llamadas a la función objetivo (MaxNFE).
-        :param pop_size_max: Población inicial (si es None, se auto-calibra a min(18*D, max(50, MaxNFE/200))).
-        :param pop_size_min: Tamaño mínimo de población al final de LPSR (def: 4).
-        :param memory_size: Tamaño de las memorias históricas de Lehmer H (def: 6).
-        :param k_boogeyman_ratio: Proporción de peores individuos que forman el Cuco (def: 15%).
-        :param num_boogeymen: Número de centroides anti-atractores simultáneos (def: 2).
-        :param p_safe_ratio: Proporción de mejores soluciones (p-best) candidatas al Refugio (def: 11%).
-        :param annealing_power: Exponente de enfriamiento termodinámico gamma (def: 1.5).
-        :param archive_factor: Factor de capacidad del archivo externo |A| = archive_factor * N (def: 1.4).
-        :param max_repulsion_force: Cota superior de la repulsión cosecante |csc| (def: 4.0).
-        :param seed: Semilla pseudoaleatoria para reproducibilidad.
+        Args:
+            objective_func: Callable objective accepting 1D or 2D NumPy arrays.
+            bounds: Boundary array of shape (D, 2) defining (lb, ub) per dimension.
+            max_evaluations: Total evaluation budget (MaxNFE). Defaults to 50000.
+            pop_size_max: Initial population size. Dynamically set if None.
+            pop_size_min: Minimum terminal population size under LPSR. Defaults to 4.
+            memory_size: Capacity of historical Lehmer memory buffers. Defaults to 6.
+            k_boogeyman_ratio: Proportion of worst solutions forming anti-attractors.
+            num_boogeymen: Number of stratified anti-attractor centroids.
+            p_safe_ratio: Elite top-tier ratio for p-best positive attraction.
+            annealing_power: Power-law exponent gamma for thermodynamic cooling.
+            archive_factor: External archive size multiplier |A| = factor * N.
+            max_repulsion_force: Upper clipping bound for the cosecant barrier.
+            seed: Pseudo-random generator seed for deterministic reproducibility.
         """
         self.objective_func = objective_func
         self.bounds = np.asarray(bounds, dtype=np.float64)
@@ -112,38 +124,42 @@ class AD_BSA:
 
         self.rng = np.random.default_rng(seed)
 
-        # Calibración dinámica de población inicial según el presupuesto
         if pop_size_max is None:
-            calc_pop = int(min(18 * self.dim, max(50, self.max_evaluations / 200)))
+            calc_pop = int(
+                min(18 * self.dim, max(50, self.max_evaluations / 200))
+            )
             self.pop_size_max = max(self.pop_size_min + 2, calc_pop)
         else:
             self.pop_size_max = int(pop_size_max)
 
         self.current_pop_size = self.pop_size_max
 
-        # Estructuras de datos poblacionales
+        # Population structures
         self.Children: np.ndarray = np.empty((0, self.dim), dtype=np.float64)
         self.fitness: np.ndarray = np.empty(0, dtype=np.float64)
         self.Archive: np.ndarray = np.empty((0, self.dim), dtype=np.float64)
 
-        # Registro del óptimo global (Safe House)
+        # Global best record (Safe House)
         self.best_position: np.ndarray = np.empty(self.dim, dtype=np.float64)
         self.best_fitness: float = float("inf")
 
-        # Memorias históricas adaptativas de Lehmer (H)
+        # Historical Lehmer parameter memories (H)
         self.Memory_F_safe = np.full(self.memory_size, 0.5, dtype=np.float64)
         self.Memory_F_escape = np.full(self.memory_size, 0.5, dtype=np.float64)
         self.Memory_F_diff = np.full(self.memory_size, 0.5, dtype=np.float64)
         self.Memory_CR = np.full(self.memory_size, 0.5, dtype=np.float64)
         self.memory_pointer = 0
 
-        # Contadores de ejecución
+        # Runtime counters
         self.evaluations_count = 0
         self.generation = 0
 
     def _init_population(self) -> None:
-        """Inicializa la población uniformemente en el hipercubo delimitado."""
-        self.Children = self.lower_bounds + self.rng.random((self.current_pop_size, self.dim)) * self.bound_range
+        """Initialize the population uniformly inside the bounding box."""
+        self.Children = (
+            self.lower_bounds
+            + self.rng.random((self.current_pop_size, self.dim)) * self.bound_range
+        )
         self.fitness = self.objective_func(self.Children)
         self.evaluations_count = self.current_pop_size
 
@@ -152,45 +168,63 @@ class AD_BSA:
         self.best_position = self.Children[best_idx].copy()
 
     def _awaken_multi_boogeymen(self) -> Tuple[np.ndarray, float]:
-        """
-        Calcula M anti-atractores mediante Partición Estratificada por Rango de Fitness
-        (Fitness-Rank Stratified Partitioning) sobre el k% de las peores soluciones
-        (cuencas de estancamiento subóptimas) y determina el radio dinámico de captura.
+        """Compute M anti-attractors via Fitness-Rank Stratified Partitioning.
 
-        Esta estratificación agrupa las peores soluciones en M niveles de subóptimos
-        calculando sus baricentros geométricos en O(k * D), evitando la sobrecarga
-        computacional y la concentración de distancias propia de k-means en alta dimensión.
+        Partitions the worst k% candidates into M contiguous sub-tiers to obtain
+        centroid coordinates in O(k * D) without iterative clustering latency.
+
+        Returns:
+            Tuple[np.ndarray, float]: Tuple containing (boogeymen_centroids, Rc),
+                where boogeymen_centroids has shape (num_boogeymen, D) and Rc
+                is the spatial capture radius.
         """
-        k_count = max(self.num_boogeymen * 2, int(np.ceil(self.k_boogeyman_ratio * self.current_pop_size)))
+        k_count = max(
+            self.num_boogeymen * 2,
+            int(np.ceil(self.k_boogeyman_ratio * self.current_pop_size)),
+        )
         worst_indices = np.argsort(self.fitness)[-k_count:]
         worst_individuals = self.Children[worst_indices]
 
-        # Partición en clusters (Multi-Boogeyman)
         boogeymen = []
         cluster_size = int(np.ceil(k_count / self.num_boogeymen))
         for m in range(self.num_boogeymen):
-            c_slice = worst_individuals[m * cluster_size : (m + 1) * cluster_size]
+            c_slice = worst_individuals[
+                m * cluster_size:(m + 1) * cluster_size
+            ]
             if len(c_slice) > 0:
                 boogeymen.append(np.mean(c_slice, axis=0))
             else:
-                boogeymen.append(worst_individuals[self.rng.integers(0, k_count)])
+                boogeymen.append(
+                    worst_individuals[self.rng.integers(0, k_count)]
+                )
 
-        # Radio de captura como fracción de la dispersión de la población
         pop_std = np.mean(np.std(self.Children, axis=0))
         capture_radius = max(0.5 * pop_std, 1e-12)
 
         return np.array(boogeymen), capture_radius
 
-    def _sample_parameters(self) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
-        """Genera parámetros F_safe, F_escape, raw_F_escape, F_diff y CR vía memorias de Lehmer y Cauchy."""
-        mem_indices = self.rng.integers(0, self.memory_size, size=self.current_pop_size)
+    def _sample_parameters(
+        self,
+    ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+        """Sample control parameters via historical Cauchy/Gaussian distributions.
+
+        Returns:
+            Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+                Vectors of (F_safe, F_escape, raw_F_escape, F_diff, CR) for all
+                current population members.
+        """
+        mem_indices = self.rng.integers(
+            0, self.memory_size, size=self.current_pop_size
+        )
 
         def sample_cauchy(mu_arr: np.ndarray) -> np.ndarray:
             res = np.zeros(self.current_pop_size, dtype=np.float64)
             unfilled = np.ones(self.current_pop_size, dtype=bool)
             while np.any(unfilled):
                 count = np.sum(unfilled)
-                rand_cauchy = mu_arr[unfilled] + 0.1 * np.tan(np.pi * (self.rng.random(count) - 0.5))
+                rand_cauchy = mu_arr[unfilled] + 0.1 * np.tan(
+                    np.pi * (self.rng.random(count) - 0.5)
+                )
                 valid = rand_cauchy > 0.0
                 res_indices = np.where(unfilled)[0][valid]
                 res[res_indices] = np.minimum(rand_cauchy[valid], 1.0)
@@ -201,50 +235,60 @@ class AD_BSA:
         raw_F_escape = sample_cauchy(self.Memory_F_escape[mem_indices])
         F_diff = sample_cauchy(self.Memory_F_diff[mem_indices])
 
-        # Enfriamiento termodinámico puro (desacoplado de la memoria histórica)
         progress = self.evaluations_count / self.max_evaluations
         annealing_factor = max(0.0, (1.0 - progress) ** self.annealing_power)
         F_escape = raw_F_escape * annealing_factor
 
-        CR = np.clip(self.rng.normal(self.Memory_CR[mem_indices], 0.1), 0.0, 1.0)
+        CR = np.clip(
+            self.rng.normal(self.Memory_CR[mem_indices], 0.1), 0.0, 1.0
+        )
         return F_safe, F_escape, raw_F_escape, F_diff, CR
 
     def _select_mutation_partners(
-        self,
-        boogeymen_pos: np.ndarray
+        self, boogeymen_pos: np.ndarray
     ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+        """Select mutation vector partners across population and external archive.
+
+        Args:
+            boogeymen_pos: Coordinate array of anti-attractors (M, D).
+
+        Returns:
+            Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+                Arrays of (x_best_p, S_closest, x_r1, x_r2).
         """
-        Selecciona:
-          - x_best_p: vector guía dentro del top p% (p-best).
-          - S_closest: el Cuco más cercano a cada individuo.
-          - x_r1: individuo aleatorio de la población actual (r1 != i).
-          - x_r2: solución aleatoria del archivo extendido P U A (r2 != r1 != i).
-        """
-        N = self.current_pop_size
+        num_pop = self.current_pop_size
 
         # 1. P-Best Selection
-        p_num = max(2, int(np.ceil(self.p_safe_ratio * N)))
+        p_num = max(2, int(np.ceil(self.p_safe_ratio * num_pop)))
         sorted_indices = np.argsort(self.fitness)
         top_p_indices = sorted_indices[:p_num]
-        chosen_p_idx = top_p_indices[self.rng.integers(0, p_num, size=N)]
+        chosen_p_idx = top_p_indices[
+            self.rng.integers(0, p_num, size=num_pop)
+        ]
         x_best_p = self.Children[chosen_p_idx]
 
-        # 2. Asignación del Cuco más cercano
+        # 2. Nearest Anti-Attractor Assignment
         if len(boogeymen_pos) > 1:
-            dists = np.linalg.norm(self.Children[:, np.newaxis, :] - boogeymen_pos[np.newaxis, :, :], axis=2)
+            dists = np.linalg.norm(
+                self.Children[:, np.newaxis, :]
+                - boogeymen_pos[np.newaxis, :, :],
+                axis=2,
+            )
             nearest_b_idx = np.argmin(dists, axis=1)
             S_closest = boogeymen_pos[nearest_b_idx]
         else:
-            S_closest = np.tile(boogeymen_pos[0], (N, 1))
+            S_closest = np.tile(boogeymen_pos[0], (num_pop, 1))
 
-        # 3. Selección de r1 (de la población actual P, r1 != i)
-        idx_matrix = np.tile(np.arange(N), (N, 1))
-        mask = ~np.eye(N, dtype=bool)
-        candidates_p = idx_matrix[mask].reshape(N, N - 1)
-        r1_idx = candidates_p[np.arange(N), self.rng.integers(0, N - 1, size=N)]
+        # 3. Selection of r1 from current population (r1 != i)
+        idx_matrix = np.tile(np.arange(num_pop), (num_pop, 1))
+        mask = ~np.eye(num_pop, dtype=bool)
+        candidates_p = idx_matrix[mask].reshape(num_pop, num_pop - 1)
+        r1_idx = candidates_p[
+            np.arange(num_pop), self.rng.integers(0, num_pop - 1, size=num_pop)
+        ]
         x_r1 = self.Children[r1_idx]
 
-        # 4. Selección de r2 (de P U A, r2 != r1 != i)
+        # 4. Selection of r2 from P U A (r2 != r1 != i)
         archive_size = len(self.Archive)
         if archive_size > 0:
             pool = np.vstack([self.Children, self.Archive])
@@ -252,40 +296,48 @@ class AD_BSA:
             pool = self.Children
 
         total_pool_size = len(pool)
-        i_arr = np.arange(N)
+        i_arr = np.arange(num_pop)
         low_forbid = np.minimum(i_arr, r1_idx)
         high_forbid = np.maximum(i_arr, r1_idx)
 
-        r2_cand = self.rng.integers(0, total_pool_size - 2, size=N)
-        r2_cand += (r2_cand >= low_forbid)
-        r2_cand += (r2_cand >= high_forbid)
+        r2_cand = self.rng.integers(0, total_pool_size - 2, size=num_pop)
+        r2_cand += r2_cand >= low_forbid
+        r2_cand += r2_cand >= high_forbid
         x_r2 = pool[r2_cand]
 
         return x_best_p, S_closest, x_r1, x_r2
 
     @staticmethod
     def _lehmer_mean(values: np.ndarray, weights: np.ndarray) -> float:
-        """Calcula la media de Lehmer ponderada sum(w * x^2) / sum(w * x)."""
+        """Compute the weighted Lehmer mean sum(w * x^2) / sum(w * x)."""
         sum_wx = np.sum(weights * values)
         if sum_wx <= 1e-14:
             return float(np.mean(values))
         return float(np.sum(weights * (values**2)) / sum_wx)
 
     def _update_archive(self, defeated_parents: np.ndarray) -> None:
-        """Agrega los padres derrotados al archivo histórico y trunca según capacidad."""
+        """Append defeated parents to external archive and enforce capacity."""
         if len(defeated_parents) == 0:
             return
         self.Archive = np.vstack([self.Archive, defeated_parents])
-        max_archive_capacity = int(self.archive_factor * self.current_pop_size)
+        max_archive_capacity = int(
+            self.archive_factor * self.current_pop_size
+        )
         if len(self.Archive) > max_archive_capacity:
-            survivor_indices = self.rng.choice(len(self.Archive), size=max_archive_capacity, replace=False)
+            survivor_indices = self.rng.choice(
+                len(self.Archive), size=max_archive_capacity, replace=False
+            )
             self.Archive = self.Archive[survivor_indices]
 
     def _boogeyman_lpsr(self) -> None:
-        """Reduce la población linealmente y trunca el archivo proporcionalmente."""
-        target_size = int(np.round(
-            self.pop_size_max - (self.evaluations_count / self.max_evaluations) * (self.pop_size_max - self.pop_size_min)
-        ))
+        """Linearly reduce population size and truncate archive proportionally."""
+        target_size = int(
+            np.round(
+                self.pop_size_max
+                - (self.evaluations_count / self.max_evaluations)
+                * (self.pop_size_max - self.pop_size_min)
+            )
+        )
         target_size = max(self.pop_size_min, target_size)
 
         if target_size < self.current_pop_size:
@@ -299,13 +351,21 @@ class AD_BSA:
             self.fitness = self.fitness[survivors]
             self.current_pop_size = target_size
 
-            max_archive_capacity = int(self.archive_factor * self.current_pop_size)
+            max_archive_capacity = int(
+                self.archive_factor * self.current_pop_size
+            )
             if len(self.Archive) > max_archive_capacity:
-                survivor_indices = self.rng.choice(len(self.Archive), size=max_archive_capacity, replace=False)
+                survivor_indices = self.rng.choice(
+                    len(self.Archive), size=max_archive_capacity, replace=False
+                )
                 self.Archive = self.Archive[survivor_indices]
 
     def optimize(self) -> OptimizationResult:
-        """Ejecuta el ciclo de optimización de AD-BSA."""
+        """Execute the primary AD-BSA optimization loop.
+
+        Returns:
+            OptimizationResult: Encapsulated trajectory and optimal solution.
+        """
         start_time = time.perf_counter()
         self._init_population()
 
@@ -316,74 +376,93 @@ class AD_BSA:
         while self.evaluations_count < self.max_evaluations:
             self.generation += 1
 
-            # 1. Despertar al Séquito del Cuco y Radio de Captura
+            # 1. Awaken anti-attractor centroids
             boogeymen_pos, capture_radius = self._awaken_multi_boogeymen()
 
-            # 2. Muestreo de hiperparámetros
-            F_safe, F_escape, raw_F_escape, F_diff, CR = self._sample_parameters()
+            # 2. Sample hyperparameters
+            (
+                F_safe,
+                F_escape,
+                raw_F_escape,
+                F_diff,
+                CR,
+            ) = self._sample_parameters()
 
-            # 3. Selección de parejas de mutación
-            x_best_p, S_closest, x_r1, x_r2 = self._select_mutation_partners(boogeymen_pos)
+            # 3. Select mutation partners
+            (
+                x_best_p,
+                S_closest,
+                x_r1,
+                x_r2,
+            ) = self._select_mutation_partners(boogeymen_pos)
 
-            # Vector de atracción p-best
             safe_vector = (x_best_p - self.Children) * F_safe[:, np.newaxis]
-
-            # Vector de perturbación diferencial con archivo
             diff_vector = (x_r1 - x_r2) * F_diff[:, np.newaxis]
 
-            # ------------------------------------------------------------------
-            # 4. OPERADOR DE REPULSIÓN COSECANTE ACOTADA |csc(x)|
-            # ------------------------------------------------------------------
-            diff_escape = self.Children - S_closest  # Dirección hacia afuera del Cuco
+            # 4. Bounded Cosecant Repulsion Barrier |csc(x)|
+            diff_escape = self.Children - S_closest
             r = np.linalg.norm(diff_escape, axis=1, keepdims=True) + 1e-8
             r_norm = r / (2.0 * capture_radius + 1e-8)
 
-            # Argumento acotado en (0, pi) para evitar singularidades infinitas
             arg = np.clip(r_norm * np.pi * 0.5, 1e-3, 0.999 * np.pi)
             raw_csc = np.abs(1.0 / np.sin(arg))
-
-            # Barrera acotada en [1.0, max_repulsion_force] con desplazamiento base - 1.0
-            force_profile = np.clip(raw_csc, 1.0, self.max_repulsion_force) - 1.0
-
-            # Corte estricto a cero cuando la solución está fuera del radio de peligro (r_norm >= 2.0)
+            force_profile = (
+                np.clip(raw_csc, 1.0, self.max_repulsion_force) - 1.0
+            )
             force_profile = np.where(r_norm < 2.0, force_profile, 0.0)
 
             unit_escape = diff_escape / r
-            escape_vector = F_escape[:, np.newaxis] * force_profile * unit_escape * capture_radius
+            escape_vector = (
+                F_escape[:, np.newaxis]
+                * force_profile
+                * unit_escape
+                * capture_radius
+            )
 
-            # Mutante compuesto
+            # Composite mutant vector
             mutant_children = reflect_boundaries(
                 self.Children + safe_vector + escape_vector + diff_vector,
                 lb=self.lower_bounds,
                 ub=self.upper_bounds,
-                base=self.Children
+                base=self.Children,
             )
 
-            # 5. Cruce Binomial Vectorizado
+            # 5. Binomial Crossover
             rand_j = self.rng.integers(0, self.dim, size=self.current_pop_size)
             j_matrix = np.tile(np.arange(self.dim), (self.current_pop_size, 1))
-            j_rand_mask = (j_matrix == rand_j[:, np.newaxis])
-            crossover_mask = (self.rng.random((self.current_pop_size, self.dim)) <= CR[:, np.newaxis]) | j_rand_mask
-            trial_children = np.where(crossover_mask, mutant_children, self.Children)
+            j_rand_mask = j_matrix == rand_j[:, np.newaxis]
+            crossover_mask = (
+                self.rng.random((self.current_pop_size, self.dim))
+                <= CR[:, np.newaxis]
+            ) | j_rand_mask
+            trial_children = np.where(
+                crossover_mask, mutant_children, self.Children
+            )
 
-            evals_to_run = min(self.current_pop_size, self.max_evaluations - self.evaluations_count)
+            evals_to_run = min(
+                self.current_pop_size,
+                self.max_evaluations - self.evaluations_count,
+            )
             if evals_to_run < self.current_pop_size:
                 trial_children = trial_children[:evals_to_run]
 
             trial_fitness = self.objective_func(trial_children)
             self.evaluations_count += evals_to_run
 
-            # 6. Selección Codiciosa y Archivo de Derrotados
+            # 6. Greedy Selection and Archiving
             improvements_mask = trial_fitness <= self.fitness[:evals_to_run]
             successful_indices = np.where(improvements_mask)[0]
 
             fitness_deltas = np.zeros(evals_to_run, dtype=np.float64)
-            fitness_deltas[successful_indices] = self.fitness[successful_indices] - trial_fitness[successful_indices]
+            fitness_deltas[successful_indices] = (
+                self.fitness[successful_indices]
+                - trial_fitness[successful_indices]
+            )
 
-            # Archivar a los padres superados
             self._update_archive(self.Children[successful_indices])
-
-            self.Children[successful_indices] = trial_children[successful_indices]
+            self.Children[successful_indices] = trial_children[
+                successful_indices
+            ]
             self.fitness[successful_indices] = trial_fitness[successful_indices]
 
             best_idx_now = np.argmin(self.fitness)
@@ -391,17 +470,28 @@ class AD_BSA:
                 self.best_fitness = float(self.fitness[best_idx_now])
                 self.best_position = self.Children[best_idx_now].copy()
 
-            # 7. Actualización de Memorias Históricas de Lehmer
+            # 7. Update Historical Lehmer Memories
             if len(successful_indices) > 0:
-                weights = fitness_deltas[successful_indices] / (np.sum(fitness_deltas[successful_indices]) + 1e-14)
-                self.Memory_F_safe[self.memory_pointer] = self._lehmer_mean(F_safe[successful_indices], weights)
-                # Almacenar raw_F_escape para que el enfriamiento termodinámico sea exacto y sin double damping
-                self.Memory_F_escape[self.memory_pointer] = self._lehmer_mean(raw_F_escape[successful_indices], weights)
-                self.Memory_F_diff[self.memory_pointer] = self._lehmer_mean(F_diff[successful_indices], weights)
-                self.Memory_CR[self.memory_pointer] = float(np.sum(weights * CR[successful_indices]))
-                self.memory_pointer = (self.memory_pointer + 1) % self.memory_size
+                weights = fitness_deltas[successful_indices] / (
+                    np.sum(fitness_deltas[successful_indices]) + 1e-14
+                )
+                self.Memory_F_safe[self.memory_pointer] = self._lehmer_mean(
+                    F_safe[successful_indices], weights
+                )
+                self.Memory_F_escape[self.memory_pointer] = self._lehmer_mean(
+                    raw_F_escape[successful_indices], weights
+                )
+                self.Memory_F_diff[self.memory_pointer] = self._lehmer_mean(
+                    F_diff[successful_indices], weights
+                )
+                self.Memory_CR[self.memory_pointer] = float(
+                    np.sum(weights * CR[successful_indices])
+                )
+                self.memory_pointer = (
+                    self.memory_pointer + 1
+                ) % self.memory_size
 
-            # 8. Reducción Lineal de Población (LPSR)
+            # 8. LPSR Population Reduction
             if self.evaluations_count < self.max_evaluations:
                 self._boogeyman_lpsr()
 
@@ -417,5 +507,5 @@ class AD_BSA:
             history_best_fitness=hist_best_fitness,
             history_evaluations=hist_evaluations,
             history_population_size=hist_population_size,
-            execution_time=time.perf_counter() - start_time
+            execution_time=time.perf_counter() - start_time,
         )
