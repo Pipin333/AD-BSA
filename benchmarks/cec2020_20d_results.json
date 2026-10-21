@@ -1,0 +1,1924 @@
+{
+  "metadata": {
+    "benchmark_suite": "IEEE CEC 2020",
+    "dimension": 20,
+    "bounds": [
+      -100.0,
+      100.0
+    ],
+    "max_evaluations": 200000,
+    "num_runs": 5,
+    "algorithms": [
+      "AD-BSA",
+      "CMA-ES",
+      "L-SHADE",
+      "NL-SHADE-RSP",
+      "NL-SHADE-LBC",
+      "MadDE",
+      "Standard-PSO",
+      "Standard-DE",
+      "Cuckoo-Search",
+      "jSO"
+    ],
+    "functions": [
+      "F1",
+      "F2",
+      "F3",
+      "F4",
+      "F5",
+      "F6",
+      "F7",
+      "F8",
+      "F9",
+      "F10"
+    ]
+  },
+  "friedman_ranks": {
+    "AD-BSA": 3.2,
+    "CMA-ES": 4.6,
+    "L-SHADE": 2.8,
+    "NL-SHADE-RSP": 5.1,
+    "NL-SHADE-LBC": 5.3,
+    "MadDE": 6.4,
+    "Standard-PSO": 8.4,
+    "Standard-DE": 6.4,
+    "Cuckoo-Search": 8.5,
+    "jSO": 4.3
+  },
+  "summary_statistics": {
+    "F1": {
+      "name": "Shifted and Rotated Bent Cigar",
+      "category": "Unimodal",
+      "bias": 100.0,
+      "algorithms": {
+        "AD-BSA": {
+          "mean_error": 0.0,
+          "std_error": 0.0,
+          "median_error": 0.0,
+          "best_error": 0.0,
+          "worst_error": 0.0
+        },
+        "CMA-ES": {
+          "mean_error": 2.5579538487363607e-14,
+          "std_error": 1.657256204579568e-14,
+          "median_error": 1.4210854715202004e-14,
+          "best_error": 1.4210854715202004e-14,
+          "worst_error": 5.684341886080802e-14
+        },
+        "L-SHADE": {
+          "mean_error": 0.0,
+          "std_error": 0.0,
+          "median_error": 0.0,
+          "best_error": 0.0,
+          "worst_error": 0.0
+        },
+        "NL-SHADE-RSP": {
+          "mean_error": 1.4210854715202004e-14,
+          "std_error": 0.0,
+          "median_error": 1.4210854715202004e-14,
+          "best_error": 1.4210854715202004e-14,
+          "worst_error": 1.4210854715202004e-14
+        },
+        "NL-SHADE-LBC": {
+          "mean_error": 1.9042545318370685e-13,
+          "std_error": 3.1720461330004823e-13,
+          "median_error": 2.842170943040401e-14,
+          "best_error": 1.4210854715202004e-14,
+          "worst_error": 8.242295734817162e-13
+        },
+        "MadDE": {
+          "mean_error": 0.00010527900415127078,
+          "std_error": 4.216532956976267e-05,
+          "median_error": 0.00011601087302892665,
+          "best_error": 5.0639587911405215e-05,
+          "worst_error": 0.0001537812667606886
+        },
+        "Standard-PSO": {
+          "mean_error": 1145.1064588453096,
+          "std_error": 945.8894534415986,
+          "median_error": 1558.3667675415163,
+          "best_error": 12.294244814198123,
+          "worst_error": 2197.5321321064052
+        },
+        "Standard-DE": {
+          "mean_error": 7.074163477227558e-12,
+          "std_error": 5.8709813706593036e-12,
+          "median_error": 4.646949491871055e-12,
+          "best_error": 2.2311041902867146e-12,
+          "worst_error": 1.800515292416094e-11
+        },
+        "Cuckoo-Search": {
+          "mean_error": 8200.58817178805,
+          "std_error": 3944.6710288548998,
+          "median_error": 8554.376918377659,
+          "best_error": 3561.3364510616807,
+          "worst_error": 14563.229255324773
+        },
+        "jSO": {
+          "mean_error": 0.0,
+          "std_error": 0.0,
+          "median_error": 0.0,
+          "best_error": 0.0,
+          "worst_error": 0.0
+        }
+      }
+    },
+    "F2": {
+      "name": "Shifted and Rotated Schwefel",
+      "category": "Multimodal",
+      "bias": 1100.0,
+      "algorithms": {
+        "AD-BSA": {
+          "mean_error": 0.0,
+          "std_error": 0.0,
+          "median_error": 0.0,
+          "best_error": 0.0,
+          "worst_error": 0.0
+        },
+        "CMA-ES": {
+          "mean_error": 0.0,
+          "std_error": 0.0,
+          "median_error": 0.0,
+          "best_error": 0.0,
+          "worst_error": 0.0
+        },
+        "L-SHADE": {
+          "mean_error": 0.0,
+          "std_error": 0.0,
+          "median_error": 0.0,
+          "best_error": 0.0,
+          "worst_error": 0.0
+        },
+        "NL-SHADE-RSP": {
+          "mean_error": 0.0,
+          "std_error": 0.0,
+          "median_error": 0.0,
+          "best_error": 0.0,
+          "worst_error": 0.0
+        },
+        "NL-SHADE-LBC": {
+          "mean_error": 0.0,
+          "std_error": 0.0,
+          "median_error": 0.0,
+          "best_error": 0.0,
+          "worst_error": 0.0
+        },
+        "MadDE": {
+          "mean_error": 0.0,
+          "std_error": 0.0,
+          "median_error": 0.0,
+          "best_error": 0.0,
+          "worst_error": 0.0
+        },
+        "Standard-PSO": {
+          "mean_error": 0.0,
+          "std_error": 0.0,
+          "median_error": 0.0,
+          "best_error": 0.0,
+          "worst_error": 0.0
+        },
+        "Standard-DE": {
+          "mean_error": 0.0,
+          "std_error": 0.0,
+          "median_error": 0.0,
+          "best_error": 0.0,
+          "worst_error": 0.0
+        },
+        "Cuckoo-Search": {
+          "mean_error": 0.0,
+          "std_error": 0.0,
+          "median_error": 0.0,
+          "best_error": 0.0,
+          "worst_error": 0.0
+        },
+        "jSO": {
+          "mean_error": 0.0,
+          "std_error": 0.0,
+          "median_error": 0.0,
+          "best_error": 0.0,
+          "worst_error": 0.0
+        }
+      }
+    },
+    "F3": {
+      "name": "Shifted and Rotated Lunacek bi-Rastrigin",
+      "category": "Multimodal",
+      "bias": 700.0,
+      "algorithms": {
+        "AD-BSA": {
+          "mean_error": 21.944985285767302,
+          "std_error": 0.742553685886326,
+          "median_error": 21.973920776541604,
+          "best_error": 20.79716485533629,
+          "worst_error": 23.13668601421682
+        },
+        "CMA-ES": {
+          "mean_error": 22.701459994470362,
+          "std_error": 0.755941927644739,
+          "median_error": 22.393189406733313,
+          "best_error": 22.012525461724522,
+          "worst_error": 24.16277781027361
+        },
+        "L-SHADE": {
+          "mean_error": 22.96218914564315,
+          "std_error": 0.3370778422864705,
+          "median_error": 23.02339120973818,
+          "best_error": 22.367993918745583,
+          "worst_error": 23.40929885151047
+        },
+        "NL-SHADE-RSP": {
+          "mean_error": 23.976291593887822,
+          "std_error": 1.589747420126936,
+          "median_error": 23.54861846607662,
+          "best_error": 21.70620630419353,
+          "worst_error": 26.33940419129931
+        },
+        "NL-SHADE-LBC": {
+          "mean_error": 22.137847150488074,
+          "std_error": 0.8413198050278708,
+          "median_error": 22.022217784437657,
+          "best_error": 21.09197266528588,
+          "worst_error": 23.250539845995263
+        },
+        "MadDE": {
+          "mean_error": 25.849927166707584,
+          "std_error": 1.6433104025680394,
+          "median_error": 25.507402842578927,
+          "best_error": 24.40828873712826,
+          "worst_error": 28.97469265607174
+        },
+        "Standard-PSO": {
+          "mean_error": 46.315388425658604,
+          "std_error": 5.860167573913494,
+          "median_error": 43.34580854385149,
+          "best_error": 41.50333555194925,
+          "worst_error": 57.579512509626056
+        },
+        "Standard-DE": {
+          "mean_error": 86.12952837863904,
+          "std_error": 15.378532294198374,
+          "median_error": 90.98161030891333,
+          "best_error": 68.12195580708817,
+          "worst_error": 108.77572350080891
+        },
+        "Cuckoo-Search": {
+          "mean_error": 98.03457656894008,
+          "std_error": 23.582525123892687,
+          "median_error": 82.79280832911672,
+          "best_error": 71.84829793255983,
+          "worst_error": 129.13477870850647
+        },
+        "jSO": {
+          "mean_error": 21.656175944420625,
+          "std_error": 0.44600907702739606,
+          "median_error": 21.43864357204393,
+          "best_error": 21.098745391961756,
+          "worst_error": 22.332657086363497
+        }
+      }
+    },
+    "F4": {
+      "name": "Expanded Rosenbrock + Griewank",
+      "category": "Multimodal",
+      "bias": 1900.0,
+      "algorithms": {
+        "AD-BSA": {
+          "mean_error": 1.6619571969010394,
+          "std_error": 0.3790515392752932,
+          "median_error": 1.763502180830983,
+          "best_error": 1.1226558562323135,
+          "worst_error": 2.071558006419991
+        },
+        "CMA-ES": {
+          "mean_error": 1.375935115568518,
+          "std_error": 0.37948965593533307,
+          "median_error": 1.59480571711606,
+          "best_error": 0.7282795370992972,
+          "worst_error": 1.7205550308758575
+        },
+        "L-SHADE": {
+          "mean_error": 1.1615249267062153,
+          "std_error": 0.1010722375659623,
+          "median_error": 1.1710194663248785,
+          "best_error": 0.9818655172239232,
+          "worst_error": 1.2766413150675362
+        },
+        "NL-SHADE-RSP": {
+          "mean_error": 3.3305787692897866,
+          "std_error": 0.2276243325884147,
+          "median_error": 3.2023705259875896,
+          "best_error": 3.1276286925844943,
+          "worst_error": 3.728531379021433
+        },
+        "NL-SHADE-LBC": {
+          "mean_error": 1.4500389787465793,
+          "std_error": 0.4241591483016254,
+          "median_error": 1.4742430990320372,
+          "best_error": 0.9217852086005678,
+          "worst_error": 2.0821143573048175
+        },
+        "MadDE": {
+          "mean_error": 2.187124325375362,
+          "std_error": 0.40152825156415134,
+          "median_error": 2.082657161544603,
+          "best_error": 1.5758754090738876,
+          "worst_error": 2.6650047018524674
+        },
+        "Standard-PSO": {
+          "mean_error": 4.663959650080415,
+          "std_error": 1.8995053994664128,
+          "median_error": 4.116455525015908,
+          "best_error": 2.659534036942887,
+          "worst_error": 7.050445709273163
+        },
+        "Standard-DE": {
+          "mean_error": 8.072039121961415,
+          "std_error": 2.7276914372098475,
+          "median_error": 9.323453881176647,
+          "best_error": 2.638950629006331,
+          "worst_error": 9.843968932704229
+        },
+        "Cuckoo-Search": {
+          "mean_error": 5.414081249329501,
+          "std_error": 1.0535589576183997,
+          "median_error": 6.1495651809718765,
+          "best_error": 3.489385159369931,
+          "worst_error": 6.19455831499431
+        },
+        "jSO": {
+          "mean_error": 1.275731923699641,
+          "std_error": 0.13477992126466634,
+          "median_error": 1.2705609933350388,
+          "best_error": 1.0656268706277388,
+          "worst_error": 1.4564405637145228
+        }
+      }
+    },
+    "F5": {
+      "name": "Hybrid Function 1",
+      "category": "Hybrid",
+      "bias": 1700.0,
+      "algorithms": {
+        "AD-BSA": {
+          "mean_error": 89.66178941913654,
+          "std_error": 147.8384621767418,
+          "median_error": 10.944519355706689,
+          "best_error": 0.0,
+          "worst_error": 382.56270854986406
+        },
+        "CMA-ES": {
+          "mean_error": 21.299521307441818,
+          "std_error": 19.753979129169746,
+          "median_error": 17.909222679688583,
+          "best_error": 0.0,
+          "worst_error": 51.81684201883422
+        },
+        "L-SHADE": {
+          "mean_error": 0.0,
+          "std_error": 0.0,
+          "median_error": 0.0,
+          "best_error": 0.0,
+          "worst_error": 0.0
+        },
+        "NL-SHADE-RSP": {
+          "mean_error": 3568.0141356904073,
+          "std_error": 1348.5096165592888,
+          "median_error": 3410.390866400865,
+          "best_error": 1680.846269089956,
+          "worst_error": 5655.5552159533
+        },
+        "NL-SHADE-LBC": {
+          "mean_error": 0.08262345535144959,
+          "std_error": 0.16524691070289918,
+          "median_error": 0.0,
+          "best_error": 0.0,
+          "worst_error": 0.41311727675724796
+        },
+        "MadDE": {
+          "mean_error": 20347.297428228507,
+          "std_error": 4787.3112510758665,
+          "median_error": 19839.97931851281,
+          "best_error": 12689.919347806745,
+          "worst_error": 25473.271798509806
+        },
+        "Standard-PSO": {
+          "mean_error": 137282.3141455258,
+          "std_error": 141810.22539603477,
+          "median_error": 59392.29168244234,
+          "best_error": 25769.925234046656,
+          "worst_error": 410996.93205983995
+        },
+        "Standard-DE": {
+          "mean_error": 164.0232603223902,
+          "std_error": 281.6292527117176,
+          "median_error": 0.0,
+          "best_error": 0.0,
+          "worst_error": 722.1462437091677
+        },
+        "Cuckoo-Search": {
+          "mean_error": 76122.57835886076,
+          "std_error": 23373.77164643936,
+          "median_error": 68876.35277144809,
+          "best_error": 46030.82773177475,
+          "worst_error": 109586.38856076742
+        },
+        "jSO": {
+          "mean_error": 4.285539034754038e-08,
+          "std_error": 8.57099848894334e-08,
+          "median_error": 0.0,
+          "best_error": 0.0,
+          "worst_error": 2.142753601219738e-07
+        }
+      }
+    },
+    "F6": {
+      "name": "Hybrid Function 2",
+      "category": "Hybrid",
+      "bias": 1600.0,
+      "algorithms": {
+        "AD-BSA": {
+          "mean_error": 0.5413579765444411,
+          "std_error": 0.6640859712576527,
+          "median_error": 0.0,
+          "best_error": 0.0,
+          "worst_error": 1.4127137636012321
+        },
+        "CMA-ES": {
+          "mean_error": 68.51884913911917,
+          "std_error": 135.8525882856828,
+          "median_error": 1.1068489828589918,
+          "best_error": 0.0,
+          "worst_error": 340.22193587501147
+        },
+        "L-SHADE": {
+          "mean_error": 0.5586716013412569,
+          "std_error": 0.6866377258328185,
+          "median_error": 0.0,
+          "best_error": 0.0,
+          "worst_error": 1.4875144220929997
+        },
+        "NL-SHADE-RSP": {
+          "mean_error": 0.0,
+          "std_error": 0.0,
+          "median_error": 0.0,
+          "best_error": 0.0,
+          "worst_error": 0.0
+        },
+        "NL-SHADE-LBC": {
+          "mean_error": 0.0,
+          "std_error": 0.0,
+          "median_error": 0.0,
+          "best_error": 0.0,
+          "worst_error": 0.0
+        },
+        "MadDE": {
+          "mean_error": 0.0,
+          "std_error": 0.0,
+          "median_error": 0.0,
+          "best_error": 0.0,
+          "worst_error": 0.0
+        },
+        "Standard-PSO": {
+          "mean_error": 3659.2109199352103,
+          "std_error": 6267.197299439532,
+          "median_error": 942.4472013398067,
+          "best_error": 34.721271307613506,
+          "worst_error": 16164.285424313985
+        },
+        "Standard-DE": {
+          "mean_error": 0.0,
+          "std_error": 0.0,
+          "median_error": 0.0,
+          "best_error": 0.0,
+          "worst_error": 0.0
+        },
+        "Cuckoo-Search": {
+          "mean_error": 31.12623681405089,
+          "std_error": 44.974101177398786,
+          "median_error": 0.0,
+          "best_error": 0.0,
+          "worst_error": 115.54508478974617
+        },
+        "jSO": {
+          "mean_error": 0.5665877293383801,
+          "std_error": 0.6939548964143799,
+          "median_error": 0.0,
+          "best_error": 0.0,
+          "worst_error": 1.4265831384348076
+        }
+      }
+    },
+    "F7": {
+      "name": "Hybrid Function 3",
+      "category": "Hybrid",
+      "bias": 2100.0,
+      "algorithms": {
+        "AD-BSA": {
+          "mean_error": 66.0348844572778,
+          "std_error": 79.83224780351472,
+          "median_error": 52.24849810814203,
+          "best_error": 1.2616622572595588,
+          "worst_error": 218.37119262400802
+        },
+        "CMA-ES": {
+          "mean_error": 72.9693234495714,
+          "std_error": 143.3429600954252,
+          "median_error": 0.5149650937378283,
+          "best_error": 0.0,
+          "worst_error": 359.63355595817256
+        },
+        "L-SHADE": {
+          "mean_error": 54.39088507502902,
+          "std_error": 84.05572648329647,
+          "median_error": 1.4416679420482978,
+          "best_error": 0.0,
+          "worst_error": 217.65772872528942
+        },
+        "NL-SHADE-RSP": {
+          "mean_error": 66.72002538562447,
+          "std_error": 64.71954066354402,
+          "median_error": 72.16875938071689,
+          "best_error": 0.0,
+          "worst_error": 174.4157630435816
+        },
+        "NL-SHADE-LBC": {
+          "mean_error": 141.82961452587134,
+          "std_error": 95.3618641432023,
+          "median_error": 217.90716244352234,
+          "best_error": 0.0,
+          "worst_error": 218.7673180875163
+        },
+        "MadDE": {
+          "mean_error": 712.7755239581373,
+          "std_error": 265.5718374583193,
+          "median_error": 775.4857574869552,
+          "best_error": 228.7160776833016,
+          "worst_error": 951.7205592799119
+        },
+        "Standard-PSO": {
+          "mean_error": 15379.046417420604,
+          "std_error": 8513.513736621437,
+          "median_error": 14534.092834727562,
+          "best_error": 2774.8770678356823,
+          "worst_error": 29479.635298091707
+        },
+        "Standard-DE": {
+          "mean_error": 10.50469716229245,
+          "std_error": 21.0093943245849,
+          "median_error": 0.0,
+          "best_error": 0.0,
+          "worst_error": 52.52348581146225
+        },
+        "Cuckoo-Search": {
+          "mean_error": 26262.984993695027,
+          "std_error": 14599.232203488898,
+          "median_error": 21390.514283675453,
+          "best_error": 11013.490577923456,
+          "worst_error": 53366.96485898632
+        },
+        "jSO": {
+          "mean_error": 64.78304541262096,
+          "std_error": 79.97846073689772,
+          "median_error": 52.390030788218155,
+          "best_error": 0.0,
+          "worst_error": 217.65338820568059
+        }
+      }
+    },
+    "F8": {
+      "name": "Composition Function 1",
+      "category": "Composition",
+      "bias": 2200.0,
+      "algorithms": {
+        "AD-BSA": {
+          "mean_error": 0.0,
+          "std_error": 0.0,
+          "median_error": 0.0,
+          "best_error": 0.0,
+          "worst_error": 0.0
+        },
+        "CMA-ES": {
+          "mean_error": 82.34167820337689,
+          "std_error": 41.19769257191382,
+          "median_error": 102.73091940914492,
+          "best_error": 0.0,
+          "worst_error": 104.54844955590443
+        },
+        "L-SHADE": {
+          "mean_error": 0.0,
+          "std_error": 0.0,
+          "median_error": 0.0,
+          "best_error": 0.0,
+          "worst_error": 0.0
+        },
+        "NL-SHADE-RSP": {
+          "mean_error": 0.0,
+          "std_error": 0.0,
+          "median_error": 0.0,
+          "best_error": 0.0,
+          "worst_error": 0.0
+        },
+        "NL-SHADE-LBC": {
+          "mean_error": 80.2279908991125,
+          "std_error": 40.25066521929077,
+          "median_error": 101.61877307259101,
+          "best_error": 0.0,
+          "worst_error": 103.66692852382539
+        },
+        "MadDE": {
+          "mean_error": 0.0,
+          "std_error": 0.0,
+          "median_error": 0.0,
+          "best_error": 0.0,
+          "worst_error": 0.0
+        },
+        "Standard-PSO": {
+          "mean_error": 0.0,
+          "std_error": 0.0,
+          "median_error": 0.0,
+          "best_error": 0.0,
+          "worst_error": 0.0
+        },
+        "Standard-DE": {
+          "mean_error": 0.0,
+          "std_error": 0.0,
+          "median_error": 0.0,
+          "best_error": 0.0,
+          "worst_error": 0.0
+        },
+        "Cuckoo-Search": {
+          "mean_error": 0.0,
+          "std_error": 0.0,
+          "median_error": 0.0,
+          "best_error": 0.0,
+          "worst_error": 0.0
+        },
+        "jSO": {
+          "mean_error": 0.0,
+          "std_error": 0.0,
+          "median_error": 0.0,
+          "best_error": 0.0,
+          "worst_error": 0.0
+        }
+      }
+    },
+    "F9": {
+      "name": "Composition Function 2",
+      "category": "Composition",
+      "bias": 2400.0,
+      "algorithms": {
+        "AD-BSA": {
+          "mean_error": 200.0,
+          "std_error": 0.0,
+          "median_error": 200.0,
+          "best_error": 200.0,
+          "worst_error": 200.0
+        },
+        "CMA-ES": {
+          "mean_error": 180.00000000208948,
+          "std_error": 40.00000000024461,
+          "median_error": 200.00000000221644,
+          "best_error": 100.00000000160026,
+          "worst_error": 200.00000000229375
+        },
+        "L-SHADE": {
+          "mean_error": 200.0,
+          "std_error": 0.0,
+          "median_error": 200.0,
+          "best_error": 200.0,
+          "worst_error": 200.0
+        },
+        "NL-SHADE-RSP": {
+          "mean_error": 200.0,
+          "std_error": 0.0,
+          "median_error": 200.0,
+          "best_error": 200.0,
+          "worst_error": 200.0
+        },
+        "NL-SHADE-LBC": {
+          "mean_error": 200.0,
+          "std_error": 0.0,
+          "median_error": 200.0,
+          "best_error": 200.0,
+          "worst_error": 200.0
+        },
+        "MadDE": {
+          "mean_error": 200.00000000000236,
+          "std_error": 5.303524488589708e-13,
+          "median_error": 200.00000000000227,
+          "best_error": 200.00000000000182,
+          "worst_error": 200.00000000000318
+        },
+        "Standard-PSO": {
+          "mean_error": 234.7665662036132,
+          "std_error": 69.53313240722477,
+          "median_error": 200.0000000000009,
+          "best_error": 200.00000000000045,
+          "worst_error": 373.83283101806273
+        },
+        "Standard-DE": {
+          "mean_error": 200.00000000047248,
+          "std_error": 4.538924408106048e-10,
+          "median_error": 200.00000000026694,
+          "best_error": 200.00000000008959,
+          "worst_error": 200.00000000135515
+        },
+        "Cuckoo-Search": {
+          "mean_error": 200.00238671048663,
+          "std_error": 0.0009134388089881522,
+          "median_error": 200.00195261589988,
+          "best_error": 200.00174082485955,
+          "worst_error": 200.00419774053125
+        },
+        "jSO": {
+          "mean_error": 200.0,
+          "std_error": 0.0,
+          "median_error": 200.0,
+          "best_error": 200.0,
+          "worst_error": 200.0
+        }
+      }
+    },
+    "F10": {
+      "name": "Composition Function 3",
+      "category": "Composition",
+      "bias": 2500.0,
+      "algorithms": {
+        "AD-BSA": {
+          "mean_error": 628.9696338823921,
+          "std_error": 13.711601031537333,
+          "median_error": 622.1388653113545,
+          "best_error": 622.0341155386395,
+          "worst_error": 656.3926698968962
+        },
+        "CMA-ES": {
+          "mean_error": 622.0357153392508,
+          "std_error": 0.027798005991594755,
+          "median_error": 622.0227417480342,
+          "best_error": 622.019111268728,
+          "worst_error": 622.0912401834239
+        },
+        "L-SHADE": {
+          "mean_error": 622.0738699939229,
+          "std_error": 0.04419201201570848,
+          "median_error": 622.0912401834221,
+          "best_error": 622.0227417480319,
+          "worst_error": 622.1340882531276
+        },
+        "NL-SHADE-RSP": {
+          "mean_error": 655.4074076260124,
+          "std_error": 15.351374820321686,
+          "median_error": 643.1508739712172,
+          "best_error": 642.608010451313,
+          "worst_error": 674.3257116705245
+        },
+        "NL-SHADE-LBC": {
+          "mean_error": 654.7958687028276,
+          "std_error": 15.342660039836998,
+          "median_error": 642.3244924290475,
+          "best_error": 642.2357901429614,
+          "worst_error": 673.6768876582519
+        },
+        "MadDE": {
+          "mean_error": 642.6399715574189,
+          "std_error": 25.21125613567651,
+          "median_error": 622.1144267064128,
+          "best_error": 622.0227426880851,
+          "worst_error": 673.5481655108401
+        },
+        "Standard-PSO": {
+          "mean_error": 646.019430124626,
+          "std_error": 19.510992252115457,
+          "median_error": 661.6014195287153,
+          "best_error": 622.0473906093857,
+          "worst_error": 662.2289813214948
+        },
+        "Standard-DE": {
+          "mean_error": 628.877179108192,
+          "std_error": 13.705003995379103,
+          "median_error": 622.0227417480319,
+          "best_error": 622.0191112687253,
+          "worst_error": 656.287185237531
+        },
+        "Cuckoo-Search": {
+          "mean_error": 624.0873257328692,
+          "std_error": 2.9719897216103033,
+          "median_error": 622.634478833781,
+          "best_error": 622.2922561016758,
+          "worst_error": 630.0155774588029
+        },
+        "jSO": {
+          "mean_error": 622.0205634604479,
+          "std_error": 0.0017785643645776051,
+          "median_error": 622.0191112687253,
+          "best_error": 622.0191112687253,
+          "worst_error": 622.0227417480319
+        }
+      }
+    }
+  },
+  "wilcoxon_tests_vs_ad_bsa": {
+    "F1": {
+      "CMA-ES": {
+        "p_value": 1.0,
+        "sign": "="
+      },
+      "L-SHADE": {
+        "p_value": 1.0,
+        "sign": "="
+      },
+      "NL-SHADE-RSP": {
+        "p_value": 1.0,
+        "sign": "="
+      },
+      "NL-SHADE-LBC": {
+        "p_value": 1.0,
+        "sign": "="
+      },
+      "MadDE": {
+        "p_value": 0.0625,
+        "sign": "="
+      },
+      "Standard-PSO": {
+        "p_value": 0.0625,
+        "sign": "="
+      },
+      "Standard-DE": {
+        "p_value": 0.0625,
+        "sign": "="
+      },
+      "Cuckoo-Search": {
+        "p_value": 0.0625,
+        "sign": "="
+      },
+      "jSO": {
+        "p_value": 1.0,
+        "sign": "="
+      }
+    },
+    "F2": {
+      "CMA-ES": {
+        "p_value": 1.0,
+        "sign": "="
+      },
+      "L-SHADE": {
+        "p_value": 1.0,
+        "sign": "="
+      },
+      "NL-SHADE-RSP": {
+        "p_value": 1.0,
+        "sign": "="
+      },
+      "NL-SHADE-LBC": {
+        "p_value": 1.0,
+        "sign": "="
+      },
+      "MadDE": {
+        "p_value": 1.0,
+        "sign": "="
+      },
+      "Standard-PSO": {
+        "p_value": 1.0,
+        "sign": "="
+      },
+      "Standard-DE": {
+        "p_value": 1.0,
+        "sign": "="
+      },
+      "Cuckoo-Search": {
+        "p_value": 1.0,
+        "sign": "="
+      },
+      "jSO": {
+        "p_value": 1.0,
+        "sign": "="
+      }
+    },
+    "F3": {
+      "CMA-ES": {
+        "p_value": 0.1875,
+        "sign": "="
+      },
+      "L-SHADE": {
+        "p_value": 0.125,
+        "sign": "="
+      },
+      "NL-SHADE-RSP": {
+        "p_value": 0.125,
+        "sign": "="
+      },
+      "NL-SHADE-LBC": {
+        "p_value": 0.8125,
+        "sign": "="
+      },
+      "MadDE": {
+        "p_value": 0.0625,
+        "sign": "="
+      },
+      "Standard-PSO": {
+        "p_value": 0.0625,
+        "sign": "="
+      },
+      "Standard-DE": {
+        "p_value": 0.0625,
+        "sign": "="
+      },
+      "Cuckoo-Search": {
+        "p_value": 0.0625,
+        "sign": "="
+      },
+      "jSO": {
+        "p_value": 1.0,
+        "sign": "="
+      }
+    },
+    "F4": {
+      "CMA-ES": {
+        "p_value": 0.625,
+        "sign": "="
+      },
+      "L-SHADE": {
+        "p_value": 0.125,
+        "sign": "="
+      },
+      "NL-SHADE-RSP": {
+        "p_value": 0.0625,
+        "sign": "="
+      },
+      "NL-SHADE-LBC": {
+        "p_value": 0.625,
+        "sign": "="
+      },
+      "MadDE": {
+        "p_value": 0.3125,
+        "sign": "="
+      },
+      "Standard-PSO": {
+        "p_value": 0.0625,
+        "sign": "="
+      },
+      "Standard-DE": {
+        "p_value": 0.0625,
+        "sign": "="
+      },
+      "Cuckoo-Search": {
+        "p_value": 0.0625,
+        "sign": "="
+      },
+      "jSO": {
+        "p_value": 0.3125,
+        "sign": "="
+      }
+    },
+    "F5": {
+      "CMA-ES": {
+        "p_value": 0.8125,
+        "sign": "="
+      },
+      "L-SHADE": {
+        "p_value": 0.25,
+        "sign": "="
+      },
+      "NL-SHADE-RSP": {
+        "p_value": 0.0625,
+        "sign": "="
+      },
+      "NL-SHADE-LBC": {
+        "p_value": 0.25,
+        "sign": "="
+      },
+      "MadDE": {
+        "p_value": 0.0625,
+        "sign": "="
+      },
+      "Standard-PSO": {
+        "p_value": 0.0625,
+        "sign": "="
+      },
+      "Standard-DE": {
+        "p_value": 0.875,
+        "sign": "="
+      },
+      "Cuckoo-Search": {
+        "p_value": 0.0625,
+        "sign": "="
+      },
+      "jSO": {
+        "p_value": 0.25,
+        "sign": "="
+      }
+    },
+    "F6": {
+      "CMA-ES": {
+        "p_value": 1.0,
+        "sign": "="
+      },
+      "L-SHADE": {
+        "p_value": 1.0,
+        "sign": "="
+      },
+      "NL-SHADE-RSP": {
+        "p_value": 0.5,
+        "sign": "="
+      },
+      "NL-SHADE-LBC": {
+        "p_value": 0.5,
+        "sign": "="
+      },
+      "MadDE": {
+        "p_value": 0.5,
+        "sign": "="
+      },
+      "Standard-PSO": {
+        "p_value": 0.0625,
+        "sign": "="
+      },
+      "Standard-DE": {
+        "p_value": 0.5,
+        "sign": "="
+      },
+      "Cuckoo-Search": {
+        "p_value": 0.625,
+        "sign": "="
+      },
+      "jSO": {
+        "p_value": 1.0,
+        "sign": "="
+      }
+    },
+    "F7": {
+      "CMA-ES": {
+        "p_value": 0.625,
+        "sign": "="
+      },
+      "L-SHADE": {
+        "p_value": 1.0,
+        "sign": "="
+      },
+      "NL-SHADE-RSP": {
+        "p_value": 1.0,
+        "sign": "="
+      },
+      "NL-SHADE-LBC": {
+        "p_value": 0.1875,
+        "sign": "="
+      },
+      "MadDE": {
+        "p_value": 0.0625,
+        "sign": "="
+      },
+      "Standard-PSO": {
+        "p_value": 0.0625,
+        "sign": "="
+      },
+      "Standard-DE": {
+        "p_value": 0.125,
+        "sign": "="
+      },
+      "Cuckoo-Search": {
+        "p_value": 0.0625,
+        "sign": "="
+      },
+      "jSO": {
+        "p_value": 0.625,
+        "sign": "="
+      }
+    },
+    "F8": {
+      "CMA-ES": {
+        "p_value": 0.125,
+        "sign": "="
+      },
+      "L-SHADE": {
+        "p_value": 1.0,
+        "sign": "="
+      },
+      "NL-SHADE-RSP": {
+        "p_value": 1.0,
+        "sign": "="
+      },
+      "NL-SHADE-LBC": {
+        "p_value": 0.125,
+        "sign": "="
+      },
+      "MadDE": {
+        "p_value": 1.0,
+        "sign": "="
+      },
+      "Standard-PSO": {
+        "p_value": 1.0,
+        "sign": "="
+      },
+      "Standard-DE": {
+        "p_value": 1.0,
+        "sign": "="
+      },
+      "Cuckoo-Search": {
+        "p_value": 1.0,
+        "sign": "="
+      },
+      "jSO": {
+        "p_value": 1.0,
+        "sign": "="
+      }
+    },
+    "F9": {
+      "CMA-ES": {
+        "p_value": 0.625,
+        "sign": "="
+      },
+      "L-SHADE": {
+        "p_value": 1.0,
+        "sign": "="
+      },
+      "NL-SHADE-RSP": {
+        "p_value": 1.0,
+        "sign": "="
+      },
+      "NL-SHADE-LBC": {
+        "p_value": 1.0,
+        "sign": "="
+      },
+      "MadDE": {
+        "p_value": 1.0,
+        "sign": "="
+      },
+      "Standard-PSO": {
+        "p_value": 0.0625,
+        "sign": "="
+      },
+      "Standard-DE": {
+        "p_value": 1.0,
+        "sign": "="
+      },
+      "Cuckoo-Search": {
+        "p_value": 0.0625,
+        "sign": "="
+      },
+      "jSO": {
+        "p_value": 1.0,
+        "sign": "="
+      }
+    },
+    "F10": {
+      "CMA-ES": {
+        "p_value": 0.125,
+        "sign": "="
+      },
+      "L-SHADE": {
+        "p_value": 0.3125,
+        "sign": "="
+      },
+      "NL-SHADE-RSP": {
+        "p_value": 0.0625,
+        "sign": "="
+      },
+      "NL-SHADE-LBC": {
+        "p_value": 0.0625,
+        "sign": "="
+      },
+      "MadDE": {
+        "p_value": 0.8125,
+        "sign": "="
+      },
+      "Standard-PSO": {
+        "p_value": 0.125,
+        "sign": "="
+      },
+      "Standard-DE": {
+        "p_value": 0.4375,
+        "sign": "="
+      },
+      "Cuckoo-Search": {
+        "p_value": 0.625,
+        "sign": "="
+      },
+      "jSO": {
+        "p_value": 0.0625,
+        "sign": "="
+      }
+    }
+  },
+  "raw_runs": {
+    "F1": {
+      "AD-BSA": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "CMA-ES": [
+        2.842170943040401e-14,
+        1.4210854715202004e-14,
+        1.4210854715202004e-14,
+        5.684341886080802e-14,
+        1.4210854715202004e-14
+      ],
+      "L-SHADE": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "NL-SHADE-RSP": [
+        1.4210854715202004e-14,
+        1.4210854715202004e-14,
+        1.4210854715202004e-14,
+        1.4210854715202004e-14,
+        1.4210854715202004e-14
+      ],
+      "NL-SHADE-LBC": [
+        5.684341886080802e-14,
+        8.242295734817162e-13,
+        2.842170943040401e-14,
+        2.842170943040401e-14,
+        1.4210854715202004e-14
+      ],
+      "MadDE": [
+        0.00011601087302892665,
+        5.0639587911405215e-05,
+        6.159377940662125e-05,
+        0.0001537812667606886,
+        0.0001443695136487122
+      ],
+      "Standard-PSO": [
+        1942.1228496269518,
+        15.21630013747675,
+        12.294244814198123,
+        1558.3667675415163,
+        2197.5321321064052
+      ],
+      "Standard-DE": [
+        8.142819751810748e-12,
+        4.646949491871055e-12,
+        1.800515292416094e-11,
+        2.3447910280083306e-12,
+        2.2311041902867146e-12
+      ],
+      "Cuckoo-Search": [
+        9761.401800106347,
+        4562.596434069786,
+        8554.376918377659,
+        14563.229255324773,
+        3561.3364510616807
+      ],
+      "jSO": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "F2": {
+      "AD-BSA": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "CMA-ES": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "L-SHADE": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "NL-SHADE-RSP": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "NL-SHADE-LBC": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "MadDE": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "Standard-PSO": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "Standard-DE": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "Cuckoo-Search": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "jSO": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "F3": {
+      "AD-BSA": [
+        21.997457038196785,
+        21.973920776541604,
+        23.13668601421682,
+        20.79716485533629,
+        21.81969774454501
+      ],
+      "CMA-ES": [
+        22.320357700169552,
+        24.16277781027361,
+        22.393189406733313,
+        22.012525461724522,
+        22.618449593450805
+      ],
+      "L-SHADE": [
+        22.943088044884348,
+        23.02339120973818,
+        23.067173703337176,
+        23.40929885151047,
+        22.367993918745583
+      ],
+      "NL-SHADE-RSP": [
+        23.54861846607662,
+        23.232571773936684,
+        26.33940419129931,
+        25.05465723393297,
+        21.70620630419353
+      ],
+      "NL-SHADE-LBC": [
+        22.934455805107063,
+        23.250539845995263,
+        22.022217784437657,
+        21.09197266528588,
+        21.390049651614504
+      ],
+      "MadDE": [
+        25.747047119740955,
+        28.97469265607174,
+        25.507402842578927,
+        24.40828873712826,
+        24.612204478018043
+      ],
+      "Standard-PSO": [
+        43.34580854385149,
+        46.41658653703985,
+        41.50333555194925,
+        42.73169898582637,
+        57.579512509626056
+      ],
+      "Standard-DE": [
+        69.61995029546199,
+        90.98161030891333,
+        93.14840198092281,
+        68.12195580708817,
+        108.77572350080891
+      ],
+      "Cuckoo-Search": [
+        82.67911777428765,
+        82.79280832911672,
+        129.13477870850647,
+        71.84829793255983,
+        123.71788010022976
+      ],
+      "jSO": [
+        21.410378479104224,
+        22.000455192629715,
+        21.098745391961756,
+        21.43864357204393,
+        22.332657086363497
+      ]
+    },
+    "F4": {
+      "AD-BSA": [
+        1.3231370839005194,
+        1.763502180830983,
+        2.071558006419991,
+        1.1226558562323135,
+        2.02893285712139
+      ],
+      "CMA-ES": [
+        1.7205550308758575,
+        1.6733557961308634,
+        1.1626794966205125,
+        1.59480571711606,
+        0.7282795370992972
+      ],
+      "L-SHADE": [
+        0.9818655172239232,
+        1.233452916216038,
+        1.2766413150675362,
+        1.1710194663248785,
+        1.1446454186987012
+      ],
+      "NL-SHADE-RSP": [
+        3.1276286925844943,
+        3.2023705259875896,
+        3.728531379021433,
+        3.440082076638646,
+        3.15428117221677
+      ],
+      "NL-SHADE-LBC": [
+        2.0821143573048175,
+        1.4742430990320372,
+        0.9217852086005678,
+        1.711757946234684,
+        1.0602942825607897
+      ],
+      "MadDE": [
+        2.6650047018524674,
+        2.018871937768381,
+        2.082657161544603,
+        2.5932124166374706,
+        1.5758754090738876
+      ],
+      "Standard-PSO": [
+        6.748445647929202,
+        2.744917331240913,
+        7.050445709273163,
+        2.659534036942887,
+        4.116455525015908
+      ],
+      "Standard-DE": [
+        9.084758448990215,
+        9.323453881176647,
+        9.469063717929657,
+        9.843968932704229,
+        2.638950629006331
+      ],
+      "Cuckoo-Search": [
+        6.19455831499431,
+        3.489385159369931,
+        5.065337552112169,
+        6.171560039199221,
+        6.1495651809718765
+      ],
+      "jSO": [
+        1.3748819524862483,
+        1.0656268706277388,
+        1.4564405637145228,
+        1.2705609933350388,
+        1.2111492383346558
+      ]
+    },
+    "F5": {
+      "AD-BSA": [
+        10.944519355706689,
+        0.0,
+        382.56270854986406,
+        54.80171919011195,
+        0.0
+      ],
+      "CMA-ES": [
+        51.81684201883422,
+        34.78162372449765,
+        0.0,
+        1.9899181141886402,
+        17.909222679688583
+      ],
+      "L-SHADE": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "NL-SHADE-RSP": [
+        2789.208725326145,
+        4304.069601681774,
+        1680.846269089956,
+        3410.390866400865,
+        5655.5552159533
+      ],
+      "NL-SHADE-LBC": [
+        0.41311727675724796,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "MadDE": [
+        19839.97931851281,
+        12689.919347806745,
+        18344.840203414045,
+        25473.271798509806,
+        25388.47647289914
+      ],
+      "Standard-PSO": [
+        410996.93205983995,
+        25769.925234046656,
+        137404.25191675362,
+        52848.16983454653,
+        59392.29168244234
+      ],
+      "Standard-DE": [
+        97.97005790278331,
+        0.0,
+        0.0,
+        0.0,
+        722.1462437091677
+      ],
+      "Cuckoo-Search": [
+        109586.38856076742,
+        46030.82773177475,
+        60083.09899276112,
+        96036.22373755244,
+        68876.35277144809
+      ],
+      "jSO": [
+        2.142753601219738e-07,
+        1.5916157281026244e-12,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "F6": {
+      "AD-BSA": [
+        1.4127137636012321,
+        0.0,
+        0.0,
+        0.0,
+        1.294076119120973
+      ],
+      "CMA-ES": [
+        1.1068489828589918,
+        340.22193587501147,
+        0.0,
+        0.0,
+        1.2654608377254135
+      ],
+      "L-SHADE": [
+        0.0,
+        0.0,
+        1.3058435846132852,
+        0.0,
+        1.4875144220929997
+      ],
+      "NL-SHADE-RSP": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "NL-SHADE-LBC": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "MadDE": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "Standard-PSO": [
+        1076.222073342683,
+        78.37862937196155,
+        942.4472013398067,
+        16164.285424313985,
+        34.721271307613506
+      ],
+      "Standard-DE": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "Cuckoo-Search": [
+        0.0,
+        115.54508478974617,
+        40.08609928050828,
+        0.0,
+        0.0
+      ],
+      "jSO": [
+        1.4063555082570929,
+        0.0,
+        0.0,
+        1.4265831384348076,
+        0.0
+      ]
+    },
+    "F7": {
+      "AD-BSA": [
+        52.24849810814203,
+        57.00737360721723,
+        1.2856956897621785,
+        218.37119262400802,
+        1.2616622572595588
+      ],
+      "CMA-ES": [
+        0.0,
+        4.6980961959466185,
+        359.63355595817256,
+        0.0,
+        0.5149650937378283
+      ],
+      "L-SHADE": [
+        1.4416679420482978,
+        217.65772872528942,
+        0.4961110054496203,
+        0.0,
+        52.35891770235776
+      ],
+      "NL-SHADE-RSP": [
+        87.01560450382385,
+        0.0,
+        72.16875938071689,
+        0.0,
+        174.4157630435816
+      ],
+      "NL-SHADE-LBC": [
+        0.0,
+        218.6504579755856,
+        53.82313412273243,
+        218.7673180875163,
+        217.90716244352234
+      ],
+      "MadDE": [
+        951.7205592799119,
+        775.4857574869552,
+        661.3846404346527,
+        946.5705849058654,
+        228.7160776833016
+      ],
+      "Standard-PSO": [
+        16428.402248651582,
+        14534.092834727562,
+        2774.8770678356823,
+        13678.224637796491,
+        29479.635298091707
+      ],
+      "Standard-DE": [
+        52.52348581146225,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "Cuckoo-Search": [
+        53366.96485898632,
+        11013.490577923456,
+        17752.024215253034,
+        27791.93103263685,
+        21390.514283675453
+      ],
+      "jSO": [
+        53.3762822293279,
+        52.390030788218155,
+        0.0,
+        0.49552583987815524,
+        217.65338820568059
+      ]
+    },
+    "F8": {
+      "AD-BSA": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "CMA-ES": [
+        0.0,
+        100.29401925746106,
+        104.54844955590443,
+        102.73091940914492,
+        104.13500279437403
+      ],
+      "L-SHADE": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "NL-SHADE-RSP": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "NL-SHADE-LBC": [
+        94.01678299704236,
+        0.0,
+        101.61877307259101,
+        103.66692852382539,
+        101.83746990210375
+      ],
+      "MadDE": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "Standard-PSO": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "Standard-DE": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "Cuckoo-Search": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "jSO": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "F9": {
+      "AD-BSA": [
+        200.0,
+        200.0,
+        200.0,
+        200.0,
+        200.0
+      ],
+      "CMA-ES": [
+        100.00000000160026,
+        200.00000000229375,
+        200.00000000206956,
+        200.00000000226737,
+        200.00000000221644
+      ],
+      "L-SHADE": [
+        200.0,
+        200.0,
+        200.0,
+        200.0,
+        200.0
+      ],
+      "NL-SHADE-RSP": [
+        200.0,
+        200.0,
+        200.0,
+        200.0,
+        200.0
+      ],
+      "NL-SHADE-LBC": [
+        200.0,
+        200.0,
+        200.0,
+        200.0,
+        200.0
+      ],
+      "MadDE": [
+        200.00000000000273,
+        200.00000000000318,
+        200.00000000000182,
+        200.00000000000227,
+        200.00000000000182
+      ],
+      "Standard-PSO": [
+        373.83283101806273,
+        200.0000000000009,
+        200.0000000000009,
+        200.00000000000045,
+        200.0000000000009
+      ],
+      "Standard-DE": [
+        200.00000000008959,
+        200.00000000042246,
+        200.00000000135515,
+        200.00000000026694,
+        200.00000000022828
+      ],
+      "Cuckoo-Search": [
+        200.00192320806036,
+        200.00174082485955,
+        200.00211916308217,
+        200.00195261589988,
+        200.00419774053125
+      ],
+      "jSO": [
+        200.0,
+        200.0,
+        200.0,
+        200.0,
+        200.0
+      ]
+    },
+    "F10": {
+      "AD-BSA": [
+        656.3926698968962,
+        622.1793252859707,
+        622.1031933791,
+        622.1388653113545,
+        622.0341155386395
+      ],
+      "CMA-ES": [
+        622.019111268728,
+        622.0227417480342,
+        622.0227417480342,
+        622.0227417480342,
+        622.0912401834239
+      ],
+      "L-SHADE": [
+        622.0227417480319,
+        622.0985380370012,
+        622.0912401834221,
+        622.0227417480319,
+        622.1340882531276
+      ],
+      "NL-SHADE-RSP": [
+        674.089338899099,
+        642.8631031379082,
+        642.608010451313,
+        643.1508739712172,
+        674.3257116705245
+      ],
+      "NL-SHADE-LBC": [
+        673.4962022952177,
+        642.2357901429614,
+        673.6768876582519,
+        642.3244924290475,
+        642.2459709886598
+      ],
+      "MadDE": [
+        622.1144267064128,
+        622.0281019419044,
+        622.0227426880851,
+        673.5481655108401,
+        673.486420939852
+      ],
+      "Standard-PSO": [
+        661.6014195287153,
+        622.0473906093857,
+        662.0171552175989,
+        662.2289813214948,
+        622.2022039459353
+      ],
+      "Standard-DE": [
+        622.0227417480319,
+        622.0341155386395,
+        656.287185237531,
+        622.0227417480319,
+        622.0191112687253
+      ],
+      "Cuckoo-Search": [
+        622.634478833781,
+        622.2922561016758,
+        622.5300078101513,
+        622.9643084599347,
+        630.0155774588029
+      ],
+      "jSO": [
+        622.0227417480319,
+        622.0191112687253,
+        622.0191112687253,
+        622.0227417480319,
+        622.0191112687253
+      ]
+    }
+  }
+}

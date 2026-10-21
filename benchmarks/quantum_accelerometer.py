@@ -12,9 +12,9 @@ import numpy as np
 from scipy.integrate import solve_ivp
 from scipy.linalg import eigh
 import matplotlib.pyplot as plt
-
-# Importar AD-BSA v2 desde el workspace
-from ad_bsa_v2 import AD_BSA_v2
+import os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "src")))
+from ad_bsa import AD_BSA
 
 
 # ==============================================================================
@@ -267,9 +267,9 @@ def main():
         t_de = time.time() - t0
         print(f"  [Standard DE] Finalizado en {t_de:.1f}s | Mejor Score: {-best_fit_de:.4f}")
         
-        # 2. AD-BSA v2
+        # 2. AD-BSA
         t0 = time.time()
-        bsa = AD_BSA_v2(
+        bsa = AD_BSA(
             objective_func=f_vec,
             bounds=bounds,
             max_evaluations=budget,
