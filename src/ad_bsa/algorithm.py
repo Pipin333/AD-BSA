@@ -178,15 +178,19 @@ class AD_BSA:
                 where boogeymen_centroids has shape (num_boogeymen, D) and Rc
                 is the spatial capture radius.
         """
-        k_count = max(
-            self.num_boogeymen * 2,
-            int(np.ceil(self.k_boogeyman_ratio * self.current_pop_size)),
+        k_count = min(
+            self.current_pop_size,
+            max(
+                self.num_boogeymen,
+                int(np.ceil(self.k_boogeyman_ratio * self.current_pop_size)),
+            ),
         )
         worst_indices = np.argsort(self.fitness)[-k_count:]
         worst_individuals = self.Children[worst_indices]
+        n_worst = len(worst_individuals)
 
         boogeymen = []
-        cluster_size = int(np.ceil(k_count / self.num_boogeymen))
+        cluster_size = max(1, int(np.ceil(n_worst / self.num_boogeymen)))
         for m in range(self.num_boogeymen):
             c_slice = worst_individuals[
                 m * cluster_size:(m + 1) * cluster_size
@@ -195,7 +199,7 @@ class AD_BSA:
                 boogeymen.append(np.mean(c_slice, axis=0))
             else:
                 boogeymen.append(
-                    worst_individuals[self.rng.integers(0, k_count)]
+                    worst_individuals[self.rng.integers(0, n_worst)]
                 )
 
         pop_std = np.mean(np.std(self.Children, axis=0))
