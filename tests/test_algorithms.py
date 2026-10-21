@@ -14,6 +14,9 @@ from ad_bsa import (
     jSO,
     CMA_ES,
     L_SHADE,
+    NL_SHADE_RSP,
+    NL_SHADE_LBC,
+    MadDE,
     CanonicalCuckooSearch,
     StandardDE,
     StandardPSO,
@@ -36,6 +39,9 @@ def rosenbrock(x: np.ndarray) -> np.ndarray:
     jSO,
     CMA_ES,
     L_SHADE,
+    NL_SHADE_RSP,
+    NL_SHADE_LBC,
+    MadDE,
     CanonicalCuckooSearch,
     StandardDE,
     StandardPSO,
@@ -71,7 +77,7 @@ def test_ad_bsa_csc_repulsion_stability():
 
 
 def test_canonical_population_and_archive_ratios():
-    """Verifica que L-SHADE y jSO utilicen las fórmulas canónicas de N_init y ratios de archivo."""
+    """Verifica que L-SHADE, jSO, NL-SHADE-RSP, NL-SHADE-LBC y MadDE utilicen sus fórmulas canónicas."""
     dim = 10
     bounds = np.array([[-100.0, 100.0]] * dim)
     evaluator = EvaluatorWrapper(sphere)
@@ -87,6 +93,26 @@ def test_canonical_population_and_archive_ratios():
     jso_opt = jSO(evaluator, bounds=bounds, max_evaluations=50000, seed=42)
     assert jso_opt.N_init == expected_jso_N
     assert jso_opt.arc_rate == 2.6
+
+    # NL-SHADE-RSP canónico (CEC 2021): N_init = 30 * D, H = 20 * D, arc_rate = 2.1
+    rsp_opt = NL_SHADE_RSP(evaluator, bounds=bounds, max_evaluations=50000, seed=42)
+    assert rsp_opt.N_init == 30 * dim == 300
+    assert rsp_opt.H == 20 * dim == 200
+    assert rsp_opt.arc_rate == 2.1
+
+    # NL-SHADE-LBC canónico (CEC 2022): N_init = 23 * D, H = 20 * D, arc_rate = 1.0
+    lbc_opt = NL_SHADE_LBC(evaluator, bounds=bounds, max_evaluations=50000, seed=42)
+    assert lbc_opt.N_init == 23 * dim == 230
+    assert lbc_opt.H == 20 * dim == 200
+    assert lbc_opt.arc_rate == 1.0
+
+    # MadDE canónico (CEC 2021): N_init = 2 * D^2, H = 10 * D, arc_rate = 2.3, pbest_rate = 0.18, qbx = 0.01
+    madde_opt = MadDE(evaluator, bounds=bounds, max_evaluations=50000, seed=42)
+    assert madde_opt.N_init == 2 * (dim ** 2) == 200
+    assert madde_opt.H == 10 * dim == 100
+    assert madde_opt.arc_rate == 2.3
+    assert madde_opt.pbest_rate == 0.18
+    assert madde_opt.qbx_probability == 0.01
 
 
 def test_ad_bsa_pure_annealing_memory():
