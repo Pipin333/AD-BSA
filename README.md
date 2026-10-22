@@ -171,7 +171,7 @@ A preliminary exploratory ablation study on 4 functions in 50D ($n=5$ runs) eval
 
 ---
 
-## 6. Open Questions & Roadmap for AD-BSA v3
+## 6. Open Questions & Roadmap for AD-BSA
 
 Based on the diagnostic findings, future research will address:
 1. **Dimensional Scaling of Capture Radius ($R_c$)**: Reformulating $R_c \propto \mathcal{O}(\sqrt{D} \cdot \bar{\sigma})$ so that the active threshold $r_{\text{norm}} < \tau$ scales with the natural concentration of measure in $\mathbb{R}^D$.
