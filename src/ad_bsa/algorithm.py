@@ -87,6 +87,8 @@ class AD_BSA:
         annealing_power: float = 1.5,
         archive_factor: float = 1.4,
         max_repulsion_force: float = 4.0,
+        repulsion_mode: str = "cosecant",
+        initial_population: Optional[np.ndarray] = None,
         seed: Optional[int] = None,
     ) -> None:
         """Initialize the AD-BSA optimizer.
@@ -104,6 +106,8 @@ class AD_BSA:
             annealing_power: Power-law exponent gamma for thermodynamic cooling.
             archive_factor: External archive size multiplier |A| = factor * N.
             max_repulsion_force: Upper clipping bound for the cosecant barrier.
+            repulsion_mode: Formulation of repulsion mechanism ('cosecant', 'none', 'random_direction').
+            initial_population: Optional pre-sampled population matrix of shape (N, D).
             seed: Pseudo-random generator seed for deterministic reproducibility.
         """
         self.objective_func = objective_func
@@ -121,10 +125,14 @@ class AD_BSA:
         self.annealing_power = float(annealing_power)
         self.archive_factor = float(archive_factor)
         self.max_repulsion_force = float(max_repulsion_force)
+        self.repulsion_mode = str(repulsion_mode).lower()
+        self.initial_population = initial_population
 
         self.rng = np.random.default_rng(seed)
 
-        if pop_size_max is None:
+        if initial_population is not None:
+            self.pop_size_max = len(initial_population)
+        elif pop_size_max is None:
             calc_pop = int(
                 min(18 * self.dim, max(50, self.max_evaluations / 200))
             )
@@ -156,10 +164,13 @@ class AD_BSA:
 
     def _init_population(self) -> None:
         """Initialize the population uniformly inside the bounding box."""
-        self.Children = (
-            self.lower_bounds
-            + self.rng.random((self.current_pop_size, self.dim)) * self.bound_range
-        )
+        if self.initial_population is not None:
+            self.Children = np.asarray(self.initial_population, dtype=np.float64).copy()
+        else:
+            self.Children = (
+                self.lower_bounds
+                + self.rng.random((self.current_pop_size, self.dim)) * self.bound_range
+            )
         self.fitness = self.objective_func(self.Children)
         self.evaluations_count = self.current_pop_size
 
@@ -178,15 +189,19 @@ class AD_BSA:
                 where boogeymen_centroids has shape (num_boogeymen, D) and Rc
                 is the spatial capture radius.
         """
-        k_count = max(
-            self.num_boogeymen * 2,
-            int(np.ceil(self.k_boogeyman_ratio * self.current_pop_size)),
+        k_count = min(
+            self.current_pop_size,
+            max(
+                self.num_boogeymen,
+                int(np.ceil(self.k_boogeyman_ratio * self.current_pop_size)),
+            ),
         )
         worst_indices = np.argsort(self.fitness)[-k_count:]
         worst_individuals = self.Children[worst_indices]
+        n_worst = len(worst_individuals)
 
         boogeymen = []
-        cluster_size = int(np.ceil(k_count / self.num_boogeymen))
+        cluster_size = max(1, int(np.ceil(n_worst / self.num_boogeymen)))
         for m in range(self.num_boogeymen):
             c_slice = worst_individuals[
                 m * cluster_size:(m + 1) * cluster_size
@@ -195,7 +210,7 @@ class AD_BSA:
                 boogeymen.append(np.mean(c_slice, axis=0))
             else:
                 boogeymen.append(
-                    worst_individuals[self.rng.integers(0, k_count)]
+                    worst_individuals[self.rng.integers(0, n_worst)]
                 )
 
         pop_std = np.mean(np.std(self.Children, axis=0))
@@ -412,12 +427,26 @@ class AD_BSA:
             force_profile = np.where(r_norm < 2.0, force_profile, 0.0)
 
             unit_escape = diff_escape / r
-            escape_vector = (
-                F_escape[:, np.newaxis]
-                * force_profile
-                * unit_escape
-                * capture_radius
-            )
+            if self.repulsion_mode == "none":
+                escape_vector = np.zeros_like(safe_vector)
+            elif self.repulsion_mode == "random_direction":
+                rand_dirs = self.rng.standard_normal(diff_escape.shape)
+                rand_norms = np.linalg.norm(rand_dirs, axis=1, keepdims=True) + 1e-12
+                rand_unit = rand_dirs / rand_norms
+                escape_vector = (
+                    F_escape[:, np.newaxis]
+                    * force_profile
+                    * rand_unit
+                    * capture_radius
+                )
+            else:
+                # Canonical cosecant directional repulsion
+                escape_vector = (
+                    F_escape[:, np.newaxis]
+                    * force_profile
+                    * unit_escape
+                    * capture_radius
+                )
 
             # Composite mutant vector
             mutant_children = reflect_boundaries(
