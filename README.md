@@ -144,10 +144,10 @@ An earlier exploratory benchmark evaluated 10 independent runs across the 10 pro
 
 ## 4. Benchmark Audit & Known Third-Party Defect in `opfunu`
 
-An inspection of the third-party dependency `opfunu==1.0.1` (`opfunu/utils/operator.py`, lines 95–105) identified an algebraic discrepancy in `modified_schwefel_func`:
-1. The boundary penalty term `- ((z - 500)/100)^2 / nx` is assigned within a `-=` accumulation statement, causing boundary violations outside $[-500, 500]$ to **decrease** the objective value instead of penalizing it.
-2. Coordinates escaping $[-500, 500]$ yield fitness values strictly below the theoretical bias ($f(x) < f_{\text{bias}}$).
-3. Runners applying $\text{error} = \max(0.0, f_{\text{best}} - f_{\text{bias}})$ truncate these negative deltas to $0.00\text{e}+00$.
+An inspection of the third-party dependency `opfunu==1.0.1` (`opfunu/utils/operator.py`, lines 95–105) identified a sign inversion defect in `modified_schwefel_func`:
+1. **Amplitude Sign Inversion**: For coordinates exceeding the domain boundary ($z > 500$), the official IEEE CEC C-code specification defines the folded coordinate amplitude as $(500.0 - \text{fmod}(z, 500))$. In `opfunu/utils/operator.py`, this term is incorrectly implemented with an addition: `(500.0 + np.fmod(np.abs(z), 500))`.
+2. **Spurious Negative Valleys**: Because the amplitude grows up to $\approx 1000$ instead of decaying within $[0, 500]$, subtracting this term (`fx -= (...) - penalty`) causes the amplified sine wave to overpower the quadratic boundary penalty $( (z - 500) / 100 )^2 / n_x$ around $z \approx 997.55$. This creates an artificial global minimum of **$-553.791$** (verified empirically), strictly below the theoretical function minimum of $0.0$.
+3. **Artificial Zero Truncation**: When individuals escape into this spurious basin, $f(\mathbf{x}) < f_{\text{bias}}$. Benchmark runners computing $\text{error} = \max(0.0, f_{\text{best}} - f_{\text{bias}})$ truncate these negative deltas to exact zeros ($0.00\text{e}+00$).
 
 ### Dependency Map and Status Across CEC 2020 Problems:
 * **F1, F3, F4, F9, F10**: **Clean**. No dependency on `modified_schwefel_func`.
