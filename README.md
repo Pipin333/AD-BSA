@@ -171,15 +171,7 @@ A preliminary exploratory ablation study on 4 functions in 50D ($n=5$ runs) eval
 
 ---
 
-## 6. Quantum Floquet Engineering Application
-
-An exploratory numerical simulation applying AD-BSA to multi-harmonic Floquet control in atomtronic Sagnac accelerometers (Carmona-López et al., 2026 model) was examined as a potential application domain.
-
-* **Classification**: This study represents an exploratory **numerical simulation** (simulated Hamiltonian dynamics in QuTiP), not an experimental laboratory validation on physical hardware. Detailed performance claims have been excluded from the core validated benchmark suite pending formal experimental protocols.
-
----
-
-## 7. Open Questions & Roadmap for AD-BSA v3
+## 6. Open Questions & Roadmap for AD-BSA v3
 
 Based on the diagnostic findings, future research will address:
 1. **Dimensional Scaling of Capture Radius ($R_c$)**: Reformulating $R_c \propto \mathcal{O}(\sqrt{D} \cdot \bar{\sigma})$ so that the active threshold $r_{\text{norm}} < \tau$ scales with the natural concentration of measure in $\mathbb{R}^D$.
