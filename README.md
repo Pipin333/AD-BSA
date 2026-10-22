@@ -115,9 +115,9 @@ As documented in the audit section below, F3, F4, and F10 do not depend on the t
 
 | Function | Landscape Type | `AD-BSA (Full)` | `w/o Repulsion` | `Random Dir` | `L-SHADE (Ref)` | Wilcoxon: Full vs w/o Rep | Wilcoxon: Full vs L-SHADE | Holm Adj. $p$ (vs L-SHADE) |
 | :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **F3** | Lunacek bi-Rastrigin | $22.68$ (mean $22.4$) | $22.48$ (mean $22.4$) | $22.21$ (mean $22.5$) | $22.68$ (mean $22.6$) | $p = 0.937$ ($=$) | $p = 0.561$ ($=$) | $p_{\text{adj}} = 1.000$ |
+| **F3** | Lunacek bi-Rastrigin | $22.75$ (mean $22.4$) | $22.47$ (mean $22.4$) | $22.17$ (mean $22.5$) | $22.65$ (mean $22.6$) | $p = 0.937$ ($=$) | $p = 0.561$ ($=$) | $p_{\text{adj}} = 1.000$ |
 | **F4** | Rosenbrock + Griewank| $1.62$ (mean $1.70$) | $1.60$ (mean $1.70$) | $1.86$ (mean $2.06$) | **$1.41$ (mean $1.33$)** | $p = 0.678$ ($=$) | **$p = 4.27 \times 10^{-4}$ ($-$)** | **$p_{\text{adj}} = 0.0026$ ($-$)** |
-| **F10** | Composition 3 ($N=5$)| $622.05$ (mean $622.0$) | $622.05$ (mean $622.0$) | $622.04$ (mean $622.0$) | $622.02$ (mean $622.0$) | $p = 0.638$ ($=$) | $p = 0.048$ ($-$) | $p_{\text{adj}} = 0.144$ ($=$) |
+| **F10** | Composition 3 ($N=5$)| $622.07$ (mean $622.1$) | $622.10$ (mean $623.4$) | $622.11$ (mean $625.7$) | $622.05$ (mean $622.1$) | $p = 0.638$ ($=$) | $p = 0.048$ ($-$) | $p_{\text{adj}} = 0.144$ ($=$) |
 
 *Notation*:
 * `(+)` : AD-BSA outperforms competitor with statistical significance ($p < 0.05$).
@@ -144,7 +144,7 @@ An earlier exploratory benchmark evaluated 10 independent runs across the 10 pro
 
 ## 4. Benchmark Audit & Known Third-Party Defect in `opfunu`
 
-An inspection of the third-party dependency `opfunu==1.0.1` (`opfunu/cec_based/operator.py`, lines 95–105) identified an algebraic discrepancy in `modified_schwefel_func`:
+An inspection of the third-party dependency `opfunu==1.0.1` (`opfunu/utils/operator.py`, lines 95–105) identified an algebraic discrepancy in `modified_schwefel_func`:
 1. The boundary penalty term `- ((z - 500)/100)^2 / nx` is assigned within a `-=` accumulation statement, causing boundary violations outside $[-500, 500]$ to **decrease** the objective value instead of penalizing it.
 2. Coordinates escaping $[-500, 500]$ yield fitness values strictly below the theoretical bias ($f(x) < f_{\text{bias}}$).
 3. Runners applying $\text{error} = \max(0.0, f_{\text{best}} - f_{\text{bias}})$ truncate these negative deltas to $0.00\text{e}+00$.
