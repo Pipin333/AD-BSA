@@ -127,3 +127,31 @@ def test_ad_bsa_pure_annealing_memory():
     # Tras optimizar, la memoria de Lehmer para escape no debe haber colapsado a cero
     assert np.all(opt.Memory_F_escape > 0.05)
 
+
+def test_ad_bsa_repulsion_variants_and_paired_population():
+    """Verifica que las variantes de repulsión y la inyección de población inicial operen correctamente."""
+    dim = 5
+    bounds = np.array([[-10.0, 10.0]] * dim)
+    init_pop = np.random.uniform(-10.0, 10.0, (50, dim))
+
+    # 1. Full AD-BSA
+    opt_full = AD_BSA(EvaluatorWrapper(sphere), bounds=bounds, max_evaluations=1000, initial_population=init_pop, seed=123)
+    res_full = opt_full.optimize()
+    assert res_full.total_evaluations <= 1000
+
+    # 2. No repulsion
+    opt_none = AD_BSA(EvaluatorWrapper(sphere), bounds=bounds, max_evaluations=1000, repulsion_mode="none", initial_population=init_pop, seed=123)
+    res_none = opt_none.optimize()
+    assert res_none.total_evaluations <= 1000
+
+    # 3. Random direction repulsion
+    opt_rand = AD_BSA(EvaluatorWrapper(sphere), bounds=bounds, max_evaluations=1000, repulsion_mode="random_direction", initial_population=init_pop, seed=123)
+    res_rand = opt_rand.optimize()
+    assert res_rand.total_evaluations <= 1000
+
+    # 4. L-SHADE with paired initial population
+    opt_lshade = L_SHADE(EvaluatorWrapper(sphere), bounds=bounds, max_evaluations=1000, initial_population=init_pop, seed=123)
+    res_lshade = opt_lshade.optimize()
+    assert res_lshade.total_evaluations <= 1000
+
+

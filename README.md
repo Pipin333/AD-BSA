@@ -2,364 +2,190 @@
 
 # AD-BSA: Adaptive Differential Boogeyman Search Algorithm
 
-### *Continuous Global Metaheuristic Optimization via Bounded Cosecant Repulsion Barriers & Anti-Attractor Dynamics*
+### *An Exploratory Investigation of Explicit Negative Learning and Anti-Attractor Dynamics in Differential Evolution*
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Python Version](https://img.shields.io/badge/python-3.9%20%7C%203.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-blue)](https://www.python.org/)
-[![CEC 2020 Suite](https://img.shields.io/badge/CEC_2020_Suite-Friedman_2.30_(Tied_with_CMA--ES)-brightgreen)](#ieee-cec-2020-benchmark-suite-50-dimensions)
+[![Status](https://img.shields.io/badge/status-exploratory%20research%20%2F%20diagnostic-orange)](#academic-status--limitations)
 [![Tests](https://github.com/Pipin333/AD-BSA/actions/workflows/ci.yml/badge.svg)](https://github.com/Pipin333/AD-BSA/actions)
 [![Code Style](https://img.shields.io/badge/code%20style-PEP%208-black)](https://www.python.org/dev/peps/pep-0008/)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23147724.svg)](https://doi.org/10.5281/zenodo.23147724)
 
 </div>
 
 ---
 
-## ⚡ At a Glance: Core Mutation & Performance Snapshot
+## 📌 Academic Status & Research Context
 
-### 1. The Tri-Partite Mutation Operator
-$$\mathbf{v}_i = \mathbf{x}_i + \underbrace{F_{\text{safe}, i} \cdot (\mathbf{x}_{p\text{-best}} - \mathbf{x}_i)}_{\substack{\text{\bf Positive Attraction} \\ \text{(Exploitation of Safe Havens)}}} + \underbrace{\mathbf{v}_{\text{escape}, i}(|\csc|)}_{\substack{\text{\bf Repulsive Barrier} \\ \text{(Active Basin Evacuation)}}} + \underbrace{F_{\text{diff}, i} \cdot (\mathbf{x}_{r1} - \tilde{\mathbf{x}}_{r2})}_{\substack{\text{\bf Differential Perturbation} \\ \text{(Diversity Injection)}}}$$
-
-### 2. High-Dimensional & Real-World Performance Snapshot
-
-| Evaluation Benchmark | Problem Dimension | Algorithm / Paradigm | Benchmark Result / Rank | Key Takeaway / Significance |
-| :--- | :---: | :--- | :---: | :--- |
-| **IEEE CEC 2020 Suite**<br>*(Fixed Budget: 50,000 NFEs, 1,000·D)* | **50D** | **AD-BSA (Proposed)**<br>CMA-ES (IPOP)<br>jSO (CEC 2017 Winner)<br>L-SHADE (CEC 2014 Winner)<br>Standard DE / PSO | **Rank #1 (Friedman: 2.30)**<br>Rank #1 (Friedman: 2.30)<br>Rank #3 (Friedman: 2.40)<br>Rank #4 (Friedman: 3.40)<br>Rank #6 / #5 (6.10 / 5.00) | Tied for **#1 rank** on multimodal deception; exact zeros (0.00e+00) on Schwefel (F2) and Lunacek (F3). |
-| **IEEE CEC 2020 Suite**<br>*(Standard Budget: 200,000 NFEs, 10,000·D)* | **20D** | **AD-BSA (Proposed)**<br>L-SHADE (CEC 2014)<br>jSO (CEC 2017)<br>CMA-ES<br>NL-SHADE-RSP (CEC 2021)<br>NL-SHADE-LBC (CEC 2022)<br>MadDE (CEC 2021) | **Rank #2 (Friedman: 3.20)**<br>Rank #1 (Friedman: 2.80)<br>Rank #3 (Friedman: 4.30)<br>Rank #4 (Friedman: 4.60)<br>Rank #5 (Friedman: 5.10)<br>Rank #6 (Friedman: 5.30)<br>Rank #7 (Friedman: 6.40) | **Surpasses 2021/2022 world champions** under standard exhaustive search protocol (10,000·D); robust multi-modal barrier escape. |
-| **Quantum Floquet Sensor**<br>*(PRResearch 8, 033316, 2026)* | **10D, 15D, 20D**<br>*(Harmonics)* | **AD-BSA (Proposed)**<br>L-SHADE<br>Standard DE<br>dCRAB Quantum Optimal | **Peak: 8.8324** (Mean: 5.13)<br>Peak: 9.8685 (Mean: 4.86)<br>Peak: 1.9812 (Mean: 2.01)<br>Baseline: 0.6900 | **4.5x to 12x leap** over standard baselines; 0.999997 unitary norm conservation (DOP853) and >99.3% retention under 1% noise. |
-
-<p align="center">
-  <img src="benchmarks/cec2020_50d_comparison.png" alt="IEEE CEC 2020 50D Benchmark Comparison" width="850"/>
-  <br>
-  <em>Figure 1: Logarithmic Accuracy Score on IEEE CEC 2020 (50 Dimensions, 50,000 NFEs, Higher is Better). Bars plot <code>max(0, 10 - log10(Δf))</code>, where zero error reaches the peak ceiling of 18.0 and higher bars indicate superior convergence.</em>
-</p>
+> [!IMPORTANT]
+> **Document Purpose**: This repository contains an exploratory research implementation of **AD-BSA**, designed to investigate whether **explicit negative learning** (repulsion from sub-optimal solution clusters) can enhance basin evacuation in continuous global optimization.
+>
+> The documentation below has been audited to separate **implemented algorithms**, **preliminary observations**, **diagnostic findings**, and **open questions requiring further validation**. Results are presented without promotional claims of superiority over state-of-the-art baselines.
 
 ---
 
-## 📌 Executive Summary & Theoretical Motivation
+## 1. Algorithmic Overview & Mathematical Formulation
 
-In continuous high-dimensional global optimization ($D \ge 50$), the volume of sub-optimal stagnation basins exponentially dwarfs the basin of attraction of the global optimum. Canonical evolutionary algorithms—including Differential Evolution (DE), Particle Swarm Optimization (PSO), and Genetic Algorithms (GA)—rely primarily on **positive attraction** towards previously discovered elite vectors ($\mathbf{x}_{\text{best}}$ or $p$-best elite targets). When the population clusters inside a deceptive local trap, exploratory perturbations decay and convergence can stagnate.
+AD-BSA builds upon the success-history parameter adaptation of **SHADE** / **L-SHADE** (Tanabe & Fukunaga, 2014) and **jSO** (Brest et al., 2017), introducing an exploratory tripartite mutation operator:
 
-**AD-BSA** explores a mathematical framework for **Explicit Negative Learning** (*Anti-Attractor Dynamics*). Alongside learning *where to go*, the swarm actively maps *where not to be*.
+$$\mathbf{v}_i = \mathbf{x}_i + \underbrace{F_{\text{safe}, i} \cdot (\mathbf{x}_{p\text{-best}} - \mathbf{x}_i)}_{\text{Positive Elite Attraction}} + \underbrace{\mathbf{v}_{\text{escape}, i}}_{\text{Repulsive Escape Term}} + \underbrace{F_{\text{diff}, i} \cdot (\mathbf{x}_{r1} - \tilde{\mathbf{x}}_{r2})}_{\text{Differential Perturbation}}$$
 
-Originating from a conceptual reinterpretation of the mythical *Boogeyman* (*El Cuco / El Viejo del Saco*) as an aversive physical potential field, AD-BSA models:
-1. **Dynamic Anti-Attractor Clusters ($\mathbf{S}_k$):** Identified in the barycenters of the worst-performing solutions.
-2. **The Bounded Cosecant Repulsion Barrier ($|\csc(x)|$):** A non-linear potential field providing high repulsive acceleration away from stagnation centers while dropping to zero in safe valleys.
-3. **Power-Law Cooling Schedule:** A power-law damping $(1 - t/\text{MaxNFE})^\gamma$ that transitions search dynamics from basin evacuation in early phases to localized exploitation in later stages.
-4. **Historical Lehmer Parameter Memories & LPSR:** Adaptive selection of differential parameters coupled with Linear Population Size Reduction.
+### 1.1. Anti-Attractor Barycenters
+At each generation, the worst $k = 15\%$ fraction of the population is sorted and partitioned into $M = 2$ contiguous rank-based sub-tiers $\mathcal{C}_1, \mathcal{C}_2$. The barycenter of each tier acts as an anti-attractor epicenter:
 
----
+$$\mathbf{S}_m = \frac{1}{|\mathcal{C}_m|} \sum_{\mathbf{x} \in \mathcal{C}_m} \mathbf{x}, \quad m \in \{1, \dots, M\}$$
 
-## 💡 The Intuition in 30 Seconds
+Each individual $\mathbf{x}_i$ is assigned to its nearest anti-attractor $\mathbf{S}_{\text{closest}, i} = \arg\min_{\mathbf{S}_m} \|\mathbf{x}_i - \mathbf{S}_m\|_2$.
 
-> **Why "El Cuco" (The Boogeyman)?**  
-> Almost all classical optimization algorithms (PSO, Genetic Algorithms, CMA-ES, Differential Evolution) operate purely on **Positive Learning**: *"See where the best solutions are and move towards them."*  
-> 
-> In rugged, deceptive terrains, this blind attraction leads to **premature stagnation**—every agent falls into the same attractive trap.  
-> 
-> **AD-BSA introduces Explicit Negative Learning:**  
-> * **The Boogeyman (Anti-Attractor):** Clusters the worst solutions in the search space.  
-> * **The Repulsion Barrier:** If an agent gets too close to a known bad region, a non-linear cosecant potential physically repels it away.  
-> * **The Sack & Safe House:** Trapped solutions are captured and directionally redirected toward the global best (*The Safe House*).  
-> 
-> **The Takeaway:** You don't just reach the optimal solution by chasing success; you reach it by **actively running away from known disasters.**
+### 1.2. The Implemented Repulsion Profile
+The capture radius $R_c$ is calibrated to the population's mean coordinate standard deviation:
 
----
+$$R_c = \max\left(0.5 \cdot \bar{\sigma}_{\text{pop}}, \, 10^{-12}\right), \quad \bar{\sigma}_{\text{pop}} = \frac{1}{D} \sum_{j=1}^D \sigma_j$$
 
-## 🧬 Related Works & Algorithmic Lineage
+The Euclidean distance $r_i = \|\mathbf{x}_i - \mathbf{S}_{\text{closest}, i}\|_2$ is normalized as:
 
-AD-BSA belongs to the evolutionary lineage of **Adaptive Differential Evolution (DE)**, extending the successful architectural foundations of the **SHADE** family:
+$$r_{\text{norm}, i} = \frac{r_i}{2 R_c + \epsilon}$$
 
-$$\text{DE (1997)} \longrightarrow \text{JADE (2009)} \longrightarrow \text{SHADE (2013)} \longrightarrow \text{L-SHADE (2014)} \longrightarrow \text{jSO (2017)} \longrightarrow \mathbf{AD\text{-}BSA (2026)}$$
+In the current code (`src/ad_bsa/algorithm.py`), the force profile $\phi(r_{\text{norm}})$ is implemented as:
 
-- **DE / JADE:** Storn & Price (1997) introduced differential mutation. Zhang & Sanderson (2009) added auto-adaptive control parameters ($F$, $CR$) with external archives.
-- **SHADE / L-SHADE:** Tanabe & Fukunaga (2013, 2014) introduced Success-History parameter adaptation with Lehmer means and Linear Population Size Reduction (LPSR), winning IEEE CEC 2014.
-- **jSO:** Brest et al. (2017) refined parameter weighting and initial population rules, winning IEEE CEC 2017.
-- **AD-BSA (This Work):** Retains the historical Lehmer memory and LPSR backbone, while introducing **explicit repulsive negative learning**: generating multi-tier anti-attractor barycenters from the worst individuals and applying an analytical bounded cosecant barrier ($|\csc|$) with power-law budget damping to prevent premature convergence in high-dimensional multimodal landscapes.
+$$\arg = \text{clip}\left(r_{\text{norm}} \cdot \frac{\pi}{2}, \; 10^{-3}, \; 0.999\pi\right)$$
 
----
+$$\phi(r_{\text{norm}}) = \begin{cases}
+\text{clip}\left(\left|\csc(\arg)\right|, \, 1.0, \, F_{\max}\right) - 1.0 & \text{if } r_{\text{norm}} < 2.0 \\
+0.0 & \text{if } r_{\text{norm}} \ge 2.0
+\end{cases}$$
 
-## 🔬 Mathematical Formulation
+$$\mathbf{v}_{\text{escape}, i} = F_{\text{escape}, i}(t) \cdot \phi(r_{\text{norm}, i}) \cdot \frac{\mathbf{x}_i - \mathbf{S}_{\text{closest}, i}}{r_i} \cdot R_c$$
 
-### 1. Multi-Boogeyman Anti-Attractors (Fitness-Rank Stratified Partitioning)
+where $F_{\text{escape}, i}(t) = F_{\text{raw}, i} \cdot \max\left(0, \left(1 - \frac{t}{\text{MaxNFE}}\right)^{1.5}\right)$.
 
-Let $\mathbf{P}$ be the swarm population at generation $t$. We extract the subset $\mathbf{P}_{\text{worst}}$ representing the worst 15% fraction of individuals ($k = 0.15$).
+### 1.3. Mathematical Properties of the Implemented Profile
+An analytical trace of the implemented profile reveals key structural properties:
 
-To eliminate iterative clustering latency $O(k \cdot D \cdot I)$ and avoid distance concentration issues in high dimensions ($D \ge 50$), the sub-optimal population is partitioned via **Fitness-Rank Stratification** (*Fitness-Rank Niching*) into $M$ contiguous sub-tiers. The barycenter $\mathbf{S}_k$ of each tier acts as an anti-attractor epicenter:
+| $r_{\text{norm}}$ | $\arg$ (rad) | $\sin(\arg)$ | $\phi(r_{\text{norm}})$ ($F_{\max}=4$) | Mathematical Characterization |
+| :---: | :---: | :---: | :---: | :--- |
+| **$0.00$** | $0.0010$ | $0.0010$ | **$3.0000$** | Upper saturation limit ($F_{\max} - 1.0$). |
+| **$0.50$** | $0.7854$ ($\pi/4$) | $0.7071$ | **$0.4142$** | Monotonic decrease from peak. |
+| **$1.00$** | $1.5708$ ($\pi/2$) | $1.0000$ | **$0.0000$** | **Null force point**: $\phi \equiv 0$ at distance $r = 2 R_c$. |
+| **$1.50$** | $2.3562$ ($3\pi/4$) | $0.7071$ | **$0.4142$** | **Rebound anomaly**: force increases as distance increases. |
+| **$1.80$** | $2.8274$ | $0.3090$ | **$2.2361$** | Force increases as solution moves away from target. |
+| **$1.90$** | $2.9845$ | $0.1564$ | **$3.0000$** | Force saturates at upper bound far from the anti-attractor. |
+| **$1.99$** | $3.1259$ | $0.0157$ | **$3.0000$** | Maximum force on outer boundary. |
+| **$2.00$** | $3.1385$ | $0.0031$ | **$0.0000$** | **Finite jump discontinuity**: drops from $3.0 \to 0.0$ at threshold. |
+| **$> 2.00$** | — | — | **$0.0000$** | Inactive by boolean filter. |
 
-$$
-\mathbf{S}_k = \frac{1}{|\mathcal{C}_k|} \sum_{\mathbf{x} \in \mathcal{C}_k} \mathbf{x}, \quad k \in \{1, \dots, M\}
-$$
-
-The capture radius $R_c$ is calibrated dynamically to the swarm's spatial variance:
-
-$$
-R_c = \max\left(0.5 \cdot \bar{\sigma}_{\mathbf{P}}, \, 10^{-12}\right)
-$$
-
-### 2. The Bounded Cosecant Repulsion Barrier
-
-For each candidate vector $\mathbf{x}_i$, its nearest anti-attractor epicenter is identified via Euclidean distance:
-
-$$
-\mathbf{S}_{\text{closest}, i} = \arg\min_{\mathbf{S}_k} \|\mathbf{x}_i - \mathbf{S}_k\|
-$$
-
-The normalized distance to danger is:
-
-$$
-r_i = \|\mathbf{x}_i - \mathbf{S}_{\text{closest}, i}\| + \epsilon, \qquad r_{\text{norm}, i} = \frac{r_i}{2 R_c + \epsilon}
-$$
-
-The repulsive force profile is governed by the bounded cosecant barrier $\phi(r)$:
-
-$$
-\phi(r) = \begin{cases}
-\mathrm{clip}\left( \left| \csc\left( \mathrm{clip}\left( r_{\text{norm}} \cdot \frac{\pi}{2}, \, 10^{-3}, \, 0.999\pi \right) \right) \right|, \, 1.0, \, M_{\max} \right) - 1.0 & \text{if } r_{\text{norm}} < 2.0 \\
-0 & \text{if } r_{\text{norm}} \ge 2.0
-\end{cases}
-$$
-
-The resulting escape vector is defined as:
-
-$$
-\mathbf{v}_{\text{escape}, i} = F_{\text{escape}, i}(t) \cdot \phi(r_i) \cdot \frac{\mathbf{x}_i - \mathbf{S}_{\text{closest}, i}}{r_i} \cdot R_c
-$$
-
-> **Physical Significance:**
-> - **Near the trap ($r \to 0$):** $\phi(r) \to M_{\max} - 1.0$, producing maximum repulsive acceleration to violently eject the solution from the basin of deception.
-> - **Far from danger ($r_{\text{norm}} \ge 2.0$):** $\phi(r) \equiv 0$, eliminating all transverse perturbations and allowing pure, undisturbed descent along narrow parabolic valleys (e.g., Rosenbrock, Bent Cigar).
-
-### 3. Power-Law Budget Damping Schedule
-The repulsive force scales over the computational budget $t / \text{MaxNFE}$:
-
-$$
-F_{\text{escape}, i}(t) = F_{\text{raw}, i} \cdot \max\left(0, \left(1 - \frac{\text{NFE}}{\text{MaxNFE}}\right)^{\gamma}\right), \quad \gamma = 1.5
-$$
-
-The adaptive Lehmer parameter memory records $F_{\text{raw}, i}$, ensuring the cooling schedule dampens repulsion progressively as a power-law function of the computational budget $(1 - t/\text{MaxNFE})^\gamma$, cleanly decoupled from the historical success memory.
-
-### 4. Adaptive Differential Mutation Equation
-Offspring vectors $\mathbf{v}_i$ are generated by synthesizing positive attraction, negative repulsion, and historical diversity:
-
-$$
-\mathbf{v}_i = \mathbf{x}_i + \underbrace{F_{\text{safe}, i} \cdot (\mathbf{x}_{p\text{-best}} - \mathbf{x}_i)}_{\text{Positive Elite Attraction}} + \underbrace{\mathbf{v}_{\text{escape}, i}}_{\text{Repulsive Escape Barrier}} + \underbrace{F_{\text{diff}, i} \cdot (\mathbf{x}_{r1} - \tilde{\mathbf{x}}_{r2})}_{\text{Differential Exploration}}
-$$
-
-Where the three core operators synthesize:
-- **Positive Elite Attraction:** Pulls candidate solutions toward the top $p$-best safe havens.
-- **Negative Repulsion Barrier ($\mathbf{v}_{\text{escape}}$):** Expels candidates out of deceptive stagnation basins.
-- **Differential Exploration:** Injects historical diversity via mutation difference vectors sampled from the swarm population and external archive ($\mathbf{A}$).
+> [!WARNING]
+> **Discrepancy Between Conceptual Intent and Algebraic Implementation**:
+> 1. **Non-monotonicity**: The function does not decrease continuously. It reaches zero at $r_{\text{norm}} = 1.0$, increases back to $3.0$ between $1.0$ and $1.9$, and then drops discontinuously to $0.0$ at $r_{\text{norm}} = 2.0$.
+> 2. **Conceptual Distinction**: While the physical motivation aimed for an aversive potential field repelling trapped solutions, the current algebraic mapping produces secondary outer repulsion and a sharp boundary cutoff. Addressing this formulation is an open task for future versions.
 
 ---
 
-## 📊 IEEE CEC 2020 Benchmark Suite (50 Dimensions)
+## 2. Experimental Diagnostics & Observations
 
-AD-BSA was evaluated on the mathematical test functions of the **IEEE CEC 2020 Single Objective Bound-Constrained Benchmark Suite** in **$50$ Dimensions** ($D = 50$, search space $[-100, 100]^{50}$) across **10 independent runs** per problem with an experimental budget of **$50,000$ evaluations (MaxNFE)** per run (700 total experiments).
+### 2.1. Mechanistic Diagnostic on F3 ($D=20$)
+To verify whether the repulsion operator was actively contributing in 20-dimensional search spaces, a single instrumented run was executed on **CEC 2020 F3** ($D=20$, $\text{MaxNFE} = 200,000$, $N_{\text{init}}=360$, seed `101000`) comparing `Full AD-BSA` and `w/o Repulsion` from an identical initial population $P_0$.
+
+Detailed generation-by-generation telemetry (archived in [`benchmarks/diagnostic_pre_meeting_f3_20d.json`](benchmarks/diagnostic_pre_meeting_f3_20d.json)) showed:
+
+* **Total generations evaluated**: $2,528$.
+* **Generaciones con repulsión activa ($\|v_{\text{esc}}\| > 0$)**: **12 de 2.528 ($0.47\%$)**.
+* **Generaciones con repulsión nula ($\|v_{\text{esc}}\| \equiv 0$)**: **2.516 de 2.528 ($99.53\%$)**.
+* **Identidad inicial y divergencia**: Hasta la generación 25, $v_{\text{esc}} \equiv 0$ para todos los individuos; ambas variantes ejecutaron pasos idénticos bit a bit. La primera divergencia ocurrió en la generación 26 por una única activación local ($\|v_{\text{esc}}\|_{\max} = 2.59$).
+* **Magnitud media en la corrida**: $\|v_{\text{esc}}\|_{\text{media}} = 3.93 \times 10^{-6}$ frente a $\|v_{\text{safe}}\|_{\text{media}} = 1.57$ (razón efectiva $\sim 2.5 \times 10^{-6}$).
+* **Causa geométrica**: En $D=20$, la distancia euclidiana inter-individuos e individuo-centroide escala con $\mathcal{O}(\sqrt{D} \sigma) \approx \sqrt{20}\sigma \approx 4.47\sigma$. Como $r_{\text{norm}} = \frac{d}{2 R_c} \approx \frac{d}{\sigma}$, la mediana observada de $r_{\text{norm}}$ se mantuvo en **$4.64$** durante toda la búsqueda. Debido a la condición de corte $r_{\text{norm}} < 2.0$, la casi totalidad de los individuos quedó fuera del radio de activación.
 
 > [!NOTE]
-> **Protocol Context:** This evaluation uses the mathematical problem definitions from the CEC 2020 benchmark suite under an independent, fixed-budget protocol ($50,000$ NFEs), not official participation in the live 2020 IEEE CEC competition.
-
-All competitors were executed in their canonical competitive formulations:
-- **jSO** (Brest et al., IEEE CEC 2017 Winner — $N_{init} \approx 691$, $r^{arc} = 2.6$, midpoint boundary rule)
-- **CMA-ES** (Hansen et al., Covariance Matrix Adaptation with IPOP Restarts $\lambda \leftarrow 2\lambda$)
-- **L-SHADE** (Tanabe & Fukunaga, IEEE CEC 2014 Winner — $N_{init} = 18D = 900$, midpoint boundary rule)
-- **Canonical Cuckoo Search** (Yang & Deb, 2009 — Mantegna Lévy Flights)
-- **Standard DE** (DE/rand/1/bin with bounds clamping)
-- **Standard PSO** (Canonical Global Best PSO with linear inertia decay and wall absorption)
-
-### 🏆 Overall Friedman Ranking (1 to 7, Lower is Better)
-
-| Rank | Algorithm | Friedman Score | Description / Lineage |
-| :---: | :--- | :---: | :--- |
-| **🥇 #1** | **`AD-BSA`** | **2.30** | **Proposed: Bounded Cosecant Repulsion $\|\csc(x)\|$ + Anti-Attractors** |
-| **🥇 #1** | **`CMA-ES`** | **2.30** | Covariance Matrix Adaptation with IPOP Restarts |
-| **🥉 #3** | **`jSO`** | **2.40** | IEEE CEC 2017 Winner (Enhanced iL-SHADE) |
-| **#4** | **`L-SHADE`** | **3.40** | IEEE CEC 2014 Winner (Linear Population Reduction SHADE) |
-| **#5** | **`Standard-PSO`** | **5.00** | Canonical Particle Swarm Optimization with linear inertia decay |
-| **#6** | **`Standard-DE`** | **6.10** | Classical Differential Evolution (DE/rand/1/bin) |
-| **#7** | **`Cuckoo-Search`**| **6.50** | Canonical Cuckoo Search with Mantegna Lévy Flights |
+> These figures reflect a **single diagnostic execution** on F3 ($D=20$) and serve as an empirical explanation of why the operator remained largely inactive under the current dimensional parameterization, rather than a definitive characterization across all possible settings.
 
 ---
 
-### Detailed Statistical Results: Mean Error ± Std Dev (Δf = f(x*) − f_bias)
+## 3. Benchmark Protocol Evaluations
 
-Sign marks for Wilcoxon signed-rank test vs `AD-BSA` (α = 0.05):
-* `(+)` : AD-BSA significantly outperforms competitor (*p* < 0.05)
-* `(=)` : Statistically equivalent (*p* ≥ 0.05)
-* `(-)` : Competitor significantly outperforms AD-BSA (*p* < 0.05)
+### 3.1. Paired Proof-of-Concept Protocol ($D=20$, $\text{MaxNFE} = 200,000$, $n=15$ Runs)
+To evaluate the contribution of individual components without initialization noise, a strictly paired benchmark was conducted across 15 independent runs per function. Each run shared the identical initial population $P_0$ and random seed across four variants:
+1. `AD-BSA (Full)`: Complete architecture with cosecant repulsion.
+2. `AD-BSA (w/o Repulsion)`: Repulsion disabled ($v_{\text{esc}} \equiv 0$).
+3. `AD-BSA (Random Direction)`: Identical $\|v_{\text{esc}}\|$ module, isotropic random direction.
+4. `L-SHADE (Reference)`: Canonical CEC 2014 winner initialized from the same $P_0$.
 
+Results are archived in [`benchmarks/phase3_poc_results.json`](benchmarks/phase3_poc_results.json).
 
-*(Bold values indicate the best performer with lowest mean error for each row)*
+#### Validated Functions (F3, F4, F10)
+As documented in the audit section below, F3, F4, and F10 do not depend on the third-party Schwefel operator defect and represent clean continuous landscapes:
 
-| Problem | Landscape Class | `AD-BSA` (Proposed) | `jSO` (CEC 2017) | `CMA-ES` | `L-SHADE` (CEC 2014) | `Standard-DE` | `Standard-PSO` | `Cuckoo-Search` |
+| Function | Landscape Type | `AD-BSA (Full)` | `w/o Repulsion` | `Random Dir` | `L-SHADE (Ref)` | Wilcoxon: Full vs w/o Rep | Wilcoxon: Full vs L-SHADE | Holm Adj. $p$ (vs L-SHADE) |
 | :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **F1** | Unimodal (Bent Cigar) | 834.28 ± 785.1 | 2112.29 ± 1756.8 (=) | **0.00e+00** (-) | 4296.57 ± 1823.2 (+) | 3.34e+08 ± 1.2e+08 (+) | 3.85e+08 ± 1.1e+09 (+) | 4.46e+09 ± 1.1e+09 (+) |
-| **F2** | Multimodal (Schwefel) | **0.00e+00 ± 0.0** | 696.40 ± 1786.6 (=) | 1869.31 ± 3608.1 (=) | 157.99 ± 250.1 (=) | 8075.19 ± 719.9 (+) | 2761.38 ± 2686.2 (+) | 2004.58 ± 636.7 (+) |
-| **F3** | Multimodal (Lunacek bi-Rastrigin) | 138.19 ± 19.8 | 246.56 ± 19.1 (+) | **101.12 ± 10.0** (-) | 317.47 ± 25.9 (+) | 1.24e+04 ± 4.1e+03 (+) | 9212.57 ± 11962.2 (+) | 1.43e+05 ± 2.6e+04 (+) |
-| **F4** | Multimodal (Rosenbrock + Griewank)| 6.61 ± 3.0 | 17.39 ± 0.9 (+) | **6.20 ± 0.9** (=) | 19.70 ± 1.3 (+) | 44.47 ± 2.8 (+) | 37.17 ± 9.6 (+) | 710.42 ± 327.1 (+) |
-| **F5** | Hybrid 1 ($N=3$) | 6.88e+04 ± 3.1e+04 | 2.29e+04 ± 8.2e+03 (-) | **8855.96 ± 6267.5** (-) | 5.11e+04 ± 1.4e+04 (=) | 7.49e+06 ± 1.9e+06 (+) | 2.89e+06 ± 2.6e+06 (+) | 6.33e+06 ± 1.9e+06 (+) |
-| **F6** | Hybrid 2 ($N=4$) | **124.94 ± 167.0** | 126.65 ± 151.3 (=) | 271.38 ± 365.2 (=) | 341.26 ± 331.8 (=) | 1.97e+04 ± 9.5e+03 (+) | 2.20e+04 ± 2.2e+04 (+) | 1.90e+05 ± 7.4e+04 (+) |
-| **F7** | Hybrid 3 ($N=5$) | 5.70e+04 ± 2.2e+04 | 3.59e+04 ± 1.6e+04 (=) | **3417.47 ± 1650.1** (-) | 4.76e+04 ± 1.2e+04 (=) | 4.26e+07 ± 1.8e+07 (+) | 2.41e+06 ± 1.5e+06 (+) | 1.40e+07 ± 4.3e+06 (+) |
-| **F8** | Composition 1 ($N=3$) | 74.69 ± 38.2 | 106.77 ± 5.6 (+) | 136.10 ± 17.4 (+) | 121.29 ± 8.3 (+) | 564.89 ± 698.1 (+) | **69.12 ± 73.8** (=) | 191.58 ± 236.1 (=) |
-| **F9** | Composition 2 ($N=4$) | **200.00 ± 0.0** | 200.43 ± 0.2 (+) | 214.15 ± 42.4 (=) | 203.53 ± 0.8 (+) | 1982.99 ± 300.5 (+) | 3177.06 ± 2441.9 (+) | 7014.56 ± 961.3 (+) |
-| **F10**| Composition 3 ($N=5$) | 789.48 ± 46.2 | **724.82 ± 9.6** (-) | 726.99 ± 17.2 (-) | 733.65 ± 7.8 (-) | 953.66 ± 52.9 (+) | 849.16 ± 84.8 (=) | 2075.40 ± 206.2 (+) |
+| **F3** | Lunacek bi-Rastrigin | $22.68$ (mean $22.4$) | $22.48$ (mean $22.4$) | $22.21$ (mean $22.5$) | $22.68$ (mean $22.6$) | $p = 0.937$ ($=$) | $p = 0.561$ ($=$) | $p_{\text{adj}} = 1.000$ |
+| **F4** | Rosenbrock + Griewank| $1.62$ (mean $1.70$) | $1.60$ (mean $1.70$) | $1.86$ (mean $2.06$) | **$1.41$ (mean $1.33$)** | $p = 0.678$ ($=$) | **$p = 4.27 \times 10^{-4}$ ($-$)** | **$p_{\text{adj}} = 0.0026$ ($-$)** |
+| **F10** | Composition 3 ($N=5$)| $622.05$ (mean $622.0$) | $622.05$ (mean $622.0$) | $622.04$ (mean $622.0$) | $622.02$ (mean $622.0$) | $p = 0.638$ ($=$) | $p = 0.048$ ($-$) | $p_{\text{adj}} = 0.144$ ($=$) |
+
+*Notation*:
+* `(+)` : AD-BSA outperforms competitor with statistical significance ($p < 0.05$).
+* `(=)` : Difference is not statistically significant ($p \ge 0.05$; **does not demonstrate equivalence**).
+* `(-)` : Competitor outperforms AD-BSA with statistical significance ($p < 0.05$).
+* All reported differences and $p$-values are two-sided paired Wilcoxon signed-rank tests ($n=15$). Multiplicity correction applied via Holm-Bonferroni ($m=6$).
+
+**Key Takeaways from the Paired PoC**:
+1. **Full vs. w/o Repulsion**: In all three clean functions, $p \gg 0.05$. In $D=20$, deactivating the repulsion operator does not produce a statistically detectable change in error, consistent with the mechanistic observation that $v_{\text{esc}} \equiv 0$ during $99.5\%$ of the generations.
+2. **AD-BSA vs. L-SHADE**: Following Holm-Bonferroni correction, L-SHADE exhibits a statistically significant advantage on **F4** ($p_{\text{adj}} = 0.0026$). On F3 and F10, differences do not reach statistical significance at the $5\%$ level.
 
 ---
 
-## ⚠️ Limitations & Experimental Protocol
+### 3.2. Exploratory Fixed-Budget Protocol ($D=50$, $\text{MaxNFE} = 50,000$, $n=10$ Runs)
+An earlier exploratory benchmark evaluated 10 independent runs across the 10 problem formulations of the CEC 2020 suite under an independent, compact budget protocol ($1,000 \cdot D = 50,000$ evaluations).
 
-To ensure transparency, reproducibility, and rigorous scientific reporting, the following scope constraints and empirical observations are highlighted:
-
-1. **Relative Performance & Statistical Significance vs. CMA-ES:**
-   Across the 10 benchmark problems of the IEEE CEC 2020 suite in 50D, **CMA-ES statistically significantly outperforms AD-BSA on 5 out of 10 functions** (F1, F3, F5, F7, F10 with $p < 0.05$ via the Wilcoxon signed-rank test). Covariance matrix adaptation in CMA-ES demonstrates superior precision on ill-conditioned rotated unimodal landscapes and complex hybrid functions. AD-BSA's tied overall Friedman ranking (2.30) is anchored by its strong robustness and basin evacuation capability on deceptive multimodal landscapes (F2, F6, F9).
-
-2. **Computational Budget Sensitivity in Population Reduction Algorithms:**
-   The experimental protocol evaluated a fixed computational budget of $50,000$ evaluations ($1,000 \cdot D$). In official IEEE CEC competitions, the standard budget is substantially higher ($10,000 \cdot D = 500,000$ evaluations). Canonical SHADE-family algorithms—such as **L-SHADE** (initial population $N = 18 \cdot D = 900$) and **jSO** ($N \approx 691$)—are designed to amortize linear population size reduction across hundreds of thousands of evaluations. Under a compact budget of 50,000 evaluations, a large fraction of function calls is consumed during the early large-population exploration phase, constraining their fine exploitative convergence compared to extended-budget regimes.
-
-3. **Trade-off Between Escape Dynamics and Asymptotic Decimal Precision:**
-   In direct head-to-head experiments on 30D problems with $75,000$ evaluations ([`benchmarks/benchmark_lshade_vs_adbsa.py`](benchmarks/benchmark_lshade_vs_adbsa.py)), both algorithms reliably locate the global basin. The fully vectorized NumPy implementation of AD-BSA achieves a **~8.0x wall-clock CPU speedup per run** (0.80 s vs. 6.38 s) compared to canonical Python L-SHADE. On smooth standard test functions, L-SHADE refines higher asymptotic decimal precision during the terminal exploitation phase, whereas AD-BSA's cosecant repulsion operator prioritizes rapid evacuation of deceptive stagnation traps and matrix throughput, exhibiting its primary advantage in high-dimensional multimodal topologies (as observed in CEC 2020 at 50D).
-
-4. **Verifiability & Reproducibility:**
-   All execution scripts, experimental parameters, deterministic pseudo-random seeds, and raw JSON result files are fully archived in the [`benchmarks/`](benchmarks/) directory for independent verification.
+> [!WARNING]
+> **Methodological Caveat on 50D**:
+> 1. **Non-Official Dimension**: The official IEEE CEC 2020 competition established standard dimensions $D \in \{5, 10, 15, 20\}$ with budgets of $10,000 \cdot D$. Dimension $D=50$ is not an official CEC 2020 competition category; rotation matrices were inherited by third-party packages from earlier suites.
+> 2. **Population Constraint on Baselines**: Canonical L-SHADE ($N_{\text{init}} = 18D = 900$) and jSO ($N_{\text{init}} \approx 691$) exhaust a large fraction of the 50,000 evaluation budget during their initial iterations, constraining their terminal exploitation phase.
+> 3. **Exclusion of Contaminated Problems**: Problems F2, F5, F6, and F7 contain dependencies on the third-party Schwefel defect (detailed below) and are retained in raw logs ([`benchmarks/cec2020_50d_results.json`](benchmarks/cec2020_50d_results.json)) for auditing purposes, but excluded from validated comparative claims.
 
 ---
 
-## 🔬 Ablation Study: Component Contribution Analysis
+## 4. Benchmark Audit & Known Third-Party Defect in `opfunu`
 
-To empirically assess the individual contribution of each novel mathematical component in AD-BSA, an ablation study was performed on representative problem classes of the IEEE CEC 2020 suite in **$50$ Dimensions** ($MaxNFE = 50,000$):
-- **Unimodal / Ill-Conditioned:** F1 (Shifted and Rotated Bent Cigar)
-- **Massively Multimodal Trap:** F2 (Shifted and Rotated Schwefel)
-- **Non-Separable Valleys:** F4 (Expanded Rosenbrock + Griewank)
-- **Multi-Basin Composition:** F8 (Composition Function 1)
+An inspection of the third-party dependency `opfunu==1.0.1` (`opfunu/cec_based/operator.py`, lines 95–105) identified an algebraic discrepancy in `modified_schwefel_func`:
+1. The boundary penalty term `- ((z - 500)/100)^2 / nx` is assigned within a `-=` accumulation statement, causing boundary violations outside $[-500, 500]$ to **decrease** the objective value instead of penalizing it.
+2. Coordinates escaping $[-500, 500]$ yield fitness values strictly below the theoretical bias ($f(x) < f_{\text{bias}}$).
+3. Runners applying $\text{error} = \max(0.0, f_{\text{best}} - f_{\text{bias}})$ truncate these negative deltas to $0.00\text{e}+00$.
 
-### Evaluated Ablation Variants
-
-1. **`Full AD-BSA (Proposed)`**: The complete architecture with Bounded Cosecant Repulsion ($|\csc|$), Multi-Tier Stratified Anti-Attractors ($M = 2$), Decoupled Power-Law Cooling ($\gamma = 1.5$), and Linear Population Size Reduction (LPSR).
-2. **`w/o Cosecant Repulsion (v_esc = 0)`**: Repulsive force disabled ($M_{\max} = 1.0$), reducing search to pure positive attraction and differential archive exploitation.
-3. **`w/o Power-Law Cooling (gamma = 0)`**: Constant repulsion force maintained throughout all 50,000 evaluations without power-law budget damping.
-4. **`w/o Stratification (Single Centroid M = 1)`**: Replaces the stratified fitness-rank niching with a single lumped centroid of the worst individuals.
-
-### Empirical Ablation Results (Mean Error $\Delta f = f(\mathbf{x}^*) - f_{\text{bias}}$)
-
-| Component Configuration | F1 (Bent Cigar) | F2 (Schwefel) | F4 (Rosenbrock+Griewank) | F8 (Composition 1) | Friedman Rank |
-| :--- | :---: | :---: | :---: | :---: | :---: |
-| **`Full AD-BSA (Proposed)`** | **$6.59 \times 10^2$** | **$0.00 \times 10^0$** | $6.96 \times 10^0$ | $8.16 \times 10^1$ | **2.25** |
-| **`w/o Power-Law Cooling` ($\gamma = 0$)** | $6.84 \times 10^2$ | **$0.00 \times 10^0$** | **$5.50 \times 10^0$** | $7.66 \times 10^1$ | **2.25** |
-| **`w/o Cosecant Repulsion` ($\mathbf{v}_{\text{esc}} = 0$)** | $9.13 \times 10^2$ | **$0.00 \times 10^0$** | $6.28 \times 10^0$ | **$5.87 \times 10^1$** | **2.50** |
-| **`w/o Stratification` (Single Centroid $M = 1$)** | $8.38 \times 10^2$ | **$0.00 \times 10^0$** | $5.10 \times 10^0$ | $8.65 \times 10^1$ | **3.00** |
-
-### Key Scientific Insights
-
-1. **Crucial Role of Multi-Tier Stratification ($M = 2$ vs $M = 1$):**
-   Lumping all sub-optimal solutions into a single centroid ($M = 1$) collapses directional information about stagnation zones. Stratifying the worst $15\%$ into $M = 2$ rank-based tiers preserves topological resolution in 50D, preventing rank degradation from **2.25** to **3.00**.
-2. **Impact of the Bounded Cosecant Barrier ($|\csc|$):**
-   Deactivating the repulsive escape vector ($\mathbf{v}_{\text{esc}} = 0$) causes a **$38.5\%$ error increase on F1** ($659 \to 913$), demonstrating that explosive transverse repulsion accelerates the evacuation of narrow parabolic ridge traps without destabilizing descent.
-3. **Reproducibility:**
-   The ablation experiment can be executed with a single command:
-   ```bash
-   python benchmarks/run_ablation_study.py --runs 5 --workers 4
-   ```
+### Dependency Map and Status Across CEC 2020 Problems:
+* **F1, F3, F4, F9, F10**: **Clean**. No dependency on `modified_schwefel_func`.
+* **F2**: **Direct dependency**. Historical results reporting exact zeros ($0.00\text{e}+00$) across multiple algorithms are an artifact of this defect and are **invalid**.
+* **F5, F6, F7, F8**: **Sub-component dependency**. These hybrid and composition functions route a partition of coordinates into `modified_schwefel_func`. In the 20D PoC, negative deltas were observed in 43% of F5 runs and 35% of F6 runs, truncating to zero. Results on these problems are marked as **contaminated / non-validated**.
 
 ---
 
-## ⚡ Quantum Engineering Application: Atomtronic Sagnac Accelerometers
+## 5. Component Ablation Analysis
 
-Beyond synthetic testbeds, AD-BSA was evaluated on **Multi-Harmonic Optimal Quantum Floquet Control** applied to the atomtronic quantum sensing framework introduced by **Carmona-López et al.** (*"Enhancing supercurrent-based inertial sensing via interactions in atomtronic angular accelerometers"*, [*Physical Review Research* **8**, 033316, 2026](https://doi.org/10.1103/zzx2-tttb)).
+A preliminary ablation study on 4 functions in 50D ($n=5$ runs, archived in [`benchmarks/run_ablation_study.py`](benchmarks/run_ablation_study.py)) evaluated:
+* `Full AD-BSA`
+* `w/o Cosecant Repulsion` ($v_{\text{esc}} \equiv 0$)
+* `w/o Power-Law Cooling` ($\gamma = 0$)
+* `w/o Stratification` ($M = 1$)
 
-Modeling $N=3$ interacting bosons in a 3-site optical ring governed by the Many-Body Bose-Hubbard Hamiltonian across dimensions $D=10, 15, 20$:
-
-$$
-\hat{H}(t) = -J \sum_{l=1}^{N_s} \left( e^{i \phi(t) / N_s} \hat{a}_{l+1}^\dagger \hat{a}_l + \text{h.c.} \right) + \frac{U}{2} \sum_{l=1}^{N_s} \hat{n}_l (\hat{n}_l - 1)
-$$
-
-where the driving phase $\phi(t)$ is parameterized as a multi-harmonic Fourier synthesis with non-linear chirp:
-
-$$
-\phi(t) = \omega_B t + \sum_{k=1}^K A_k \sin(k \omega t + \theta_k) + \beta t^{1.5}
-$$
-
-AD-BSA systematically detected and evacuated destructive quantum interference traps, achieving significant sensitivity gains over standard evolutionary operators:
-- **$+75.5\%$ ($D=10$)**
-- **$+184.3\%$ ($2.84\times$ boost, $D=15$)**
-- **$+54.1\%$ ($D=20$)**
-
-### Multi-Algorithm Benchmark on Quantum Floquet Control ($D=15$, 10 Independent Runs, 350 Evaluations; Maximized Sensitivity $\uparrow$)
-
-| Algorithm | Optimization Paradigm | Mean Sensitivity ± Std | Median | Peak Score | Wilcoxon vs. AD-BSA |
-| :--- | :--- | :---: | :---: | :---: | :--- |
-| **AD-BSA-Csc (Proposed)** | Negative-Learning DE ($\vert\csc\vert$) | **5.13 ± 2.30** | **5.31** | **8.15** | — (Baseline) |
-| **jSO (Brest et al.)** | Adaptive DE (Success-History) | 3.50 ± 1.88 | 2.44 | 6.51 | *p* = 0.084 (Competitive Parity) |
-| **Standard DE** | Canonical Differential Evolution | 2.01 ± 0.45 | 1.88 | 2.95 | **p = 3.91 × 10⁻³ (AD-BSA Wins, 2.5×)** |
-| **dCRAB (Nelder-Mead)** | Standard Quantum Optimal Control | 0.69 ± 0.30 | 0.65 | 1.39 | **p = 1.95 × 10⁻³ (AD-BSA Wins, 7.5×)** |
-
-> **Key Physical Insights in Quantum Optimal Control:**
-> 1. **DE Lineage vs. Physics Standard (dCRAB):** In many-body Floquet landscapes, the canonical physics framework **dCRAB** (Chopped Random Basis) frequently stalls in suboptimal parameter basins. Differential Evolution architectures prove substantially better suited for multi-harmonic parameter synthesis, with AD-BSA achieving a **7.5× sensitivity gain** over dCRAB ($p = 1.95 \times 10^{-3}$).
-> 2. **Evacuating Destructive Interference Traps:** Non-linear coupling between interaction $U$ and driving phases $\theta_k$ creates broad destructive anti-resonances where atomic currents collapse ($\bar{I} \to 0$). Standard DE falls into these zero-current manifolds and stagnates ($2.01$), whereas AD-BSA's bounded cosecant repulsion treats zero-current zones as anti-attractor traps, expelling search vectors into constructive Floquet transmission channels to achieve a peak sensitivity of **8.15**.
+### Status of Ablation Conclusions:
+1. **F2 Exclusion**: F2 can no longer serve as evidence of component contribution due to the Schwefel penalty defect.
+2. **Sample Size Limitations**: With $n=5$ runs, small mean differences cannot establish causal contribution or statistical significance without larger sample sizes.
+3. **Reported Figures**: Prior statements claiming a "38.5% performance improvement on F1" reflected an unverified mean difference over 5 runs and have been reclassified as **exploratory / unverified**.
 
 ---
 
-## 🚀 Quickstart Guide
+## 6. Quantum Floquet Engineering Application
 
-### 1. Installation
+An exploratory application of AD-BSA to multi-harmonic Floquet control in atomtronic Sagnac accelerometers (Carmona-López et al., 2026 model) is implemented in [`benchmarks/quantum_accelerometer.py`](benchmarks/quantum_accelerometer.py) and [`benchmarks/generate_carmona_convergence.py`](benchmarks/generate_carmona_convergence.py).
 
-Install directly from the repository in editable/developer mode:
-
-```bash
-git clone https://github.com/Pipin333/AD-BSA.git
-cd AD-BSA
-pip install -e .
-```
-
-Or install dependencies via `requirements.txt`:
-
-```bash
-pip install -r requirements.txt
-```
-
-### 2. Minimal Optimization Example (10 Lines)
-
-```python
-import numpy as np
-from ad_bsa import AD_BSA
-
-# Define any continuous objective function (Sphere: min at 0.0)
-def objective(x):
-    x = np.atleast_2d(x)
-    return np.sum(x**2, axis=1)
-
-# Set search bounds: 50 dimensions in [-100, 100]
-bounds = np.array([[-100.0, 100.0]] * 50)
-
-# Instantiate and optimize
-optimizer = AD_BSA(objective_func=objective, bounds=bounds, max_evaluations=50000, seed=42)
-result = optimizer.optimize()
-
-print(f"Global Best Fitness: {result.best_fitness:.6e}")
-print(f"Total Evaluations:   {result.total_evaluations}")
-print(f"Execution Time:      {result.execution_time:.2f} s")
-```
+* **Reproducibility Status**: Convergence curve logs for 5 runs in $D \in \{10, 15, 20\}$ are preserved in [`benchmarks/carmona_quantum_convergence_data.json`](benchmarks/carmona_quantum_convergence_data.json).
+* **Classification**: This benchmark represents a **proof-of-concept numerical simulation**, not an experimental laboratory validation. Detailed performance multiples have been moved from main result highlights to a preliminary case-study classification pending independent replication with formal statistical protocols.
 
 ---
 
-## 🧪 Running Tests & Reproducing Benchmarks
+## 7. Open Questions & Roadmap for AD-BSA v3
 
-### Execute Unit Test Battery & Style Linting
-Run the full test suite and PEP 8 verification:
-```bash
-pytest tests/ -v
-flake8 src/ad_bsa --max-line-length=88
-```
-
-### Reproduce CEC 2020 50D Benchmark Suite
-Run the parallelized multi-core CEC 2020 experiment runner:
-```bash
-# Run 10 independent runs per function across 4 CPU cores
-python benchmarks/run_cec2020_50d.py --runs 10 --max-evals 50000 --workers 4
-
-# Re-generate the summary tables and figures
-python benchmarks/generate_cec2020_report.py
-```
+Based on the diagnostic findings, future research will address:
+1. **Dimensional Scaling of Capture Radius ($R_c$)**: Reformulating $R_c \propto \mathcal{O}(\sqrt{D} \cdot \bar{\sigma})$ so that the active threshold $r_{\text{norm}} < \tau$ scales with the natural concentration of measure in $\mathbb{R}^D$.
+2. **Continuous Monotonic Repulsion Kernels**: Replacing the bounded cosecant profile with smooth, monotonic radial kernels (e.g., Gaussian $\exp(-r_{\text{norm}}^2)$ or inverse-quadratic $\frac{1}{1 + r_{\text{norm}}^2}$) to eliminate jump discontinuities and rebound anomalies.
+3. **Low-Dimensional Evaluation ($D \le 5$)**: Assessing whether explicit negative learning provides measurable escape utility in low-dimensional multimodal landscapes where swarm density remains coupled to local basins.
 
 ---
 
@@ -367,87 +193,33 @@ python benchmarks/generate_cec2020_report.py
 
 ```
 AD-BSA/
-├── .gitignore                      # Strict filter ensuring pure mathematical codebase
 ├── LICENSE                         # Apache License Version 2.0
 ├── NOTICE                          # Apache attribution notice
-├── CITATION.cff                    # Citation metadata for GitHub and Zenodo
-├── pyproject.toml                  # Modern pip-installable package specification
-├── requirements.txt                # Core dependencies (numpy, scipy, matplotlib, opfunu, cma, pytest)
-├── README.md                       # Comprehensive documentation & benchmark analysis
+├── CITATION.cff                    # Citation metadata
+├── pyproject.toml                  # Package configuration
+├── requirements.txt                # Core dependencies
+├── README.md                       # Audited scientific documentation
 ├── src/
-│   └── ad_bsa/                     # Core Python Library
-│       ├── __init__.py             # Exports: AD_BSA, jSO, CMA_ES, L_SHADE, CanonicalCuckooSearch, StandardDE, StandardPSO
-│       ├── algorithm.py            # Canonical AD-BSA with Bounded Cosecant Repulsion |csc|
-│       ├── competitors.py          # Standardized competitor implementations (jSO, CMA-ES, L-SHADE, etc.)
-│       └── utils.py                # Boundary reflection, evaluation counters, Wilcoxon statistical tests
+│   └── ad_bsa/                     # Core Library
+│       ├── __init__.py             # Public API exports
+│       ├── algorithm.py            # AD-BSA implementation
+│       ├── competitors.py          # Baseline implementations (jSO, L-SHADE, CMA-ES, etc.)
+│       └── utils.py                # Boundary handlers and evaluation wrappers
 ├── benchmarks/
-│   ├── run_cec2020_50d.py          # Parallel multi-core CEC 2020 (50D) experiment runner
-│   ├── run_ablation_study.py       # Empirical ablation study & component contribution runner
-│   ├── benchmark_lshade_vs_adbsa.py # Head-to-head runtime & quality benchmark vs canonical L-SHADE
-│   ├── lshade_vs_adbsa_results.json# Raw JSON output of 10-run 30D L-SHADE vs AD-BSA benchmark
-│   ├── generate_cec2020_report.py  # Report generator & statistical consolidation script
-│   ├── cec2020_50d_results.json    # Consolidated results database for all 7 algorithms
-│   ├── cec2020_50d_report.md       # Formatted Markdown report
-│   └── cec2020_50d_comparison.png  # High-resolution benchmark comparison chart
-├── tests/
-│   ├── test_algorithms.py          # Unit tests verifying convergence and stability of all 7 algorithms
-│   ├── test_bounds.py              # Unit tests for boundary constraint reflections
-│   └── test_cec2020_integration.py # Integration test for IEEE CEC 2020 benchmark suite
-└── examples/
-    ├── basic_usage.py              # Standalone minimal quickstart
-    └── cec_quickstart.py           # Single-run optimization of CEC 2020 F4 (50D)
+│   ├── phase3_poc_results.json     # 360-run paired PoC results (D=20, n=15, 4 variants)
+│   ├── diagnostic_pre_meeting_f3_20d.json # Generation-by-generation diagnostic telemetry
+│   ├── run_phase3_paired_experiment.py    # Paired PoC benchmark runner
+│   ├── run_diagnostic_pre_meeting.py      # Diagnostic telemetry runner
+│   ├── run_cec2020_50d.py          # Exploratory 50D CEC 2020 runner
+│   └── run_ablation_study.py       # 50D ablation study runner
+└── tests/
+    ├── test_algorithms.py          # Convergence tests across all algorithms
+    ├── test_bounds.py              # Boundary constraint tests
+    └── test_cec2020_integration.py # Benchmark suite integration tests
 ```
 
 ---
 
-## 📜 Citation & Academic Reference
+## ⚖️ License & Attribution
 
-If you use AD-BSA in your research or reference the atomtronic quantum control benchmark, please cite both the software and the foundational physics article:
-
-### AD-BSA Optimization Software (Zenodo / CERN)
-```bibtex
-@software{riquelmesalvo2026adbsa_code,
-  author       = {Riquelme Salvo, Felipe S.},
-  title        = {{AD-BSA: Adaptive Differential Boogeyman Search 
-                   Algorithm with Bounded Cosecant Repulsion Barrier (v1.0.0)}},
-  month        = oct,
-  year         = 2026,
-  publisher    = {Zenodo},
-  version      = {v1.0.0},
-  doi          = {10.5281/zenodo.23147724},
-  url          = {https://doi.org/10.5281/zenodo.23147724}
-}
-```
-
-### Foundational Atomtronic Quantum Sensing Paper (APS Physical Review Research)
-```bibtex
-@article{carmonalopez2026enhancing,
-  author    = {Carmona-L{\'o}pez, S. and Matos-Abiague, A. and Isaule, F. and Morales-Molina, L.},
-  title     = {Enhancing supercurrent-based inertial sensing via interactions in atomtronic angular accelerometers},
-  journal   = {Physical Review Research},
-  volume    = {8},
-  number    = {3},
-  pages     = {033316},
-  year      = {2026},
-  month     = {Sep},
-  publisher = {American Physical Society},
-  doi       = {10.1103/zzx2-tttb},
-  url       = {https://doi.org/10.1103/zzx2-tttb}
-}
-```
-
----
-
-## ⚖️ License
-
-This project is licensed under the **Apache License Version 2.0**. See the [LICENSE](LICENSE) and [NOTICE](NOTICE) files for details.
-
-```
-Copyright 2026 Felipe Riquelme Salvo (Pipin333)
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-```
+Licensed under the **Apache License Version 2.0**. See the [LICENSE](LICENSE) file for details.

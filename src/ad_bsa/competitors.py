@@ -357,6 +357,7 @@ class L_SHADE:
         p_best_rate: float = 0.11,
         arc_rate: float = 1.4,
         pop_size_init: Optional[int] = None,
+        initial_population: Optional[np.ndarray] = None,
         seed: Optional[int] = None
     ):
         self.func = objective_func
@@ -366,10 +367,13 @@ class L_SHADE:
         self.H = int(memory_size)
         self.p_rate = float(p_best_rate)
         self.arc_rate = float(arc_rate)
+        self.initial_population = initial_population
         self.rng = np.random.default_rng(seed)
 
         self.N_min = 4
-        if pop_size_init is not None:
+        if initial_population is not None:
+            self.N_init = len(initial_population)
+        elif pop_size_init is not None:
             self.N_init = int(pop_size_init)
         else:
             # Fórmula canónica de L-SHADE (Tanabe & Fukunaga, 2014): N_init = 18 * D
@@ -383,7 +387,10 @@ class L_SHADE:
         low, high = self.bounds[:, 0], self.bounds[:, 1]
         bound_range = high - low
 
-        pop = low + self.rng.random((self.N, self.dim)) * bound_range
+        if self.initial_population is not None:
+            pop = np.asarray(self.initial_population, dtype=np.float64).copy()
+        else:
+            pop = low + self.rng.random((self.N, self.dim)) * bound_range
         fits = self.func(pop)
         nfe = self.N
 
