@@ -138,7 +138,7 @@ An earlier exploratory benchmark evaluated 10 independent runs across the 10 pro
 > **Methodological Caveat on 50D**:
 > 1. **Non-Official Dimension**: The official IEEE CEC 2020 competition established standard dimensions $D \in \{5, 10, 15, 20\}$ with budgets of $10,000 \cdot D$. Dimension $D=50$ is not an official CEC 2020 competition category; rotation matrices were inherited by third-party packages from earlier suites.
 > 2. **Population Constraint on Baselines**: Canonical L-SHADE ($N_{\text{init}} = 18D = 900$) and jSO ($N_{\text{init}} \approx 691$) exhaust a large fraction of the 50,000 evaluation budget during their initial iterations, constraining their terminal exploitation phase.
-> 3. **Exclusion of Contaminated Problems**: Problems F2, F5, F6, and F7 contain dependencies on the third-party Schwefel defect (detailed below) and are retained in raw logs ([`benchmarks/cec2020_50d_results.json`](benchmarks/cec2020_50d_results.json)) for auditing purposes, but excluded from validated comparative claims.
+> 3. **Exclusion of Contaminated Problems**: Problems F2, F5, F6, and F7 contain dependencies on the third-party Schwefel defect (detailed below) and are excluded from validated comparative claims.
 
 ---
 
@@ -158,7 +158,7 @@ An inspection of the third-party dependency `opfunu==1.0.1` (`opfunu/cec_based/o
 
 ## 5. Component Ablation Analysis
 
-A preliminary ablation study on 4 functions in 50D ($n=5$ runs, archived in [`benchmarks/run_ablation_study.py`](benchmarks/run_ablation_study.py)) evaluated:
+A preliminary exploratory ablation study on 4 functions in 50D ($n=5$ runs) evaluated:
 * `Full AD-BSA`
 * `w/o Cosecant Repulsion` ($v_{\text{esc}} \equiv 0$)
 * `w/o Power-Law Cooling` ($\gamma = 0$)
@@ -173,10 +173,9 @@ A preliminary ablation study on 4 functions in 50D ($n=5$ runs, archived in [`be
 
 ## 6. Quantum Floquet Engineering Application
 
-An exploratory application of AD-BSA to multi-harmonic Floquet control in atomtronic Sagnac accelerometers (Carmona-López et al., 2026 model) is implemented in [`benchmarks/quantum_accelerometer.py`](benchmarks/quantum_accelerometer.py) and [`benchmarks/generate_carmona_convergence.py`](benchmarks/generate_carmona_convergence.py).
+An exploratory numerical simulation applying AD-BSA to multi-harmonic Floquet control in atomtronic Sagnac accelerometers (Carmona-López et al., 2026 model) was examined as a potential application domain.
 
-* **Reproducibility Status**: Convergence curve logs for 5 runs in $D \in \{10, 15, 20\}$ are preserved in [`benchmarks/carmona_quantum_convergence_data.json`](benchmarks/carmona_quantum_convergence_data.json).
-* **Classification**: This benchmark represents a **proof-of-concept numerical simulation**, not an experimental laboratory validation. Detailed performance multiples have been moved from main result highlights to a preliminary case-study classification pending independent replication with formal statistical protocols.
+* **Classification**: This study represents an exploratory **numerical simulation** (simulated Hamiltonian dynamics in QuTiP), not an experimental laboratory validation on physical hardware. Detailed performance claims have been excluded from the core validated benchmark suite pending formal experimental protocols.
 
 ---
 
@@ -206,12 +205,10 @@ AD-BSA/
 │       ├── competitors.py          # Baseline implementations (jSO, L-SHADE, CMA-ES, etc.)
 │       └── utils.py                # Boundary handlers and evaluation wrappers
 ├── benchmarks/
-│   ├── phase3_poc_results.json     # 360-run paired PoC results (D=20, n=15, 4 variants)
+│   ├── phase3_poc_results.json            # 360-run paired PoC results (D=20, n=15, 4 variants)
 │   ├── diagnostic_pre_meeting_f3_20d.json # Generation-by-generation diagnostic telemetry
 │   ├── run_phase3_paired_experiment.py    # Paired PoC benchmark runner
-│   ├── run_diagnostic_pre_meeting.py      # Diagnostic telemetry runner
-│   ├── run_cec2020_50d.py          # Exploratory 50D CEC 2020 runner
-│   └── run_ablation_study.py       # 50D ablation study runner
+│   └── run_diagnostic_pre_meeting.py      # Diagnostic telemetry runner
 └── tests/
     ├── test_algorithms.py          # Convergence tests across all algorithms
     ├── test_bounds.py              # Boundary constraint tests
